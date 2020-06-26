@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/streadway/amqp"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/crawler"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
 )
 
@@ -32,10 +35,21 @@ func main() {
 		select {
 		case msg := <-msgs:
 			{
-				// todo: consume msg
 				var page model.Page
-				json.Unmarshal(msg.Body, &page)
-				crawler.Crawl(page.Url)
+				err = json.Unmarshal(msg.Body, &page)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				urls, err := crawler.Crawl(page.Url)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				err = sdk.PageCallback(page, urls)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}
 	}
