@@ -1,10 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/streadway/amqp"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/crawler"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
 )
 
@@ -32,7 +33,9 @@ func main() {
 		case msg := <-msgs:
 			{
 				// todo: consume msg
-				http.Get(string(msg.Body))
+				var page model.Page
+				json.Unmarshal(msg.Body, &page)
+				crawler.Crawl(page.Url)
 			}
 		}
 	}

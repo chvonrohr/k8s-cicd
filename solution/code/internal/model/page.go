@@ -1,6 +1,6 @@
 package model
 
 type Page struct {
-	Id  int
-	Url string
+	Id  int    `json:"id"`
+	Url string `json:"url"`
 }
