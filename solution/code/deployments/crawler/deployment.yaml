@@ -10,3 +10,22 @@ spec:
     matchLabels:
       app: crawler
   template:
+    metadata:
+      labels:
+        app: crawler
+    spec:
+      containers:
+        - name: crawler
+          image: eu.gcr.io/my-project/crawler:my-version
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_SERVICE
+              value: "backend"
+          volumeMounts:
+            - name: rabbitmq-config-volume
+              mountPath: /var/k8s/rabbitmq/config
+      volumes:
+        - name: rabbitmq-config-volume
+          configMap:
+            name: rabbitmq-service-config
