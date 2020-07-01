@@ -1,7 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type Page struct {
-	Id     int    `json:"id"`
+	gorm.Model
 	SiteId int    `json:"siteId"`
 	Url    string `json:"url"`
 }
