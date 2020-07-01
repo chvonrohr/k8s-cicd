@@ -40,6 +40,8 @@ func main() {
 
 	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 
+	log.Println("listening to queue...")
+
 	for {
 		select {
 		case msg := <-msgs:
