@@ -52,6 +52,7 @@ func main() {
 					log.Println(err)
 					continue
 				}
+				log.Printf("crawling %s\n", page.Url)
 				urls, err := crawler.Crawl(page.Url)
 				if err != nil {
 					log.Println(err)

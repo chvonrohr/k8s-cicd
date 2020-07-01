@@ -54,4 +54,46 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		c.Status(200)
 	})
 
+	r.GET("/sites", func(c *gin.Context) {
+		var sites []model.Site
+		GetTx(c).Find(&sites)
+		c.JSON(200, &sites)
+		return
+	})
+	r.POST("/sites", func(c *gin.Context) {
+		var site model.Site
+		if err := c.BindJSON(&site); err != nil {
+			c.AbortWithStatusJSON(500, err)
+			return
+		}
+		GetTx(c).Save(&site)
+
+	})
+	r.POST("/sites/:id/crawl", func(c *gin.Context) {
+		tx := GetTx(c)
+		siteId, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			_ = c.AbortWithError(500, err)
+			return
+		}
+
+		var site model.Site
+		tx.First(&site, siteId)
+
+		page := model.Page{
+			Site:  site,
+			Url:   site.Url,
+			State: model.PendingState,
+		}
+		tx.Save(page)
+		err = QueuePage(page)
+		if err != nil {
+			c.AbortWithStatusJSON(200, err)
+			return
+		}
+		c.Status(204)
+		return
+
+	})
+
 }

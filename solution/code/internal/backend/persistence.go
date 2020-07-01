@@ -45,7 +45,7 @@ func PersistenceMiddleware(db *gorm.DB) gin.HandlerFunc {
 }
 
 func GetTx(ctx *gin.Context) *gorm.DB {
-	return ctx.MustGet("tx").(*gorm.DB)
+	return ctx.MustGet("tx").(*Transaction).Tx
 }
 
 func FailTx(ctx *gin.Context) {

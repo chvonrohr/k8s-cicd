@@ -1,5 +1,5 @@
 [backend]
-url = "http://backend"
+url = "http://localhost:8080"
 
 [queue]
 host = "localhost"
