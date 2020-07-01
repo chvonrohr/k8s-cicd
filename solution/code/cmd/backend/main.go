@@ -15,12 +15,19 @@ func main() {
 	// set up configuration files and parse flags
 	util.InitialiseConfig("backend")
 
+	db, err := backend.InitialisePersistence()
+	if err != nil {
+		panic(err)
+	}
 	// initialise http handler
 	r := gin.Default()
 	// set up routing
-	backend.InitialiseRouter(r)
+	backend.InitialiseRouter(r, db)
 
 	// defaults to r.Run("0.0.0.0:8080")
-	r.Run(fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port")))
+	err = r.Run(fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port")))
+	if err != nil {
+		panic(err)
+	}
 
 }
