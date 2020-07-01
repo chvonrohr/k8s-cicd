@@ -36,7 +36,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 
 		for _, url := range urls {
 			var page model.Page
-			tx.Where(model.Page{Site: parent.Site, Url: url}).Attrs(model.Page{State: model.CreatedState}).FirstOrCreate(&page)
+			tx.Where(model.Page{SiteID: parent.SiteID, Url: url}).Attrs(model.Page{State: model.CreatedState, SiteID: parent.SiteID}).FirstOrCreate(&page)
 			if page.State == model.CreatedState {
 				// queue page
 				if err := QueuePage(page); err != nil {
