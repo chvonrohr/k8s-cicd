@@ -1,20 +1,20 @@
-package main
+package backend
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
-	"log"
-
 	"github.com/streadway/amqp"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/crawler"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
 )
 
-func main() {
+var (
+	queue   amqp.Queue
+	channel *amqp.Channel
+)
 
+func InitialiseQueue() {
 	var (
 		username = viper.GetString("queue.username")
 		password = viper.GetString("queue.password")
@@ -22,7 +22,7 @@ func main() {
 		port     = viper.GetInt("queue.port")
 	)
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, host, port))
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
 	ch, err := conn.Channel()
@@ -33,29 +33,21 @@ func main() {
 
 	util.FailOnError(ch.Qos(5, 0, false), "Failed to set rabbitmq qos")
 
-	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
+	queue = q
+	channel = ch
 
-	for {
-		select {
-		case msg := <-msgs:
-			{
-				var page model.Page
-				err = json.Unmarshal(msg.Body, &page)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				urls, err := crawler.Crawl(page.Url)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				err = sdk.PageCallback(page, urls)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}
+}
+
+func QueuePage(page model.Page) error {
+	bs, err := json.Marshal(&page)
+	if err != nil {
+		return err
 	}
-
+	err = channel.Publish("", queue.Name, false, false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        bs,
+		},
+	)
+	return err
 }

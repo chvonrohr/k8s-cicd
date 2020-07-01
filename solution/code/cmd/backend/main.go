@@ -19,6 +19,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	backend.InitialiseQueue()
 	// initialise http handler
 	r := gin.Default()
 	// set up routing

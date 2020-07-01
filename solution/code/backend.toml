@@ -7,3 +7,9 @@ port = 3306
 username = "root"
 password = "test"
 database = "letsboot"
+
+[queue]
+host = "localhost"
+port = 5672
+username = "guest"
+password = "guest"
