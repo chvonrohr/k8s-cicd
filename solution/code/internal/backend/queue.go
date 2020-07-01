@@ -14,7 +14,7 @@ var (
 	channel *amqp.Channel
 )
 
-func InitialiseQueue() {
+func InitialiseQueue() (cancel func()) {
 	var (
 		username = viper.GetString("queue.username")
 		password = viper.GetString("queue.password")
@@ -24,10 +24,9 @@ func InitialiseQueue() {
 
 	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
-	defer util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
+
 	ch, err := conn.Channel()
 	util.FailOnError(err, "Failed to open a channel")
-	defer util.FailOnErrorF(ch.Close, "Failed to close channel")
 
 	q, err := ch.QueueDeclare("pages", true, false, false, false, nil)
 
@@ -35,6 +34,12 @@ func InitialiseQueue() {
 
 	queue = q
 	channel = ch
+
+	cancel = func() {
+		util.FailOnErrorF(ch.Close, "Failed to close channel")
+		util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
+	}
+	return
 
 }
 

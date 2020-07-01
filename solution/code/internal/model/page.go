@@ -1,6 +1,6 @@
 package model
 
-import "gorm.io/gorm"
+import "github.com/jinzhu/gorm"
 
 type PageState string
 
@@ -12,8 +12,8 @@ var (
 
 type Page struct {
 	gorm.Model
-	Site    Site      `json:"site" gorm:"index;ForeignKey:id;References:id"`
-	Url     string    `json:"url" gorm:"index"`
+	Site    Site      `json:"site" gorm:"ForeignKey:id;References:id"`
+	Url     string    `json:"url" gorm:"index:url"`
 	State   PageState `json:"state"`
 	Parents []Page    `json:"-" gorm:"many2many:page_ref_table;association_jointable_foreignkey:parent_id"`
 }

@@ -3,10 +3,10 @@ package backend
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spf13/viper"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"sync"
 )
 
@@ -19,18 +19,14 @@ func InitialisePersistence() (*gorm.DB, error) {
 		database = viper.GetString("db.database")
 	)
 	// format dsn based on above values
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", username, password, host, port, database)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", username, password, host, port, database)
+	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.AutoMigrate(&model.Site{}); err != nil {
-		return nil, err
-	}
-	if err := db.AutoMigrate(&model.Page{}); err != nil {
-		return nil, err
-	}
+	db.AutoMigrate(&model.Site{})
+	db.AutoMigrate(&model.Page{})
 
 	return db, nil
 }

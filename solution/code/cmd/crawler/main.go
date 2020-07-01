@@ -62,6 +62,11 @@ func main() {
 				if err != nil {
 					log.Println(err)
 				}
+				err = msg.Ack(false)
+				if err != nil {
+					log.Println(err)
+				}
+				log.Printf("processed %s\n", page.Url)
 			}
 		}
 	}

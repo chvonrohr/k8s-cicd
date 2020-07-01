@@ -20,7 +20,8 @@ func main() {
 		panic(err)
 	}
 
-	backend.InitialiseQueue()
+	closeQueue := backend.InitialiseQueue()
+	defer closeQueue()
 	// initialise http handler
 	r := gin.Default()
 	// set up routing

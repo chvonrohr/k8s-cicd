@@ -2,8 +2,8 @@ package backend
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gorm.io/gorm"
 	"log"
 	"strconv"
 )
@@ -55,7 +55,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 	})
 
 	r.GET("/sites", func(c *gin.Context) {
-		var sites []model.Site
+		var sites = make([]model.Site, 1)
 		GetTx(c).Find(&sites)
 		c.JSON(200, &sites)
 		return
@@ -85,10 +85,11 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 			Url:   site.Url,
 			State: model.PendingState,
 		}
-		tx.Save(page)
+		tx.Create(&page)
 		err = QueuePage(page)
 		if err != nil {
-			c.AbortWithStatusJSON(200, err)
+			FailTx(c)
+			c.AbortWithStatusJSON(500, err)
 			return
 		}
 		c.Status(204)
