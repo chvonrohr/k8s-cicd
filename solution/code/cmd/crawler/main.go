@@ -15,6 +15,11 @@ import (
 
 func main() {
 
+	// set up flags (viper.Get to retrieve)
+	crawler.InitialiseFlags()
+	// set up configuration files and parse flags
+	util.InitialiseConfig("crawler")
+
 	var (
 		username = viper.GetString("queue.username")
 		password = viper.GetString("queue.password")
@@ -22,7 +27,7 @@ func main() {
 		port     = viper.GetInt("queue.port")
 	)
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, host, port))
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
 	ch, err := conn.Channel()
