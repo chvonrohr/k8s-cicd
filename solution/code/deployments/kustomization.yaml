@@ -2,3 +2,13 @@ resources:
   - backend
   - crawler
   - rabbitmq
+
+namespace: letsboot
+
+images:
+- name: eu.gcr.io/letsboot/kubernetes-course/backend
+  newName: eu.gcr.io/letsboot/kubernetes-course/backend
+  newTag: latest
+- name: eu.gcr.io/letsboot/kubernetes-course/crawler
+  newName: eu.gcr.io/letsboot/kubernetes-course/crawler
+  newTag: latest
