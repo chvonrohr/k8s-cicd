@@ -5,11 +5,11 @@ port = 8080
 host = "localhost"
 port = 3306
 username = "letsboot"
-password = "letsboot"
-database = "letsboot"
+password = "xxx" # default example - use environment variables / kubernetes secrets
+database = "letsboot" 
 
 [queue]
 host = "localhost"
 port = 5672
 username = "guest"
-password = "guest"
+password = "xxx" # default example - use environment variables / kubernetes secrets
