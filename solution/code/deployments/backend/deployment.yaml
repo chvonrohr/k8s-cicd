@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: LETSBOOT_BACKEND.URL
+          value: "backend"

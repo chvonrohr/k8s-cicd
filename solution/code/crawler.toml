@@ -1,0 +1,8 @@
+[backend]
+url = "http://localhost:8080"
+
+[queue]
+host = "localhost"
+port = 5672
+username = "guest"
+password = "guest"

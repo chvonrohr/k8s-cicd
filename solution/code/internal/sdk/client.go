@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/viper"
 	"net/http"
 
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-)
-
-const (
-	ApiUrl = "http://backend"
 )
 
 func PageCallback(page model.Page, urls []string) error {
@@ -19,6 +16,6 @@ func PageCallback(page model.Page, urls []string) error {
 		return err
 	}
 	r := bytes.NewReader(bs)
-	_, err = http.Post(fmt.Sprintf("%s/callback/%d", ApiUrl, page.Id), "application/json", r)
+	_, err = http.Post(fmt.Sprintf("%s/callback/%d", viper.GetString("backend.url"), page.ID), "application/json", r)
 	return err
 }

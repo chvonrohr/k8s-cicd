@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/viper"
 	"log"
 
 	"github.com/streadway/amqp"
@@ -12,13 +13,21 @@ import (
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
 )
 
-var (
-	username, password, host, port string
-)
-
 func main() {
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, host, port))
+	// set up flags (viper.Get to retrieve)
+	crawler.InitialiseFlags()
+	// set up configuration files and parse flags
+	util.InitialiseConfig("crawler")
+
+	var (
+		username = viper.GetString("queue.username")
+		password = viper.GetString("queue.password")
+		host     = viper.GetString("queue.host")
+		port     = viper.GetInt("queue.port")
+	)
+
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
 	ch, err := conn.Channel()
@@ -27,9 +36,11 @@ func main() {
 
 	q, err := ch.QueueDeclare("pages", true, false, false, false, nil)
 
-	util.FailOnError(ch.Qos(5, 5, false), "Failed to set rabbitmq qos")
+	util.FailOnError(ch.Qos(5, 0, false), "Failed to set rabbitmq qos")
 
 	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
+
+	log.Println("listening to queue...")
 
 	for {
 		select {
@@ -41,6 +52,7 @@ func main() {
 					log.Println(err)
 					continue
 				}
+				log.Printf("crawling %s\n", page.Url)
 				urls, err := crawler.Crawl(page.Url)
 				if err != nil {
 					log.Println(err)
@@ -50,8 +62,12 @@ func main() {
 				if err != nil {
 					log.Println(err)
 				}
+				err = msg.Ack(false)
+				if err != nil {
+					log.Println(err)
+				}
+				log.Printf("processed %s\n", page.Url)
 			}
 		}
 	}
-
 }

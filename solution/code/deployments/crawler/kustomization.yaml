@@ -2,5 +2,3 @@ commonLabels:
   app: crawler
 resources:
   - deployment.yaml
-configMapGenerator:
-  - name:
