@@ -105,9 +105,11 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 			return
 		}
 		tx.Save(&crawl)
+		var site model.Site
+		tx.First(&site, crawl.SiteID)
 		page := model.Page{
 			Crawl: crawl,
-			Url:   crawl.Site.Url,
+			Url:   site.Url,
 			State: model.PendingState,
 		}
 		tx.Create(&page)

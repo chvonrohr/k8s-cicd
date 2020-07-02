@@ -26,7 +26,10 @@ func main() {
 		password = viper.GetString("queue.password")
 		host     = viper.GetString("queue.host")
 		port     = viper.GetInt("queue.port")
+		endpoint = viper.GetString("backend.url")
 	)
+
+	apiClient := sdk.NewClient(endpoint)
 
 	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
@@ -47,31 +50,33 @@ func main() {
 		select {
 		case msg := <-msgs:
 			{
-				go func() {
-					var page model.Page
-					err = json.Unmarshal(msg.Body, &page)
-					if err != nil {
-						log.Println(err)
-						return
+				// go func() {
+				var page model.Page
+				err = json.Unmarshal(msg.Body, &page)
+				if err != nil {
+					log.Println(err)
+					// return
+					continue
+				}
+				log.Printf("crawling %s\n", page.Url)
+				response, err := crawler.Crawl(page.Url)
+				if err != nil {
+					log.Printf("error crawling %s: %s", page.Url, err)
+					if response.StatusCode == 0 {
+						// return
+						continue
 					}
-					log.Printf("crawling %s\n", page.Url)
-					response, err := crawler.Crawl(page.Url)
-					if err != nil {
-						log.Printf("error crawling %s: %s", page.Url, err)
-						if response.StatusCode == 0 {
-							return
-						}
-					}
-					err = sdk.PageCallback(page, response)
-					if err != nil {
-						log.Println(err)
-					}
-					err = msg.Ack(false)
-					if err != nil {
-						log.Println(err)
-					}
-					log.Printf("processed %s\n", page.Url)
-				}()
+				}
+				err = apiClient.PageCallback(page, response)
+				if err != nil {
+					log.Println(err)
+				}
+				err = msg.Ack(false)
+				if err != nil {
+					log.Println(err)
+				}
+				log.Printf("processed %s\n", page.Url)
+				// }()
 			}
 		}
 	}
