@@ -11,6 +11,7 @@
 * Virtual Box Image 
 * Minimal Linux (with Dekstop)
 * SSH Key for gitlab
+* curl
 
 ## Local Kubernetes Setup
 
