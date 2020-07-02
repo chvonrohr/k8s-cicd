@@ -58,7 +58,6 @@ func main() {
 					response, err := crawler.Crawl(page.Url)
 					if err != nil {
 						log.Printf("error crawling %s: %s", page.Url, err)
-						return
 					}
 					err = sdk.PageCallback(page, response)
 					if err != nil {
