@@ -1,5 +1,20 @@
 # we use stretch linux to build
-FROM golang:stretch AS build 
+FROM golang:alpine AS build
+
+# install dependencies
+RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates
+
+# don't use root
+ENV USER=letsboot
+ENV UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
 
 WORKDIR /code
 # copy dependency files first
@@ -10,13 +25,24 @@ COPY go.sum .
 RUN go mod download
 # copy everything from current working directory into image
 COPY . .
-RUN go build ./cmd/backend
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w" ./cmd/backend
 
 # we use "scratch" image to run go service
 # the scratch image "doesn't contain anything"
 FROM scratch
 
-WORKDIR /app
-COPY --from=build /code/backend .
+EXPOSE 8080
 
-CMD /app/backend
+COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /etc/passwd /etc/passwd
+COPY --from=build /etc/group /etc/group
+
+ENV GIN_MODE=release
+
+WORKDIR /app
+COPY --from=build /code/backend /app/backend
+COPY --from=build /code/backend.* .
+USER letsboot:letsboot
+
+ENTRYPOINT ["/app/backend"]

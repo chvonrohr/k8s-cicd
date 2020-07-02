@@ -66,10 +66,13 @@ docker images|grep letsboot
 ### Docker
 
 ```bash
+# create a docker network for the containers to talk in
+docker network create letsboot
+
 # rabbitmq
-docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 rabbitmq:3
-# mariadb (change password)
-docker run --name some-mariadb -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mariadb
+docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 --network letsboot rabbitmq:3
+# mariadb (make sure to create a "letsboot" database after creating this container)
+docker run --name some-mariadb -e MYSQL_ROOT_PASSWORD="test" -p 3306:3306 -d --network letsboot mariadb
 
 # backend (host)
 go build ./cmd/backend && ./backend
@@ -77,10 +80,17 @@ go build ./cmd/backend && ./backend
 go build ./cmd/crawler && ./crawler
 
 # don't forget to amend configuration files for this
+
 # backend (docker)
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
-docker run -d --name letsboot-backend -p 8080:8080 letsboot-backend
+docker run -d --name letsboot-backend -p 8080:8080 \
+  -e LETSBOOT_DB.HOST=some-mariadb \
+  -e LETSBOOT_QUEUE.HOST=some-rabbit \
+  --network letsboot letsboot-backend
+
 # crawler (docker)
 docker build -t letsboot-crawler -f build/package/crawler.Dockerfile .
-docker run -d --name letsboot-crawler letsboot-crawler
+docker run -d --name letsboot-crawler \
+  -e LETSBOOT_QUEUE.HOST=some-rabbit \
+  --network letsboot letsboot-crawler
 ```
