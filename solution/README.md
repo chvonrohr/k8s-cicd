@@ -92,5 +92,6 @@ docker run -d --name letsboot-backend -p 8080:8080 \
 docker build -t letsboot-crawler -f build/package/crawler.Dockerfile .
 docker run -d --name letsboot-crawler \
   -e LETSBOOT_QUEUE.HOST=some-rabbit \
+  -e LETSBOOT_BACKEND.URL="http://letsboot-backend:8080" \
   --network letsboot letsboot-crawler
 ```

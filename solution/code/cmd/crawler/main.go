@@ -3,8 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 
 	"github.com/streadway/amqp"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/crawler"
@@ -55,7 +56,7 @@ func main() {
 				log.Printf("crawling %s\n", page.Url)
 				urls, err := crawler.Crawl(page.Url)
 				if err != nil {
-					log.Println(err)
+					log.Printf("error crawling %s: %s", page.Url, err)
 					continue
 				}
 				err = sdk.PageCallback(page, urls)
