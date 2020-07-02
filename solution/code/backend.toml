@@ -4,8 +4,8 @@ port = 8080
 [db]
 host = "localhost"
 port = 3306
-username = "root"
-password = "test"
+username = "letsboot"
+password = "letsboot"
 database = "letsboot"
 
 [queue]

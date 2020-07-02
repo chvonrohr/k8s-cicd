@@ -72,7 +72,12 @@ docker network create letsboot
 # rabbitmq
 docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 --network letsboot rabbitmq:3
 # mariadb (make sure to create a "letsboot" database after creating this container)
-docker run --name some-mariadb -e MYSQL_ROOT_PASSWORD="test" -p 3306:3306 -d --network letsboot mariadb
+docker run --name some-mariadb \
+  -e MYSQL_ROOT_PASSWORD="test" \
+  -e MYSQL_USER="letsboot" \
+  -e MYSQL_PASSWORD="letsboot" \
+  -e MYSQL_DATABASE="letsboot" \
+  -p 3306:3306 -d --network letsboot mariadb
 
 # backend (host)
 go build ./cmd/backend && ./backend
