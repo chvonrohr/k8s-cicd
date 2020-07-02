@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 	"log"
 	"strconv"
 )
@@ -28,15 +29,20 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		var parent model.Page
 		tx.First(&parent, parentId)
 
-		var urls []string
-		if err := c.BindJSON(&urls); err != nil {
+		var response sdk.PageResponse
+		if err := c.BindJSON(&response); err != nil {
 			_ = c.AbortWithError(500, err)
 			return
 		}
 
-		for _, url := range urls {
+		if response.Ok {
+			parent.State = model.CrawledState
+		} else {
+			parent.State = model.ErroredState
+		}
+		for _, url := range response.Urls {
 			var page model.Page
-			tx.Where(model.Page{SiteID: parent.SiteID, Url: url}).Attrs(model.Page{State: model.CreatedState, SiteID: parent.SiteID}).FirstOrCreate(&page)
+			tx.Where(model.Page{CrawlID: parent.CrawlID, Url: url}).Attrs(model.Page{State: model.CreatedState, CrawlID: parent.CrawlID}).FirstOrCreate(&page)
 			if page.State == model.CreatedState {
 				// queue page
 				if err := QueuePage(page); err != nil {
@@ -48,18 +54,40 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 			page.Parents = append(page.Parents, parent)
 			tx.Save(&page)
 		}
-		parent.State = model.CrawledState
+		parent.StatusCode = response.StatusCode
+		parent.ContentType = response.ContentType
 		tx.Save(&parent)
 
 		c.Status(200)
 	})
 
 	r.GET("/sites", func(c *gin.Context) {
-		var sites = make([]model.Site, 1)
+		var sites []model.Site
 		GetTx(c).Find(&sites)
 		c.JSON(200, &sites)
 		return
 	})
+	r.GET("/crawls", func(c *gin.Context) {
+		var crawls []model.Crawl
+		tx := GetTx(c)
+		if siteQuery := c.Query("site"); siteQuery != "" {
+			tx = tx.Where("site_id = ?", siteQuery)
+		}
+		tx.Find(&crawls)
+		c.JSON(200, &crawls)
+		return
+	})
+	r.GET("/pages", func(c *gin.Context) {
+		var pages []model.Page
+		tx := GetTx(c)
+		if crawlQuery := c.Query("crawl"); crawlQuery != "" {
+			tx = tx.Where("crawl_id = ?", crawlQuery)
+		}
+		tx.Find(&pages)
+		c.JSON(200, &pages)
+		return
+	})
+
 	r.POST("/sites", func(c *gin.Context) {
 		var site model.Site
 		if err := c.BindJSON(&site); err != nil {
@@ -69,24 +97,21 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		GetTx(c).Save(&site)
 
 	})
-	r.POST("/sites/:id/crawl", func(c *gin.Context) {
+	r.POST("/crawls", func(c *gin.Context) {
 		tx := GetTx(c)
-		siteId, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			_ = c.AbortWithError(500, err)
+		var crawl model.Crawl
+		if err := c.BindJSON(&crawl); err != nil {
+			c.AbortWithStatusJSON(500, err)
 			return
 		}
-
-		var site model.Site
-		tx.First(&site, siteId)
-
+		tx.Save(&crawl)
 		page := model.Page{
-			Site:  site,
-			Url:   site.Url,
+			Crawl: crawl,
+			Url:   crawl.Site.Url,
 			State: model.PendingState,
 		}
 		tx.Create(&page)
-		err = QueuePage(page)
+		err := QueuePage(page)
 		if err != nil {
 			FailTx(c)
 			c.AbortWithStatusJSON(500, err)

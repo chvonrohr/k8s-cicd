@@ -10,8 +10,15 @@ import (
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
 )
 
-func PageCallback(page model.Page, urls []string) error {
-	bs, err := json.Marshal(&urls)
+type PageResponse struct {
+	StatusCode  int
+	Urls        []string
+	ContentType string
+	Ok          bool
+}
+
+func PageCallback(page model.Page, response PageResponse) error {
+	bs, err := json.Marshal(&response)
 	if err != nil {
 		return err
 	}

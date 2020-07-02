@@ -47,27 +47,29 @@ func main() {
 		select {
 		case msg := <-msgs:
 			{
-				var page model.Page
-				err = json.Unmarshal(msg.Body, &page)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				log.Printf("crawling %s\n", page.Url)
-				urls, err := crawler.Crawl(page.Url)
-				if err != nil {
-					log.Printf("error crawling %s: %s", page.Url, err)
-					continue
-				}
-				err = sdk.PageCallback(page, urls)
-				if err != nil {
-					log.Println(err)
-				}
-				err = msg.Ack(false)
-				if err != nil {
-					log.Println(err)
-				}
-				log.Printf("processed %s\n", page.Url)
+				go func() {
+					var page model.Page
+					err = json.Unmarshal(msg.Body, &page)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Printf("crawling %s\n", page.Url)
+					response, err := crawler.Crawl(page.Url)
+					if err != nil {
+						log.Printf("error crawling %s: %s", page.Url, err)
+						return
+					}
+					err = sdk.PageCallback(page, response)
+					if err != nil {
+						log.Println(err)
+					}
+					err = msg.Ack(false)
+					if err != nil {
+						log.Println(err)
+					}
+					log.Printf("processed %s\n", page.Url)
+				}()
 			}
 		}
 	}

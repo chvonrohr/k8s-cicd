@@ -26,6 +26,7 @@ func InitialisePersistence() (*gorm.DB, error) {
 	}
 
 	db.AutoMigrate(&model.Site{})
+	db.AutoMigrate(&model.Crawl{})
 	db.AutoMigrate(&model.Page{})
 
 	return db, nil

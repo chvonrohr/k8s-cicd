@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"fmt"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 	"golang.org/x/net/html"
 	"log"
 	"net/http"
@@ -9,36 +10,39 @@ import (
 	"strings"
 )
 
-func Crawl(uri string) ([]string, error) {
+func Crawl(uri string) (response sdk.PageResponse, err error) {
 	request, _ := http.NewRequest("GET", uri, nil)
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
 	r, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return nil, err
+		return
 	}
+	response.StatusCode = r.StatusCode
 	if r.StatusCode < 200 || r.StatusCode >= 300 {
-		return nil, fmt.Errorf("invalid status code: %s", r.Status)
+		return response, fmt.Errorf("invalid status code: %s", r.Status)
 	}
-	if !strings.Contains(r.Header.Get("content-type"), "text/html") {
-		return nil, fmt.Errorf("invalid content type: %s", r.Header.Get("content-type"))
+	response.ContentType = r.Header.Get("content-type")
+	if !strings.Contains(response.ContentType, "text/html") {
+		return response, fmt.Errorf("invalid content type: %s", response.ContentType)
 	}
+	response.Ok = true
 	node, err := html.Parse(r.Body)
 	if err != nil {
-		return nil, err
+		return response, err
 	}
 	parsedUri, _ := url.Parse(uri)
 	anchors := crawlNode(node)
-	urls := make([]string, 0)
+	response.Urls = make([]string, 0)
 	for _, anchor := range anchors {
 		anchorUri := getHref(anchor)
 		if strings.HasPrefix(anchorUri, "/") {
 			anchorUri = fmt.Sprintf("%s://%s%s", parsedUri.Scheme, parsedUri.Host, anchorUri)
 		}
 		if isValidUri(parsedUri, anchorUri) {
-			urls = append(urls, anchorUri)
+			response.Urls = append(response.Urls, anchorUri)
 		}
 	}
-	return urls, nil
+	return
 }
 
 func isValidUri(parent *url.URL, uri string) bool {

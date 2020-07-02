@@ -10,5 +10,5 @@ type Site struct {
 
 	Url      string        `json:"url"`
 	Interval time.Duration `json:"interval"`
-	Pages    []Page        `json:"pages" gorm:"ForeignKey:SiteID"`
+	Crawls   []Crawl       `json:"crawls" gorm:"ForeignKey:SiteID"`
 }
