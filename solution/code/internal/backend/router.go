@@ -1,15 +1,24 @@
 package backend
 
 import (
+	"log"
+	"strconv"
+	"time"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
-	"log"
-	"strconv"
 )
 
 func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
+
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// create transaction for each request
 	r.Use(PersistenceMiddleware(db))
