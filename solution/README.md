@@ -2,6 +2,7 @@
 
 ## Todo:
 
+* write dockerfile for frontend
 * finish kubernetes configs
 * build helm rabbitmq mariadb deployments
 * code documentation
@@ -74,7 +75,7 @@ docker run -d --hostname rabbitmq --name letsboot-queue -p 5672:5672 --network l
 
 # mariadb - directly creates database and user
 docker run --name letsboot-database \
-  -e MYSQL_ROOT_PASSWORD="test" \
+  -e MYSQL_ROOT_PASSWORD="supersecure!!" \
   -e MYSQL_USER="letsboot" \
   -e MYSQL_PASSWORD="letsboot" \
   -e MYSQL_DATABASE="letsboot" \
@@ -136,13 +137,13 @@ curl -H "Content-Type: application/json" \
 # minimal busybox setup
 # ... todo
 
-# how to start ainteractive busybox container
-docker run -it --network letsboot  busybox
-
 # how to get a shell in the mariadb docker process
 docker exec -it letsboot-database /bin/bash
-mysql -p # enter password
+mysql -p # enter password "supersecure!!"
 SHOW DATABASES; # show databases
+
+# how to start an interactive busybox container
+docker run -it --network letsboot  busybox
 
 # how to run backend and crawler localy (ie. for debugging with breakpoints)
 docker stop letsboot-backend
@@ -163,7 +164,15 @@ go build ./cmd/crawler
 
 ```
 
+## notes
 
+setup frontend
+
+```
+ng new crawler --prefix crl --style scss --skip-git --directory web --create-application false
+cd web
+ng generate application crawler --prefix crl --routing true --style scss
+```
 
 
 ## Deploy kubernetes locally
