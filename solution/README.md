@@ -2,9 +2,11 @@
 
 ## Todo:
 
-* write tests for everything: xyz_test.go
+* finish kubernetes configs
+* build helm rabbitmq mariadb deployments
 * code documentation
-* scaling with example of crawler
+* write tests for everything: xyz_test.go
+* scaling example of crawler
 * nice to have / check
   * migrations (change database field example)
   * ssl for backend
@@ -55,6 +57,14 @@
 ```bash
 cd solution/code/
 
+# cleanup if already running
+docker network rm letsboot
+
+for container in letsboot-backend letsboot-queue letsboot-database letsboot-frontend letsboot-crawler; do \
+  docker stop $container
+  docker container rm $container
+done
+
 # create a docker network for the containers to talk in
 docker network create letsboot
 
@@ -62,17 +72,16 @@ docker network create letsboot
 # note: the hostname in this case is only for rabbitmq important, for networking we use the --name
 docker run -d --hostname rabbitmq --name letsboot-queue -p 5672:5672 --network letsboot rabbitmq:3
 
-# mariad
+# mariadb - directly creates database and user
 docker run --name letsboot-database \
   -e MYSQL_ROOT_PASSWORD="test" \
   -e MYSQL_USER="letsboot" \
   -e MYSQL_PASSWORD="letsboot" \
-  -e MYSQL_DATABASE="letsboot" \ # directly creates a database
+  -e MYSQL_DATABASE="letsboot" \
   -p 3306:3306 -d --network letsboot mariadb
 
-# todo: commands to run without docker
-
 # don't forget to amend configuration files for this
+# backend.toml, crawler.toml
 
 # build backend
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
@@ -97,11 +106,6 @@ docker run -d --name letsboot-crawler \
 
 # hint: if you build the images again, you'll see how much faster it is due to caching
 
-# to restart a docker image you have to do the following
-docker stop letsboot-crawler
-docker rm letsboot-crawler
-# ... build and run as seen above
-
 # show your local images
 docker images|grep letsboot
 
@@ -110,7 +114,7 @@ docker ps
 
 # test backend service
 # note: ssl will be done by the revese proxy in kubernetes
-http://localhost:8080/sites
+curl http://localhost:8080/sites
 
 # add site on commandline
 curl -H "Content-Type: application/json" \
@@ -124,11 +128,13 @@ curl http://localhost:8080/sites
 docker logs -f letsboot-crawler
 
 # start crawler - this adds an item to the rabbitmq and the crawler will pick it up
-curl -X POST http://localhost:8080/sites/1/crawl
+curl -H "Content-Type: application/json" \
+   -X POST -d '{"siteId":1}' \
+   http://localhost:8080/crawls
 
 # run to complete for https://localhost:8080/sites/crawl
 # minimal busybox setup
-... todo
+# ... todo
 
 # how to start ainteractive busybox container
 docker run -it --network letsboot  busybox
