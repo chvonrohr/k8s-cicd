@@ -16,8 +16,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 RUN npm i -g @angular/cli
 
 # install and cache app dependencies
-COPY package.json .
-COPY package-lock.json .
+COPY web/package.json .
+COPY web/package-lock.json .
 RUN npm ci
 
 # add app

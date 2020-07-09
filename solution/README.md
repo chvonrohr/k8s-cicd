@@ -174,5 +174,36 @@ cd web
 ng generate application crawler --prefix crl --routing true --style scss
 ```
 
-
 ## Deploy kubernetes locally
+
+### helm
+https://helm.sh/docs/intro/install/
+
+```bash
+kubectl create namespace letsboot
+```
+
+deploy rabbitmq to kubernetes using helm
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install letsboot-queue bitnami/rabbitmq -n letsboot
+
+# hostname: letsboot-queue-rabbitmq
+# username: user
+# password:
+$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
+```
+
+deploy mariadb to kubernetes using helm
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+
+# hostname: letsboot-database-mariadb
+# username: letsboot
+# database: letsboot
+# password:
+$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
+```
