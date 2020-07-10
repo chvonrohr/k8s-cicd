@@ -29,8 +29,8 @@ spec:
             - name: LETSBOOT_QUEUE.PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: data.rabbitmq-password
                   name: letsboot-queue
+                  key: rabbitmq-password
           volumeMounts:
             - name: rabbitmq-config-volume
               mountPath: /var/k8s/rabbitmq/config

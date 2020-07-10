@@ -15,28 +15,28 @@ spec:
         app: backend
     spec:
       containers:
-      - name: backend
-        image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: LETSBOOT_QUEUE.HOST
-          value: letsboot-queue-rabbitmq
-        - name: LETSBOOT_QUEUE.USERNAME
-          value: user
-        - name: LETSBOOT_QUEUE.PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: data.rabbitmq-password
-              name: letsboot-queue
-        - name: LETSBOOT_DB.HOST
-          value: letsboot-database-mariadb
-        - name: LETSBOOT_DB.DATABASE
-          value: letsboot
-        - name: LETSBOOT_DB.USERNAME
-          value: letsboot
-        - name: LETSBOOT_DB.PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: letsboot-database-mariadb
-              key: data.mariadb-password
+        - name: backend
+          image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: LETSBOOT_QUEUE.HOST
+              value: letsboot-queue-rabbitmq
+            - name: LETSBOOT_QUEUE.USERNAME
+              value: user
+            - name: LETSBOOT_QUEUE.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: letsboot-queue-rabbitmq
+                  key: rabbitmq-password
+            - name: LETSBOOT_DB.HOST
+              value: letsboot-database-mariadb
+            - name: LETSBOOT_DB.DATABASE
+              value: letsboot
+            - name: LETSBOOT_DB.USERNAME
+              value: letsboot
+            - name: LETSBOOT_DB.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: letsboot-database-mariadb
+                  key: mariadb-password
