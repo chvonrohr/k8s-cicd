@@ -15,6 +15,11 @@ func InitialiseFlags() {
 	pflag.String("db.username", "root", "database username")
 	pflag.String("db.password", "", "database password")
 	pflag.String("db.database", "default", "database name")
-	pflag.String("queue.password", "", "queue password")
+
+	// queue flags
+	pflag.String("queue.host", "localhost", "queue host")
+	pflag.String("queue.username", "guest", "queue username")
+	pflag.String("queue.password", "guest", "queue password")
+	pflag.Int("queue.port", 5672, "queue port")
 
 }

@@ -16,12 +16,21 @@ spec:
     spec:
       containers:
         - name: crawler
-          image: eu.gcr.io/my-project/crawler:my-version
+          image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
           ports:
             - containerPort: 80
           env:
-            - name: BACKEND_SERVICE
+            - name: LETSBOOT_BACKEND.URL
               value: "backend"
+            - name: LETSBOOT_QUEUE.HOST
+              value: letsboot-queue-rabbitmq
+            - name: LETSBOOT_QUEUE.USERNAME
+              value: user
+            - name: LETSBOOT_QUEUE.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: data.rabbitmq-password
+                  name: letsboot-queue
           volumeMounts:
             - name: rabbitmq-config-volume
               mountPath: /var/k8s/rabbitmq/config

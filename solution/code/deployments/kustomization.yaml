@@ -1,9 +1,9 @@
 resources:
   - backend
   - crawler
-  - rabbitmq
 
 namespace: letsboot
+namePrefix: letsboot-
 
 images:
 - name: eu.gcr.io/letsboot/kubernetes-course/backend
