@@ -2,14 +2,17 @@
 
 ## Todo:
 
-* write dockerfile for frontend
 * finish kubernetes configs
-* run to complete image
-* build helm rabbitmq mariadb deployments
-* code documentation
-* write tests for everything: xyz_test.go
-* scaling example of crawler
+* run to complete image - curl in busybox for scheduling
+* code documentation golang
+* scaling example of crawler - as soon as crawler running, start next crawler
+* check cluster login auf registry
+* write tests golang: xyz_test.go
+* gitlab-ci for build and deployment (on master)
+  * use google cluster
+  * use gitlab registry
 * check commands on windows (\ problem new line)
+
 * nice to have / check
   * migrations (change database field example)
   * ssl for backend
@@ -266,6 +269,11 @@ docker push eu.gcr.io/letsboot/kubernetes-course/crawler
 docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 
 # run everything on kubernetes
+
+# create namespace for kubernetes
+# note: only the images are used from docker, everything else is separate
+kubectl create namespace letsboot
+
 # hint: the rabbbitmq and mariadb setups we use on kubernetes are NOT the
 # same as on docker, as we want clustering and management of statefull 
 # sets which we don't have in docker
@@ -273,12 +281,52 @@ docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 # add bitnami for our rabbitmq and mariadb setups
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
-# get statefull set of rabbitmq and run it
-helm install letsboot-queue bitnami/rabbitmq -n letsboot
+# get statefullset of rabbitmq and run it
+helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot 
 
-# get statefull set of mariadb and run it
-helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+# get statefullset of mariadb and run it
+helm install letsboot-database --set slave.replicas=3,db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
 
+# hint: we now use the passwords directly from the secrets
+#       which are set by the helm statefullsets
+
+# demo: how to run busybox on kubernetes
+# this is a great way to log into a shell inside your kubernetes namespace
+kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboot -- sh
+
+# list current pods (like containers but kubernetes :-)
+kubectl get pods --namespace letsboot 
+
+# manually deploy backend with it's service
+kubectl apply -f deployments/backend/deployment.yaml --namespace letsboot
+kubectl apply -f deployments/backend/service.yaml --namespace letsboot
+
+# show logs of backend deployment
+kubectl logs --selector=app=backend --namespace letsboot
+
+kubectl apply -f deployments/frontend/deployment.yaml --namespace letsboot
+kubectl apply -f deployments/frontend/service.yaml --namespace letsboot
+
+kubectl apply -f deployments/crawler/deployment.yaml --namespace letsboot
+
+# start deployment with backend, frontend and crawler at once using kustomize
+# hint: kustomize is standard in kubernetes to have adaptable deployment configurations
+kubectl apply -k deployments
+
+# hint: to delete deployments
+# kubectl delete deployment backend
+# kubectl delete service backend
+
+# per default networking is possible only inside cluster
+# to access your services from outside you either have to configure a so called ingress
+# or you can use port forwarding which we use untill we have ingress or if we
+# want to access a service which doesn't need external access like mariadb, rabbitmq...
+
+# let's port forward the backend to use within the frontend
+kubectl port-forward --namespace letsboot backend-b5c4fb56-5q2sh 8080:8080
+
+# let's expse the frontend
+kubectl port-forward --namespace letsboot frontend-856f54ddb4-9cbpk 4201:80
 
 
 ```
