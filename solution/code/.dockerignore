@@ -1,3 +1,9 @@
 build/
 deployments/
 README.md
+
+.theia
+.idea
+.git
+
+*.exe

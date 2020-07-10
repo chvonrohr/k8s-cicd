@@ -1,4 +1,5 @@
 .idea
+.theia
 
 *.exe
 solution/code/crawler
