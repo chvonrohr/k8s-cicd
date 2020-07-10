@@ -17,6 +17,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowCredentials: true,
+		AllowHeaders:     []string{"content-type", "Origin"},
 		MaxAge:           12 * time.Hour,
 	}))
 
