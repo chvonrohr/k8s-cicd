@@ -12,6 +12,7 @@
 * Minimal Linux (with Dekstop)
 * SSH Key for gitlab
 * curl
+* https://helm.sh/docs/intro/install/
 
 ## Local Kubernetes Setup
 

@@ -4,10 +4,12 @@
 
 * write dockerfile for frontend
 * finish kubernetes configs
+* run to complete image
 * build helm rabbitmq mariadb deployments
 * code documentation
 * write tests for everything: xyz_test.go
 * scaling example of crawler
+* check commands on windows (\ problem new line)
 * nice to have / check
   * migrations (change database field example)
   * ssl for backend
@@ -50,12 +52,64 @@
     * Kubernetes Cronjob mit Run to complete - ./scheduler
       * shellscript wget backend/schedule => ads pages by interval to rabbitmq
 
+## notes
 
-## Setup and build locally without docker
+setup frontend
 
-### Docker
+```
+ng new crawler --prefix crl --style scss --skip-git --directory web --create-application false
+cd web
+ng generate application crawler --prefix crl --routing true --style scss
+```
+
+## Deploy kubernetes locally
+
+### helm
+https://helm.sh/docs/intro/install/
 
 ```bash
+kubectl create namespace letsboot
+```
+
+## quickstart
+
+```bash
+helm install letsboot-queue bitnami/rabbitmq -n letsboot
+helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+kubectl apply -k deployments/kustomization.yaml
+```
+
+deploy rabbitmq to kubernetes using helm
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install letsboot-queue bitnami/rabbitmq -n letsboot
+
+# hostname: letsboot-queue-rabbitmq
+# username: user
+# password:
+$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
+```
+
+deploy mariadb to kubernetes using helm
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+
+# hostname: letsboot-database-mariadb
+# username: letsboot
+# database: letsboot
+# password:
+$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
+```
+
+
+# walkthrough
+
+```bash
+# this walthrough expects you to have everything installed (see INSTALL.md)
+
 cd solution/code/
 
 # cleanup if already running
@@ -106,6 +160,17 @@ docker run -d --name letsboot-crawler \
   --network letsboot letsboot-crawler
 
 # hint: if you build the images again, you'll see how much faster it is due to caching
+
+# build frontend
+
+docker build -t letsboot-frontend -f build/package/frontend.Dockerfile .
+
+# run frontend
+
+docker run -d --name letsboot-frontend --network letsboot \
+  -p 4201:80  letsboot-frontend 
+
+# open frontend http://localhost:4201/
 
 # show your local images
 docker images|grep letsboot
@@ -162,56 +227,58 @@ go build ./cmd/crawler
 ./backend --db.password=letsboot --queue.password=guest &
 ./crawler --queue.password=guest &
 
-```
+# push docker images to gitlab registry
+# create token with registry_read und registry_write https://gitlab.com/profile/personal_access_tokens
+# use email address and token to login to registry:
 
-## notes
+docker login registry.gitlab.com
 
-setup frontend
+# docker build -t registry.gitlab.com/letsboot/core/kubernetes-course .
+# docker push registry.gitlab.com/letsboot/core/kubernetes-course
 
-```
-ng new crawler --prefix crl --style scss --skip-git --directory web --create-application false
-cd web
-ng generate application crawler --prefix crl --routing true --style scss
-```
+docker tag letsboot-backend registry.gitlab.com/letsboot/core/kubernetes-course/backend
+docker tag letsboot-crawler registry.gitlab.com/letsboot/core/kubernetes-course/crawler
+docker tag letsboot-frontend registry.gitlab.com/letsboot/core/kubernetes-course/frontend
 
-## Deploy kubernetes locally
+# warning if you do not specify a private registry docker 
+# may push your image to the public registry
 
-### helm
-https://helm.sh/docs/intro/install/
+docker push registry.gitlab.com/letsboot/core/kubernetes-course/backend
+docker push registry.gitlab.com/letsboot/core/kubernetes-course/crawler
+docker push registry.gitlab.com/letsboot/core/kubernetes-course/frontend
 
-```bash
-kubectl create namespace letsboot
-```
+# hint: as some layers are the same (like the first steps COPY ... in scratch) 
+# not all layers have to be pushed three times, docker is extremly optimized in this point
 
-## quickstart
+# For fallback reasons we have a public google registry where only we can push
+# this registry is used if you have troubles with your personal gitlab registry
 
-```bash
-helm install letsboot-queue bitnami/rabbitmq -n letsboot
-helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
-kubectl apply -k deployments/kustomization.yaml
-```
+gcloud auth
+gcloud config set project letsboot
+gcloud auth configure-docker eu.gcr.io
 
-deploy rabbitmq to kubernetes using helm
+docker tag letsboot-backend eu.gcr.io/letsboot/kubernetes-course/backend
+docker tag letsboot-crawler eu.gcr.io/letsboot/kubernetes-course/crawler
+docker tag letsboot-frontend eu.gcr.io/letsboot/kubernetes-course/frontend
 
-```bash
+docker push eu.gcr.io/letsboot/kubernetes-course/backend
+docker push eu.gcr.io/letsboot/kubernetes-course/crawler
+docker push eu.gcr.io/letsboot/kubernetes-course/frontend
+
+# run everything on kubernetes
+# hint: the rabbbitmq and mariadb setups we use on kubernetes are NOT the
+# same as on docker, as we want clustering and management of statefull 
+# sets which we don't have in docker
+
+# add bitnami for our rabbitmq and mariadb setups
 helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# get statefull set of rabbitmq and run it
 helm install letsboot-queue bitnami/rabbitmq -n letsboot
 
-# hostname: letsboot-queue-rabbitmq
-# username: user
-# password:
-$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
-```
-
-deploy mariadb to kubernetes using helm
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
+# get statefull set of mariadb and run it
 helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
 
-# hostname: letsboot-database-mariadb
-# username: letsboot
-# database: letsboot
-# password:
-$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
+
+
 ```
