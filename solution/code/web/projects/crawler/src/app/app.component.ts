@@ -17,4 +17,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.sites = this.http.get('http://localhost:8080/sites');
   }
+
+  addSite(site) {
+    this.sites = this.http.post('http://localhost:8080/sites', { url: site, interval: 100 });
+  }
 }
