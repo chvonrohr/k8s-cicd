@@ -183,6 +183,14 @@ https://helm.sh/docs/intro/install/
 kubectl create namespace letsboot
 ```
 
+## quickstart
+
+```bash
+helm install letsboot-queue bitnami/rabbitmq -n letsboot
+helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+kubectl apply -k deployments/kustomization.yaml
+```
+
 deploy rabbitmq to kubernetes using helm
 
 ```bash
