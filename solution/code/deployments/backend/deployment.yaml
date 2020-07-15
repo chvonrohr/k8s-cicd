@@ -30,7 +30,7 @@ spec:
                   name: letsboot-queue-rabbitmq
                   key: rabbitmq-password
             - name: LETSBOOT_DB.HOST
-              value: letsboot-database-mariadb
+              value: letsboot-database-postgresql
             - name: LETSBOOT_DB.DATABASE
               value: letsboot
             - name: LETSBOOT_DB.USERNAME
@@ -38,5 +38,5 @@ spec:
             - name: LETSBOOT_DB.PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: letsboot-database-mariadb
-                  key: mariadb-password
+                  name: letsboot-database-postgresql
+                  key: postgresql-password

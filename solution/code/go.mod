@@ -10,6 +10,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/jinzhu/gorm v1.9.14
 	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/lib/pq v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/spf13/afero v1.3.1 // indirect
@@ -23,6 +24,6 @@ require (
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

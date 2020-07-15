@@ -274,18 +274,18 @@ docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 # note: only the images are used from docker, everything else is separate
 kubectl create namespace letsboot
 
-# hint: the rabbbitmq and mariadb setups we use on kubernetes are NOT the
+# hint: the rabbbitmq and postgres setups we use on kubernetes are NOT the
 # same as on docker, as we want clustering and management of statefull 
 # sets which we don't have in docker
 
-# add bitnami for our rabbitmq and mariadb setups
+# add bitnami for our rabbitmq and postgres setups
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # get statefullset of rabbitmq and run it
 helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot 
 
-# get statefullset of mariadb and run it
-helm install letsboot-database --set slave.replicas=3,db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
+# get statefullset of postgres and run it
+helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
 
 # hint: we now use the passwords directly from the secrets
 #       which are set by the helm statefullsets
@@ -320,7 +320,7 @@ kubectl apply -k deployments
 # per default networking is possible only inside cluster
 # to access your services from outside you either have to configure a so called ingress
 # or you can use port forwarding which we use untill we have ingress or if we
-# want to access a service which doesn't need external access like mariadb, rabbitmq...
+# want to access a service which doesn't need external access like postgres, rabbitmq...
 
 # let's port forward the backend to use within the frontend
 kubectl port-forward --namespace letsboot backend-b5c4fb56-5q2sh 8080:8080

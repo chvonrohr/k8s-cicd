@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
 	"sync"
@@ -19,8 +19,8 @@ func InitialisePersistence() (*gorm.DB, error) {
 		database = viper.GetString("db.database")
 	)
 	// format dsn based on above values
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", username, password, host, port, database)
-	db, err := gorm.Open("mysql", dsn)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable", host, port, username, database, password)
+	db, err := gorm.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}

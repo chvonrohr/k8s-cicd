@@ -1,7 +1,7 @@
-resources:
-  - backend
-  - crawler
-  - frontend
+bases:
+- backend
+- crawler
+- frontend
 
 namespace: letsboot
 namePrefix: letsboot-
@@ -14,5 +14,5 @@ images:
   newName: eu.gcr.io/letsboot/kubernetes-course/crawler
   newTag: latest
 - name: eu.gcr.io/letsboot/kubernetes-course/frontend
-  newName: eu.gcr.io/letsboot/kubernetes-course/frontend:latest
+  newName: eu.gcr.io/letsboot/kubernetes-course/frontend
   newTag: latest

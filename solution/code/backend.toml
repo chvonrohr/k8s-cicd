@@ -3,7 +3,7 @@ port = 8080
 
 [db]
 host = "localhost"
-port = 3306
+port = 5432
 username = "letsboot"
 password = "xxx" # default example - use environment variables / kubernetes secrets
 database = "letsboot" 
