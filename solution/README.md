@@ -2,7 +2,15 @@
 
 ## Todo:
 
-* finish kubernetes configs
+* general idea:
+  1. solution with all parts and configs
+  2. break topics appart 
+  3. build chapters from the beginning towards the solution
+  3.1. add introduction chapters with simplified examples if necessary
+
+* kubernetes configs:
+  * scheduler job
+
 * run to complete image - curl in busybox for scheduling
 * code documentation golang
 * scaling example of crawler - as soon as crawler running, start next crawler
@@ -17,43 +25,33 @@
   * migrations (change database field example)
   * ssl for backend
 
-## Files & Folder
+## Application overview
 
 * based on golang recommended structure:
   * https://github.com/golang-standards/project-layout
 
+* parts
+  * backend - rest api and core business logic
+    * model: site, page, crawl
+  * frontend - simple list of domains and websites
+  * scheduler - simple script calling backend to schedule crawl jobs
+  * crawler - service to crawl websites listening to queue
+  * database - postgres
+  * rabbitmq - message queue service
+
 * code/
   * build/package/ - dockerfiles
   * cmd/ - golang entry points for services
-  * deployments/ - kubernetes configuration
+  * deployments/ - kubernetes configuration   
   * internal/ - source code for backend and crawler
   * web/ - frontend
-  * backend.toml - config file for backend
-  * crawler.toml - config file for crawler
+  * config/ - config files for services
+    * backend.toml - config file for backend
+    * crawler.toml - config file for crawler
+    * default.conf - config for nginx server
   * go.mod - golang dependencies
   * go.sum - golang version locks
   * .dockerignore - files to ignore with COPY . . to prevent rebuilds (caching)
-
-
-## Kubernetes Deployment
-
-    * MariaDB - ?
-    * RabbitMQ - simple as possilble
-    * Golang REST Backend - ./backend
-      * new site => add to sql write to rabbitmq with site id
-      * db: 
-        * website (id, starting_url, interval)
-        * urls (id, website_id, url)
-    * Angular Minimal-Frontend - ./frontend
-      * input: "add website*
-      * list with added websites
-      * click on website shows list of urls
-    * Golang Minimal Crawler  - ./crawler
-      * listens to rabbitmq
-      * crawls page 
-      * sends found url to rest of backend
-    * Kubernetes Cronjob mit Run to complete - ./scheduler
-      * shellscript wget backend/schedule => ads pages by interval to rabbitmq
 
 ## notes
 
@@ -122,6 +120,9 @@ for container in letsboot-backend letsboot-queue letsboot-database letsboot-fron
   docker stop $container
   docker container rm $container
 done
+
+for deployment in frontend backend crawler 
+kubectl delete deployment 
 
 # create a docker network for the containers to talk in
 docker network create letsboot
@@ -273,6 +274,9 @@ docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 # create namespace for kubernetes
 # note: only the images are used from docker, everything else is separate
 kubectl create namespace letsboot
+
+# set letsboot as our current namespace
+kubectl config set-context --current --namespace=letsboot
 
 # hint: the rabbbitmq and postgres setups we use on kubernetes are NOT the
 # same as on docker, as we want clustering and management of statefull 
