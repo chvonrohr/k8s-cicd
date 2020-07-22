@@ -18,7 +18,7 @@ spec:
         - name: backend
           image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           env:
             - name: LETSBOOT_QUEUE.HOST
               value: letsboot-queue-rabbitmq
