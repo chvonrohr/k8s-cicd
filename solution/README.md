@@ -72,6 +72,8 @@ ng generate application crawler --prefix crl --routing true --style scss
 ## walkthrough
 
 ```bash
+# walkthrough start - do not remove -
+
 # this walthrough expects you to have everything installed (see INSTALL.md)
 
 cd solution/code/
@@ -300,7 +302,7 @@ kubectl apply -k deployments
 # per default networking is possible only inside cluster
 # to access your services from outside you either have to configure a so called ingress
 # or you can use port forwarding which we use untill we have ingress or if we
-# want to access a service which doesn't need external access like postgres, rabbitmq...
+# want to access a service which doesnt need external access like postgres, rabbitmq
 
 # let's port forward the backend to use within the frontend
 kubectl port-forward --namespace letsboot backend-b5c4fb56-5q2sh 8080:8080
@@ -308,5 +310,5 @@ kubectl port-forward --namespace letsboot backend-b5c4fb56-5q2sh 8080:8080
 # let's expse the frontend
 kubectl port-forward --namespace letsboot frontend-856f54ddb4-9cbpk 4201:80
 
-
+# walkthrough end - do not remove -
 ```
