@@ -39,7 +39,7 @@ FROM nginx:1.17-alpine
 
 # copy artifact build from the 'build environment'
 COPY --from=build /app/dist/crawler /usr/share/nginx/html
-COPY config/default.conf /etc/nginx/conf.d/default.conf
+COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 
 # expose port 80
 EXPOSE 80
