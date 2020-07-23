@@ -15,6 +15,7 @@ stages:
 
 deploy:
   before_script:
+  - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
   - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
   - gcloud config set project letsboot
@@ -31,7 +32,7 @@ deploy:
   tags:
   - docker
   stage: deploy
-  image: google/cloud-sdk:latest
+  image: google/cloud-sdk:alpine
   only:
     refs:
     - tags
