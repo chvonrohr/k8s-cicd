@@ -1,42 +1,58 @@
 variables:
+  # needed for docker in docker
   DOCKER_TLS_CERTDIR: ""
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
+  # container repository from gitlab registry 8-)
   GITLAB_REPO: $CI_REGISTRY_IMAGE
+  # google container registry (we show both) and repo within it
   GOOGLE_REGISTRY: eu.gcr.io
   GOOGLE_REPO: $GOOGLE_REGISTRY/letsboot/kubernetes-course
+  # we use the 7 digit git commit hash as version
   VERSION: $CI_COMMIT_SHORT_SHA
+  # use git tag if available (like named versions v0.0.1)
   TAG: $CI_COMMIT_REF_SLUG
 
+# order of stages
 stages:
 - build
-- test
+- test # todo
 - deploy
 
-deploy:
+# this is the "deploy_all" job belonging to the "deploy" stage
+deploy_all:
+  # run this on the deployment stage
+  stage: deploy
+  # run this when a tagged commit (when a new git tag is pushed)
+  only:
+    refs:
+    - tags
+  # use gitlab runner with specific tags - not git tags, but gitlab runner tags |-( 
+  tags: 
+  - docker # you can tag your gitlab-runners, the docker tag means it supports docker in docker
+  # use this docker image to do this job
+  image: google/cloud-sdk:alpine
+  # we use before script to install everything before the main "job"
   before_script:
   - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+  # login to google (remember this is run on a build container, not on your laptop)
   - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-  - gcloud config set project letsboot
-  - gcloud config set compute/region europe-west6
-  - gcloud container clusters get-credentials cluster-1 --region europe-west6
+  # gets credentials for kubectl from gcloud, so kubectl can access this specific cluster
+  - gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
   script:
   - cd solution/code/deployments
+  # customize the the deployment configuration (in this case we only change the versions)
   - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
   - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
   - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
   - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
-  - cd ..
-  - kubectl apply --namespace letsboot -k deployments/
-  tags:
-  - docker
-  stage: deploy
-  image: google/cloud-sdk:alpine
-  only:
-    refs:
-    - tags
-
+  # apply all deployment configurations to the cluster
+  # we do not "deploy" we tell the kubernetes claster to apply this configuration
+  # kubernetes will then start to do all the changes need to get to the state we defined
+  # which also consists of pulling images and running them in containers (rolling updates etc.)
+  - kubectl apply --namespace letsboot -k ./
+  
 include:
 - local: solution/code/build/ci/backend.gitlab-ci.yml
 - local: solution/code/build/ci/frontend.gitlab-ci.yml

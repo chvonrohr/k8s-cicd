@@ -1,32 +1,41 @@
 
-
 build_backend:
+  stage: build
+  # no "only" as we run this on any commit pushed to the repo
   cache:
     paths:
     - /var/lib/docker/aufs
-  script:
-  - docker build -t $GITLAB_REPO/$APP:$VERSION -f solution/code/build/package/$APP.Dockerfile solution/code/
-  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$VERSION
-  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
-  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$TAG
-  - docker push $GITLAB_REPO/$APP:$VERSION
-  - docker push $GITLAB_REPO/$APP:$TAG
-  - docker push $GOOGLE_REPO/$APP:$VERSION
-  - docker push $GOOGLE_REPO/$APP:$TAG
-  tags:
+  tags: # tag of the gitlab-runner we want to use
   - docker
-  stage: build
   image: docker:stable
-  variables:
-    APP: backend
+  # here we run docker in docker, as we do the build in our own docker 8-)
   services:
   - docker:dind
+  # we use variables to make the script "reusable" 
+  # we could import it, but we don't to make it more easy to understand
+  variables:
+    APP: backend
+  script:
+  - docker build -t $GITLAB_REPO/$APP:$VERSION -f solution/code/build/package/$APP.Dockerfile solution/code/
+  # docker images for commits without a tag are not deployed in our case
+  # but we still push them to the docker registry for debugging 
+  # and to have a full build to see possible errors
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$VERSION
+  # if no tag is defined, $TAG is the the same as $VERSION 
+  # docker is smart and doesn't repeat anything, even if we state it here twice
+  # this is an important trick as we don't want to have any if/else in these scripts
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$TAG
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
+  # push to gitlab repo
+  - docker push $GITLAB_REPO/$APP:$VERSION
+  - docker push $GITLAB_REPO/$APP:$TAG
+  # push to google repo
+  - docker push $GOOGLE_REPO/$APP:$VERSION
+  - docker push $GOOGLE_REPO/$APP:$TAG
+  # usual authentication parts
   before_script:
+  # the $GCR_KEY is a secret we define in the gitlab settings - never put "secretes" in the script
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
   - docker login -u _json_key --password-stdin https://$GOOGLE_REGISTRY < ${HOME}/gcloud-service-key.json
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker info
-  only:
-    refs:
-      - branches@letsboot/core/kubernetes-course
-      - tags

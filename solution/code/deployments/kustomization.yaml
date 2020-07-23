@@ -1,4 +1,5 @@
-bases:
+# "bases" will be renamed to resources in newer versions (not yet supported by kubectl apply)
+bases: 
 - backend
 - crawler
 - frontend
