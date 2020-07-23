@@ -1,0 +1,43 @@
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  GITLAB_REPO: $CI_REGISTRY_IMAGE
+  GOOGLE_REGISTRY: eu.gcr.io
+  GOOGLE_REPO: $GOOGLE_REGISTRY/letsboot/kubernetes-course
+  VERSION: $CI_COMMIT_SHORT_SHA
+  TAG: $CI_COMMIT_REF_SLUG
+
+stages:
+- build
+- test
+- deploy
+
+deploy:
+  before_script:
+  - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+  - gcloud config set project letsboot
+  - gcloud config set compute/region europe-west6
+  - gcloud container clusters get-credentials cluster-1 --region europe-west6
+  script:
+  - cd solution/code/deployments
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
+  - cd ..
+  - kubectl apply --namespace letsboot -k deployments/
+  tags:
+  - docker
+  stage: deploy
+  image: google/cloud-sdk:latest
+  only:
+    refs:
+    - tags
+
+include:
+- local: solution/code/build/ci/backend.gitlab-ci.yml
+- local: solution/code/build/ci/frontend.gitlab-ci.yml
+- local: solution/code/build/ci/crawler.gitlab-ci.yml
+- local: solution/code/build/ci/scheduler.gitlab-ci.yml
