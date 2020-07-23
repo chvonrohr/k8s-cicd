@@ -118,7 +118,7 @@ docker run --name letsboot-database \
   -e POSTGRES_PASSWORD="supersecure" \
   -e POSTGRES_USER="letsboot" \
   -e POSTGRES_DB="letsboot" \
-  -p 3306:3306 -d --network letsboot postgres
+  -p 5432:5432 -d --network letsboot postgres
 
 # build backend
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
@@ -150,13 +150,14 @@ docker build -t letsboot-frontend -f build/package/frontend.Dockerfile .
 docker run -d --name letsboot-frontend --network letsboot \
   -p 4201:80  letsboot-frontend 
 
-# open frontend http://localhost:4201/
-
 # show your local images
 docker images|grep letsboot
 
 # show runing services
 docker ps
+
+# open frontend in browser http://localhost:4201/
+open http://localhost:4201/
 
 # test backend service
 # note: ssl will be done by the revese proxy in kubernetes
@@ -184,8 +185,9 @@ curl -H "Content-Type: application/json" \
 
 # how to get a shell in the mariadb docker process
 docker exec -it letsboot-database /bin/bash
-mysql -p # enter password "supersecure!!"
-SHOW DATABASES; # show databases
+# psql -U letsboot -W # enter password "supersecure!!"
+# \list # show databases
+# \dt # show tables
 
 # how to start an interactive busybox container
 docker run -it --network letsboot  busybox
@@ -204,8 +206,8 @@ go build ./cmd/backend
 go build ./cmd/crawler
 
 # run with database access
-./backend --db.password=letsboot --queue.password=guest &
-./crawler --queue.password=guest &
+./backend --db.password="supersecure" --queue.password="megasecure" &
+./crawler --queue.password="megasecure" &
 
 # push docker images to gitlab registry
 # create token with registry_read und registry_write https://gitlab.com/profile/personal_access_tokens
@@ -272,8 +274,8 @@ helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsbo
 
 # example: show secrets
 
-$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
-$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
+kubectl get secret --namespace letsboot letsboot-queue-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode
+kubectl get secret --namespace letsboot letsboot-database-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode
 
 # demo: how to run busybox on kubernetes
 # this is a great way to log into a shell inside your kubernetes namespace
@@ -282,21 +284,16 @@ kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboo
 # list current pods (like containers but kubernetes :-)
 kubectl get pods --namespace letsboot 
 
-# manually deploy backend with it's service
-kubectl apply -f deployments/backend/deployment.yaml --namespace letsboot
-kubectl apply -f deployments/backend/service.yaml --namespace letsboot
-
-# show logs of backend deployment
-kubectl logs --selector=app=backend --namespace letsboot
-
-kubectl apply -f deployments/frontend/deployment.yaml --namespace letsboot
-kubectl apply -f deployments/frontend/service.yaml --namespace letsboot
-
-kubectl apply -f deployments/crawler/deployment.yaml --namespace letsboot
+# example how to apply specific configurations
+# kubectl apply -f deployments/frontend/deployment.yaml --namespace letsboot
+# kubectl apply -f deployments/frontend/service.yaml --namespace letsboot
 
 # start deployment with backend, frontend and crawler at once using kustomize
 # hint: kustomize is standard in kubernetes to have adaptable deployment configurations
 kubectl apply -k deployments
+
+# show logs of backend deployment
+kubectl logs --selector=app=backend --namespace letsboot
 
 # hint: to delete deployments
 # kubectl delete deployment backend
@@ -307,11 +304,15 @@ kubectl apply -k deployments
 # or you can use port forwarding which we use untill we have ingress or if we
 # want to access a service which doesnt need external access like postgres, rabbitmq
 
+# how to get the first pod of a app
+# kubectl get pods -l app=backend -o name|head -n1
+
 # let's port forward the backend to use within the frontend
-kubectl port-forward --namespace letsboot backend-b5c4fb56-5q2sh 8080:8080
+kubectl port-forward --namespace letsboot service/letsboot-backend 8080:8080
 
 # let's expse the frontend
-kubectl port-forward --namespace letsboot frontend-856f54ddb4-9cbpk 4201:80
+# trick question: why can we not only expose the frontend? why do we need to expose the backend?
+kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
 # walkthrough end - do not remove -
 ```

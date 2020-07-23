@@ -5,6 +5,9 @@ run: $BASH_COMMAND
 
 docker network rm letsboot
 
+rm code/backend
+rm code/frontend
+
 for container in $(docker ps --filter network=letsboot --format '{{.Names}}'); do \
   docker stop $container
   docker container rm $container
@@ -21,3 +24,5 @@ helm delete letsboot-queue -n letsboot
 for volume in $(kubectl get pvc --namespace letsboot -o name); do \
   kubectl delete $volume --namespace letsboot
 done
+
+kubectl delete namespace letsboot
