@@ -14,6 +14,7 @@
 * gitlab-ci for build and deployment (on master)
   * use google cluster
   * use gitlab registry
+  * !! move to repository root directory (will be copy pasted from solution-gitlab-ci.yml)
 
 * code documentation golang
 
