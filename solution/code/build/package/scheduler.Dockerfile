@@ -1,3 +1,3 @@
 FROM busybox
 
-CMD curl -P http://backend/schedule
+CMD curl -X POST http://backend/schedule
