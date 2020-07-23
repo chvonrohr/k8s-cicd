@@ -79,23 +79,23 @@ ng generate application crawler --prefix crl --routing true --style scss
 cd solution/code/
 
 # cleanup if already running
+# alternatively you can run cleanup.sh
+
 docker network rm letsboot
 
-for container in letsboot-backend letsboot-queue letsboot-database letsboot-frontend letsboot-crawler; do \
+for container in $(docker ps --filter network=letsboot --format '{{.Names}}'); do \
   docker stop $container
   docker container rm $container
 done
 
-kubectl get deployments --namespace letsboot
-for deployment in frontend backend crawler; do \
-  kubectl delete deployment letsboot-$deployment --namespace letsboot
+for deployment in $(kubectl get deployments --namespace letsboot -o name); do \
+  kubectl delete $deployment --namespace letsboot
 done
 
 kubectl get statefulset --namespace letsboot
 helm delete letsboot-database -n letsboot
 helm delete letsboot-queue -n letsboot
 
-kubectl get pvc --namespace letsboot
 for volume in $(kubectl get pvc --namespace letsboot -o name); do \
   kubectl delete $volume --namespace letsboot
 done
@@ -106,9 +106,11 @@ docker network create letsboot
 # rabbitmq 
 # note: the hostname in this case is only for rabbitmq important, for networking we use the --name
 docker run -d --hostname rabbitmq --name letsboot-queue \
-  -p 5672:5672 --network letsboot rabbitmq:3 \
+  -p 5672:5672 --network letsboot \
   -e RABBITMQ_DEFAULT_PASS="megasecure" \
-  -e RABBITMQ_DEFAULT_USER=letsboot
+  -e RABBITMQ_DEFAULT_USER=letsboot \
+  rabbitmq:3 
+  
 
 # mariadb - directly creates database and user
 docker run --name letsboot-database \
