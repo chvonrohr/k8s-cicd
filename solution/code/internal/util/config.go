@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -18,6 +19,7 @@ func InitialiseConfig(name string) {
 	// ... in these folders
 	viper.AddConfigPath("/etc/letsboot")
 	viper.AddConfigPath("$HOME/.letsboot")
+	viper.AddConfigPath("./config")
 	viper.AddConfigPath(".") // working directory
 
 	// parse flags from process arg list

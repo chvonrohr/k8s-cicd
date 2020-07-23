@@ -42,7 +42,7 @@ ENV GIN_MODE=release
 
 WORKDIR /app
 COPY --from=build /code/backend /app/backend
-COPY --from=build /code/backend.* .
+COPY --from=build /code/config/backend.* .
 USER letsboot:letsboot
 
 ENTRYPOINT ["/app/backend"]

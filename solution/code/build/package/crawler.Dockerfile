@@ -40,7 +40,7 @@ COPY --from=build /etc/group /etc/group
 
 WORKDIR /app
 COPY --from=build /code/crawler .
-COPY --from=build /code/crawler.* .
+COPY --from=build /code/config/crawler.* .
 USER letsboot:letsboot
 
 ENTRYPOINT ["/app/crawler"]

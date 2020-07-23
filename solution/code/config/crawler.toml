@@ -4,5 +4,5 @@ url = "http://localhost:8080"
 [queue]
 host = "localhost"
 port = 5672
-username = "guest"
+username = "letsboot"
 password = "xxx" # default example - use environment variables / kubernetes secrets

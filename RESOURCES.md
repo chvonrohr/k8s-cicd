@@ -7,6 +7,8 @@
   * build small go lange docker images: https://medium.com/@chemidy/create-the-smallest-and-secured-golang-docker-image-based-on-scratch-4752223b7324
 * certifications
   * https://www.cncf.io/certification/cka/
+* kubernetes provider
+  * https://www.presslabs.com/blog/kubernetes-cloud-providers-2019/#3-azure-kubernetes-service-aks
 * https://stackshare.io/kubernetes
 * https://cri-o.io/#container-images
 * https://containerd.io/

@@ -2,58 +2,62 @@
 
 ## Todo:
 
-* finish kubernetes configs
-* run to complete image - curl in busybox for scheduling
-* code documentation golang
-* scaling example of crawler - as soon as crawler running, start next crawler
-* check cluster login auf registry
-* write tests golang: xyz_test.go
+* general idea:
+  1. solution with all parts and configs
+  2. break topics appart 
+  3. build chapters from the beginning towards the solution
+  3.1. add introduction chapters with simplified examples if necessary
+
+* kubernetes configs:
+  * scheduler job (run to complete)
+
 * gitlab-ci for build and deployment (on master)
   * use google cluster
   * use gitlab registry
+
+* code documentation golang
+
+* scaling example of crawler - as soon as crawler running, start next crawler
+
+* check cluster login auf registry (gitlab registry
+
+* write tests golang: xyz_test.go
+
 * check commands on windows (\ problem new line)
+
+* linux virtual machine fully prepared
 
 * nice to have / check
   * migrations (change database field example)
   * ssl for backend
 
-## Files & Folder
+## Application overview
 
 * based on golang recommended structure:
   * https://github.com/golang-standards/project-layout
 
+* parts
+  * backend - rest api and core business logic
+    * model: site, page, crawl
+  * frontend - simple list of domains and websites
+  * scheduler - simple script calling backend to schedule crawl jobs
+  * crawler - service to crawl websites listening to queue
+  * database - postgres
+  * rabbitmq - message queue service
+
 * code/
   * build/package/ - dockerfiles
   * cmd/ - golang entry points for services
-  * deployments/ - kubernetes configuration
+  * deployments/ - kubernetes configuration   
   * internal/ - source code for backend and crawler
   * web/ - frontend
-  * backend.toml - config file for backend
-  * crawler.toml - config file for crawler
+  * config/ - config files for services
+    * backend.toml - config file for backend
+    * crawler.toml - config file for crawler
+    * default.conf - config for nginx server
   * go.mod - golang dependencies
   * go.sum - golang version locks
   * .dockerignore - files to ignore with COPY . . to prevent rebuilds (caching)
-
-
-## Kubernetes Deployment
-
-    * MariaDB - ?
-    * RabbitMQ - simple as possilble
-    * Golang REST Backend - ./backend
-      * new site => add to sql write to rabbitmq with site id
-      * db: 
-        * website (id, starting_url, interval)
-        * urls (id, website_id, url)
-    * Angular Minimal-Frontend - ./frontend
-      * input: "add website*
-      * list with added websites
-      * click on website shows list of urls
-    * Golang Minimal Crawler  - ./crawler
-      * listens to rabbitmq
-      * crawls page 
-      * sends found url to rest of backend
-    * Kubernetes Cronjob mit Run to complete - ./scheduler
-      * shellscript wget backend/schedule => ads pages by interval to rabbitmq
 
 ## notes
 
@@ -65,50 +69,7 @@ cd web
 ng generate application crawler --prefix crl --routing true --style scss
 ```
 
-## Deploy kubernetes locally
-
-### helm
-https://helm.sh/docs/intro/install/
-
-```bash
-kubectl create namespace letsboot
-```
-
-## quickstart
-
-```bash
-helm install letsboot-queue bitnami/rabbitmq -n letsboot
-helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
-kubectl apply -k deployments/kustomization.yaml
-```
-
-deploy rabbitmq to kubernetes using helm
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install letsboot-queue bitnami/rabbitmq -n letsboot
-
-# hostname: letsboot-queue-rabbitmq
-# username: user
-# password:
-$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
-```
-
-deploy mariadb to kubernetes using helm
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install letsboot-database --set db.name=letsboot,db.user=letsboot bitnami/mariadb -n letsboot
-
-# hostname: letsboot-database-mariadb
-# username: letsboot
-# database: letsboot
-# password:
-$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
-```
-
-
-# walkthrough
+## walkthrough
 
 ```bash
 # this walthrough expects you to have everything installed (see INSTALL.md)
@@ -123,23 +84,36 @@ for container in letsboot-backend letsboot-queue letsboot-database letsboot-fron
   docker container rm $container
 done
 
+kubectl get deployments --namespace letsboot
+for deployment in frontend backend crawler; do \
+  kubectl delete deployment letsboot-$deployment --namespace letsboot
+done
+
+kubectl get statefulset --namespace letsboot
+helm delete letsboot-database -n letsboot
+helm delete letsboot-queue -n letsboot
+
+kubectl get pvc --namespace letsboot
+for volume in $(kubectl get pvc --namespace letsboot -o name); do \
+  kubectl delete $volume --namespace letsboot
+done
+
 # create a docker network for the containers to talk in
 docker network create letsboot
 
 # rabbitmq 
 # note: the hostname in this case is only for rabbitmq important, for networking we use the --name
-docker run -d --hostname rabbitmq --name letsboot-queue -p 5672:5672 --network letsboot rabbitmq:3
+docker run -d --hostname rabbitmq --name letsboot-queue \
+  -p 5672:5672 --network letsboot rabbitmq:3 \
+  -e RABBITMQ_DEFAULT_PASS="megasecure" \
+  -e RABBITMQ_DEFAULT_USER=letsboot
 
 # mariadb - directly creates database and user
 docker run --name letsboot-database \
-  -e MYSQL_ROOT_PASSWORD="supersecure!!" \
-  -e MYSQL_USER="letsboot" \
-  -e MYSQL_PASSWORD="letsboot" \
-  -e MYSQL_DATABASE="letsboot" \
-  -p 3306:3306 -d --network letsboot mariadb
-
-# don't forget to amend configuration files for this
-# backend.toml, crawler.toml
+  -e POSTGRES_PASSWORD="supersecure" \
+  -e POSTGRES_USER="letsboot" \
+  -e POSTGRES_DB="letsboot" \
+  -p 3306:3306 -d --network letsboot postgres
 
 # build backend
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
@@ -148,8 +122,8 @@ docker build -t letsboot-backend -f build/package/backend.Dockerfile .
 docker run -d --name letsboot-backend -p 8080:8080 \
   -e LETSBOOT_DB.HOST=letsboot-database \
   -e LETSBOOT_QUEUE.HOST=letsboot-queue \
-  -e LETSBOOT_DB.PASSWORD=letsboot \
-  -e LETSBOOT_QUEUE.PASSWORD=guest \
+  -e LETSBOOT_DB.PASSWORD="supersecure" \
+  -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   --network letsboot letsboot-backend
 
 # build crawler
@@ -159,17 +133,15 @@ docker build -t letsboot-crawler -f build/package/crawler.Dockerfile .
 docker run -d --name letsboot-crawler \
   -e LETSBOOT_QUEUE.HOST=letsboot-queue \
   -e LETSBOOT_BACKEND.URL="http://letsboot-backend:8080" \
-  -e LETSBOOT_QUEUE.PASSWORD=guest \
+  -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   --network letsboot letsboot-crawler
 
 # hint: if you build the images again, you'll see how much faster it is due to caching
 
 # build frontend
-
 docker build -t letsboot-frontend -f build/package/frontend.Dockerfile .
 
 # run frontend
-
 docker run -d --name letsboot-frontend --network letsboot \
   -p 4201:80  letsboot-frontend 
 
@@ -274,6 +246,9 @@ docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 # note: only the images are used from docker, everything else is separate
 kubectl create namespace letsboot
 
+# set letsboot as our current namespace
+kubectl config set-context --current --namespace=letsboot
+
 # hint: the rabbbitmq and postgres setups we use on kubernetes are NOT the
 # same as on docker, as we want clustering and management of statefull 
 # sets which we don't have in docker
@@ -289,6 +264,11 @@ helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsbo
 
 # hint: we now use the passwords directly from the secrets
 #       which are set by the helm statefullsets
+
+# example: show secrets
+
+$(kubectl get secret --namespace letsboot letsboot-queue -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
+$(kubectl get secret --namespace letsboot letsboot-database-mariadb -o jsonpath="{.data.mariadb-password}" | base64 --decode)
 
 # demo: how to run busybox on kubernetes
 # this is a great way to log into a shell inside your kubernetes namespace

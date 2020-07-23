@@ -13,6 +13,7 @@
 * SSH Key for gitlab
 * curl
 * https://helm.sh/docs/intro/install/
+* Windows: check: use install bash or zsh to have shellscript maybe /bin/ utils
 
 ## Local Kubernetes Setup
 
