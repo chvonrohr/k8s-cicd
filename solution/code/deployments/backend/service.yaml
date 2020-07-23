@@ -8,3 +8,4 @@ spec:
   selector:
     app: backend
   clusterIP: None
+  type: NodePort
