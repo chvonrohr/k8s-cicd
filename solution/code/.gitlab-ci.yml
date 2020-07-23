@@ -1,0 +1,20 @@
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  GITLAB_REPO: $CI_REGISTRY_IMAGE
+  GOOGLE_REGISTRY: eu.gcr.io
+  GOOGLE_REPO: $GOOGLE_REGISTRY/letsboot
+  VERSION: $CI_COMMIT_SHORT_SHA
+  TAG: $CI_COMMIT_REF_SLUG
+
+stages:
+- build
+- test
+- deploy
+
+include:
+- local: build/ci/backend.gitlab-ci.yml
+- local: build/ci/frontend.gitlab-ci.yml
+- local: build/ci/crawler.gitlab-ci.yml
+- local: build/ci/scheduler.gitlab-ci.yml
