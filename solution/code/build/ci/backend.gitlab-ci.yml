@@ -30,11 +30,3 @@ build_backend:
     refs:
       - branches@letsboot/core/kubernetes-course
       - tags
-    changes:
-    - solution/code/cmd/backend/**/*
-    - solution/code/internal/**/*
-    - solution/code/pkg/**/*
-    - solution/code/config/**/*
-    - solution/code/build/**/backend.*
-    - solution/code/.gitlab-ci.yml
-    - solution/code/*

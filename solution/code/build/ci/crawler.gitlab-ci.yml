@@ -29,11 +29,3 @@ build_crawler:
     refs:
     - branches@letsboot/core/kubernetes-course
     - tags
-    changes:
-    - solution/code/cmd/crawler/**/*
-    - solution/code/internal/**/*
-    - solution/code/pkg/**/*
-    - solution/code/config/**/*
-    - solution/code/build/**/crawler.*
-    - solution/code/.gitlab-ci.yml
-    - solution/code/*

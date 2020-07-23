@@ -29,8 +29,3 @@ build_scheduler:
     refs:
     - branches@letsboot/core/kubernetes-course
     - tags
-    changes:
-    - solution/code/config/**/*
-    - solution/code/build/**/scheduler.*
-    - solution/code/.gitlab-ci.yml
-    - solution/code/*

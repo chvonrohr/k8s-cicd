@@ -29,9 +29,3 @@ build_frontend:
     refs:
     - branches@letsboot/core/kubernetes-course
     - tags
-    changes:
-    - solution/code/config/**/*
-    - solution/code/web/**/*
-    - solution/code/build/**/frontend.*
-    - solution/code/.gitlab-ci.yml
-    - solution/code/*

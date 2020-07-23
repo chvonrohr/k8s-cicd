@@ -13,6 +13,29 @@ stages:
 - test
 - deploy
 
+deploy:
+  before_script:
+  - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+  - gcloud config set project fossilo-d7c44
+  - gcloud config set compute/region europe-west6
+  - gcloud container clusters get-credentials fossilo --zone europe-west6-a
+  script:
+  - cd solution/code/deployments
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
+  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
+  - cd ..
+  - kubectl apply --namespace letsboot -k deployments/
+  tags:
+  - docker
+  stage: deploy
+  image: docker:stable
+  only:
+    refs:
+    - tags
+
 include:
 - local: solution/code/build/ci/backend.gitlab-ci.yml
 - local: solution/code/build/ci/frontend.gitlab-ci.yml
