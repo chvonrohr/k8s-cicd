@@ -31,7 +31,7 @@ deploy:
   tags:
   - docker
   stage: deploy
-  image: docker:stable
+  image: google/cloud-sdk:latest
   only:
     refs:
     - tags
