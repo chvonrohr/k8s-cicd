@@ -14,7 +14,7 @@ stages:
 - deploy
 
 include:
-- local: build/ci/backend.gitlab-ci.yml
-- local: build/ci/frontend.gitlab-ci.yml
-- local: build/ci/crawler.gitlab-ci.yml
-- local: build/ci/scheduler.gitlab-ci.yml
+- local: solution/code/build/ci/backend.gitlab-ci.yml
+- local: solution/code/build/ci/frontend.gitlab-ci.yml
+- local: solution/code/build/ci/crawler.gitlab-ci.yml
+- local: solution/code/build/ci/scheduler.gitlab-ci.yml
