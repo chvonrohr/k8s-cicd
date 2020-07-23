@@ -17,9 +17,9 @@ deploy:
   before_script:
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
   - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-  - gcloud config set project fossilo-d7c44
+  - gcloud config set project letsboot
   - gcloud config set compute/region europe-west6
-  - gcloud container clusters get-credentials fossilo --zone europe-west6-a
+  - gcloud container clusters get-credentials cluster-1 --region europe-west6
   script:
   - cd solution/code/deployments
   - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
