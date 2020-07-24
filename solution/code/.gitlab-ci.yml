@@ -38,20 +38,21 @@ deploy_all:
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
   # login to google (remember this is run on a build container, not on your laptop)
   - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+  - gcloud components install kubectl
   # gets credentials for kubectl from gcloud, so kubectl can access this specific cluster
   - gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
   script:
-  - cd solution/code/deployments
-  # customize the the deployment configuration (in this case we only change the versions)
-  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
-  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
-  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
-  - kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
-  # apply all deployment configurations to the cluster
-  # we do not "deploy" we tell the kubernetes claster to apply this configuration
-  # kubernetes will then start to do all the changes need to get to the state we defined
-  # which also consists of pulling images and running them in containers (rolling updates etc.)
-  - kubectl apply --namespace letsboot -k ./
+    - cd solution/code/deployments
+    # customize the the deployment configuration (in this case we only change the versions)
+    - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
+    - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
+    - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
+    - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
+    # apply all deployment configurations to the cluster
+    # we do not "deploy" we tell the kubernetes claster to apply this configuration
+    # kubernetes will then start to do all the changes need to get to the state we defined
+    # which also consists of pulling images and running them in containers (rolling updates etc.)
+    - kubectl apply --namespace letsboot -k ./
   
 include:
 - local: solution/code/build/ci/backend.gitlab-ci.yml
