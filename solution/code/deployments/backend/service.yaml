@@ -7,5 +7,4 @@ spec:
   - port: 80
   selector:
     app: backend
-  clusterIP: None
   type: NodePort
