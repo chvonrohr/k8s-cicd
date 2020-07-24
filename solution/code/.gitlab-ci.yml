@@ -52,7 +52,7 @@ deploy_all:
     # we do not "deploy" we tell the kubernetes claster to apply this configuration
     # kubernetes will then start to do all the changes need to get to the state we defined
     # which also consists of pulling images and running them in containers (rolling updates etc.)
-    - kubectl apply --namespace letsboot -k ./
+    - ../../../kustomize build . | kubectl apply --namespace letsboot -f -
   
 include:
 - local: solution/code/build/ci/backend.gitlab-ci.yml
