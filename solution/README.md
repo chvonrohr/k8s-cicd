@@ -18,19 +18,25 @@
 
 * code documentation golang
 
+* scale backend to 2+ pods
+
 * scaling example of crawler - as soon as crawler running, start next crawler
 
-* check cluster login auf registry (gitlab registry
+* check cluster login auf registry (gitlab registry)
 
 * write tests golang: xyz_test.go
 
 * check commands on windows (\ problem new line)
 
 * linux virtual machine fully prepared
+  * UI, VS Code, SSH Key, google authenticated etc. => Eigener letsboot-participant@gmail.com user
+
+* JF: Finish frontned
 
 * nice to have / check
   * migrations (change database field example)
   * ssl for backend
+  * e2e testing
 
 ## Application overview
 
