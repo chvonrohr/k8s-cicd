@@ -1,9 +1,18 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"os"
+)
 
 func main() {
-	r, err := http.Post("http://letsboot-backend/schedule", "", nil)
+	url := "http://letsboot-backend/schedule"
+
+	if len(os.Args) > 1 {
+		url = os.Args[1]
+	}
+
+	r, err := http.Post(url, "", nil)
 	if err != nil {
 		panic(err)
 	}
