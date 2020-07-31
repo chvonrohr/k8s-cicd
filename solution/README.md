@@ -22,6 +22,7 @@
 
 * scaling example of crawler - as soon as crawler running, start next crawler
 
+
 * check cluster login auf registry (gitlab registry)
 
 * write tests golang: xyz_test.go
@@ -34,9 +35,11 @@
 * JF: Finish frontned
 
 * nice to have / check
+  * database scaling
   * migrations (change database field example)
   * ssl for backend
   * e2e testing
+  * rest endpoint to generate artifical load to show scaling
 
 ## Application overview
 
@@ -304,6 +307,8 @@ helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot
 # get statefullset of postgres and run it
 helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
 
+# more about scaling and replicas of postgres here: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+
 # hint: we now use the passwords directly from the secrets
 #       which are set by the helm statefullsets
 
@@ -350,8 +355,8 @@ kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80
 # trick question: why can we not only expose the frontend? why do we need to expose the backend?
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
-# get google context (assuming your authenticated to google cloud)
-gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
+# get google credentials for exising cluster - automatically done on creation
+# gcloud container clusters get-credentials gke_letsboot_europe-west6_jonas1
 
 # let's create our own cluster
 gcloud container clusters create jonas1 --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
@@ -359,10 +364,64 @@ gcloud container clusters create jonas1 --project letsboot --region europe-west6
 # for more information about options
 # gcloud container clusters create --help
 
-# swtich context to the new cluster
+# switch context to the new cluster
+kubectl config use-context gke_letsboot_europe-west6_jonas1
+
+# check if there are any pods (should be empty)
+kubectl get pods -n letsboot
+
+# the same as above
+kubectl create namespace letsboot 
+kubectl config set-context --current --namespace=letsboot
+
+# deploy stateful sets using helm
+helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot 
+helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
+
+# applay deployments
+kubectl apply -k deployments
+kubectl get pods -n letsboot
+
+# expose it locally
+kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80 & 
+kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80 &
+
+# show environment variables you get as a pod
+kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboot -- env; kubectl delete pod busybox
+
+# experiment 
+# let's create some load
+kubectl top pods
+
+for i in {1..100}; do \
+  curl -H "Content-Type: application/json" \
+    -X POST -d '{"url":"https://www.letsboot.com","interval":3600000}' \
+    http://localhost:8080/sites
+  curl http://localhost:8080/sites
+done
+
+# one of the backends and the database will slightly increase in usage
+# 5mb for a backend ;-)
+kubectl top pods
+
+# let's start crawling the first 100 websites
+for i in {1..100}; do \
+  curl -H "Content-Type: application/json" \
+    -X POST -d "{\"siteId\":$i}" \
+    http://localhost:8080/crawls
+done
+
+# see difference (1m = 0.1% of a vcpu)
+kubectl top pods
+
+# show urls
+curl http://localhost:8080/pages
+
+# show logs of crawler
+kubectl logs --selector=app=crawler --namespace letsboot
 
 # delete cluster
-gcloud container clusters delete jonas1 --project letsboot
+gcloud container clusters delete jonas1 --project letsboot --region europe-west6
 
 # walkthrough end - do not remove -
 ```

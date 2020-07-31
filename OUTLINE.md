@@ -31,6 +31,11 @@
 * Test and Prod Environment
 * Local testing Entire environment
 
+* additional topics:
+  * RBAC role based access control for kubernetes (permissions)
+  * 
+
+
 # Why containers
 
 * first was the physical server "bläch"
