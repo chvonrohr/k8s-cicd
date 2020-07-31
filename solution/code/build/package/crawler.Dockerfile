@@ -2,7 +2,7 @@
 FROM golang:alpine AS build
 
 # install dependencies
-RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates
+RUN apk update && apk add --no-cache git ca-certificates tzdata upx && update-ca-certificates
 
 # don't use root
 ENV USER=letsboot
@@ -26,6 +26,9 @@ RUN go mod download
 # copy everything from current working directory into image
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w" ./cmd/crawler
+
+# use upx to reduce binary size even further
+RUN upx ./scheduler
 
 # we use "scratch" image to run go service
 # the scratch image "doesn't contain anything"
