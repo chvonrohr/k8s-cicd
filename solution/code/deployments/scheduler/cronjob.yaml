@@ -3,10 +3,11 @@ kind: CronJob
 metadata:
   name: scheduler
 spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
   schedule: "@hourly"
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 100
       template:
         spec:
           containers:
