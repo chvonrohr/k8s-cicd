@@ -147,6 +147,14 @@ docker run -d --name letsboot-crawler \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   --network letsboot letsboot-crawler
 
+# build scheduler
+docker build -t letsboot-scheduler -f build/package/scheduler.Dockerfile .
+
+# run scheduler (once) - with kubernetes we'll use the kubernetes scheduler
+# we don't use -d "detached" here, as we want to directly see how it runs
+docker run --name letsboot-scheduler --network letsboot \
+  letsboot-scheduler "http://letsboot-backend:8080/schedule"
+
 # hint: if you build the images again, you'll see how much faster it is due to caching
 
 # build frontend
@@ -211,9 +219,13 @@ go build ./cmd/backend
 # crawler (host)
 go build ./cmd/crawler
 
+# crawler (host)
+go build ./cmd/scheduler
+
 # run with database access
 ./backend --db.password="supersecure" --queue.password="megasecure" &
 ./crawler --queue.password="megasecure" &
+./scheduler "https://localhost:8080" 
 
 # push docker images to gitlab registry
 # create token with registry_read und registry_write https://gitlab.com/profile/personal_access_tokens
@@ -227,6 +239,7 @@ docker login registry.gitlab.com
 docker tag letsboot-backend registry.gitlab.com/letsboot/core/kubernetes-course/backend
 docker tag letsboot-crawler registry.gitlab.com/letsboot/core/kubernetes-course/crawler
 docker tag letsboot-frontend registry.gitlab.com/letsboot/core/kubernetes-course/frontend
+docker tag letsboot-scheduler registry.gitlab.com/letsboot/core/kubernetes-course/scheduler
 
 # warning if you do not specify a private registry docker 
 # may push your image to the public registry
@@ -234,6 +247,7 @@ docker tag letsboot-frontend registry.gitlab.com/letsboot/core/kubernetes-course
 docker push registry.gitlab.com/letsboot/core/kubernetes-course/backend
 docker push registry.gitlab.com/letsboot/core/kubernetes-course/crawler
 docker push registry.gitlab.com/letsboot/core/kubernetes-course/frontend
+docker push registry.gitlab.com/letsboot/core/kubernetes-course/scheduler
 
 # hint: as some layers are the same (like the first steps COPY ... in scratch) 
 # not all layers have to be pushed three times, docker is extremly optimized in this point
@@ -248,12 +262,27 @@ gcloud auth configure-docker eu.gcr.io
 docker tag letsboot-backend eu.gcr.io/letsboot/kubernetes-course/backend
 docker tag letsboot-crawler eu.gcr.io/letsboot/kubernetes-course/crawler
 docker tag letsboot-frontend eu.gcr.io/letsboot/kubernetes-course/frontend
+docker tag letsboot-scheduler eu.gcr.io/letsboot/kubernetes-course/frontend
 
 docker push eu.gcr.io/letsboot/kubernetes-course/backend
 docker push eu.gcr.io/letsboot/kubernetes-course/crawler
 docker push eu.gcr.io/letsboot/kubernetes-course/frontend
+docker push eu.gcr.io/letsboot/kubernetes-course/scheduler
 
-# run everything on kubernetes
+## run everything on kubernetes
+
+# make sure you are in the correct context
+# either through the menu of your local docker desktop
+# or the following commands
+
+# show contexts and selected one with *
+kubectl config get-contexts
+
+# get current context name
+kubectl config current-context
+
+# set local docker desktop context if not already the case
+kubectl config use-context docker-desktop
 
 # create namespace for kubernetes
 # note: only the images are used from docker, everything else is separate
@@ -288,6 +317,7 @@ kubectl get secret --namespace letsboot letsboot-database-postgresql -o jsonpath
 kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboot -- sh
 
 # list current pods (like containers but kubernetes :-)
+# you should see the database and the queue
 kubectl get pods --namespace letsboot 
 
 # example how to apply specific configurations
@@ -314,11 +344,25 @@ kubectl logs --selector=app=backend --namespace letsboot
 # kubectl get pods -l app=backend -o name|head -n1
 
 # let's port forward the backend to use within the frontend
-kubectl port-forward --namespace letsboot service/letsboot-backend 8080:8080
+kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80
 
 # let's expse the frontend
 # trick question: why can we not only expose the frontend? why do we need to expose the backend?
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
+
+# get google context (assuming your authenticated to google cloud)
+gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
+
+# let's create our own cluster
+gcloud container clusters create jonas1 --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
+
+# for more information about options
+# gcloud container clusters create --help
+
+# swtich context to the new cluster
+
+# delete cluster
+gcloud container clusters delete jonas1 --project letsboot
 
 # walkthrough end - do not remove -
 ```
