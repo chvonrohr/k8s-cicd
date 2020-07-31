@@ -5,8 +5,19 @@ run: $BASH_COMMAND
 
 docker network rm letsboot
 
+if test -d "./code"; then
+  echo 'dir check ok'
+else 
+  echo 'you are in the wrong directory'
+  pwd
+  exit;
+fi
+
+# delete binaries
+
 rm code/backend
-rm code/frontend
+rm code/crawler
+rm code/scheduler
 
 for container in $(docker ps --filter network=letsboot --format '{{.Names}}'); do \
   docker stop $container
