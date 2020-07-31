@@ -28,7 +28,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w" ./cmd/crawler
 
 # use upx to reduce binary size even further
-RUN upx ./scheduler
+RUN upx ./crawler
 
 # we use "scratch" image to run go service
 # the scratch image "doesn't contain anything"
