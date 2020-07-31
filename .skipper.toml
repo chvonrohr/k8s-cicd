@@ -1,0 +1,22 @@
+[ide]
+  base_image = "node:10"
+  workdir = "/home/course"
+  user = "letsboot"
+  shell = "/bin/bash"
+
+[ide.scripts]
+  prebuild = "$COURSE/.skipper/prebuild.sh"
+  build = "$COURSE/.skipper/build.sh"
+  postbuild = "$COURSE/.skipper/postbuild.sh"
+  start = "$COURSE/.skipper/start.sh"
+  stop = "$COURSE/.skipper/stop.sh"
+
+[ide.env]
+  GO11MODULES = "1"
+  PATH = "$PATH:/usr/local/go/bin"
+
+pwd = "/home/course"
+
+[ports]
+  backend = 8080
+  frontend = 4200
