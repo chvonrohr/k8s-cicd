@@ -1,3 +1,3 @@
 FROM busybox
 
-CMD curl -X POST http://backend/schedule
+CMD curl -X POST http://letsboot-backend/schedule
