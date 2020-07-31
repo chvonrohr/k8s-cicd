@@ -3,6 +3,7 @@ bases:
 - backend
 - crawler
 - frontend
+- scheduler
 
 namespace: letsboot
 namePrefix: letsboot-
@@ -16,4 +17,7 @@ images:
   newTag: latest
 - name: eu.gcr.io/letsboot/kubernetes-course/frontend
   newName: eu.gcr.io/letsboot/kubernetes-course/frontend
+  newTag: latest
+- name: eu.gcr.io/letsboot/kubernetes-course/scheduler
+  newName: eu.gcr.io/letsboot/kubernetes-course/scheduler
   newTag: latest
