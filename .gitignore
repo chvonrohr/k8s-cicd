@@ -4,3 +4,4 @@
 *.exe
 solution/code/crawler
 solution/code/backend
+solution/code/scheduler
