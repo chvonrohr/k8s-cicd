@@ -91,7 +91,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			err = client.CreateCrawl(model.Crawl{SiteID: siteId})
+			err = client.CreateCrawl(model.Crawl{SiteID: uint(siteId)})
 			if err != nil {
 				log.Fatal(err)
 			}
