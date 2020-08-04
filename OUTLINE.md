@@ -2,7 +2,7 @@
 
 * Mini Introduction Container and Docker
 * Create your own simple containers
-* Architecture of Cubernets from the developer's point of view
+* Architecture of Kubernets from the developer's point of view
 * Overview example project (*Golang and *TypeScript)
 * Building Build Processes
 * Body Docker Container
@@ -30,6 +30,11 @@
 * secrets management
 * Test and Prod Environment
 * Local testing Entire environment
+
+* additional topics:
+  * RBAC role based access control for kubernetes (permissions)
+  * 
+
 
 # Why containers
 
@@ -66,3 +71,15 @@
 * why do you need
 * you break it, I have to fix it :-(
 
+## hirarchy
+
+cloud (google kubernetes engine)
+--> creates clusters and nodes
+
+kubernetes cluster
+
+node-pool
+
+node - underlying virtual machine or server has to be created outside of kubernetes
+
+pod

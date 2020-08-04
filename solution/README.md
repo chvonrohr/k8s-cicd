@@ -8,35 +8,24 @@
   3. build chapters from the beginning towards the solution
   3.1. add introduction chapters with simplified examples if necessary
 
-* kubernetes configs:
-  * scheduler job (run to complete)
-
-* gitlab-ci for build and deployment (on master)
-  * use google cluster
-  * use gitlab registry
-  * !! move to repository root directory (will be copy pasted from solution-gitlab-ci.yml)
+* bug crawler backend call (test a crawl)
 
 * code documentation golang
+* write tests golang: xyz_test.go and test stage in gitlab-ci
 
-* scale backend to 2+ pods
-
-* scaling example of crawler - as soon as crawler running, start next crawler
-
-* check cluster login auf registry (gitlab registry)
-
-* write tests golang: xyz_test.go
+* https://theia-ide.org/
 
 * check commands on windows (\ problem new line)
 
-* linux virtual machine fully prepared
-  * UI, VS Code, SSH Key, google authenticated etc. => Eigener letsboot-participant@gmail.com user
-
-* JF: Finish frontned
+* JF: Finish frontend
 
 * nice to have / check
+  * scaling example of crawler - as soon as crawler running, start next crawler
+  * database scaling
   * migrations (change database field example)
   * ssl for backend
   * e2e testing
+  * rest endpoint to generate artifical load to show scaling
 
 ## Application overview
 
@@ -304,6 +293,8 @@ helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot
 # get statefullset of postgres and run it
 helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
 
+# more about scaling and replicas of postgres here: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+
 # hint: we now use the passwords directly from the secrets
 #       which are set by the helm statefullsets
 
@@ -350,19 +341,83 @@ kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80
 # trick question: why can we not only expose the frontend? why do we need to expose the backend?
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
-# get google context (assuming your authenticated to google cloud)
-gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
+# get google credentials for exising cluster - automatically done on creation
+# gcloud container clusters get-credentials gke_letsboot_europe-west6_jonas1
 
 # let's create our own cluster
 gcloud container clusters create jonas1 --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
 
+# allow kubernetes cluster to use your gitlab registry
+# for simplicty reasons we use the public google registry for the training to reduce the amount of authentication
+# 
+# kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+# 
+# to use gitlab registry change the deployment.yaml files of each pod to (image:)
+#       containers:
+#        - name: backend
+#          image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+
 # for more information about options
 # gcloud container clusters create --help
 
-# swtich context to the new cluster
+# switch context to the new cluster
+kubectl config use-context gke_letsboot_europe-west6_jonas1
+
+# check if there are any pods (should be empty)
+kubectl get pods -n letsboot
+
+# the same as above
+kubectl create namespace letsboot 
+kubectl config set-context --current --namespace=letsboot
+
+# deploy stateful sets using helm
+helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot 
+helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
+
+# applay deployments
+kubectl apply -k deployments
+kubectl get pods -n letsboot
+
+# expose it locally
+kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80 & 
+kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80 &
+
+# show environment variables you get as a pod
+kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboot -- env; kubectl delete pod busybox
+
+# experiment 
+# let's create some load
+kubectl top pods
+
+for i in {1..100}; do \
+  curl -H "Content-Type: application/json" \
+    -X POST -d '{"url":"https://www.letsboot.com","interval":3600000}' \
+    http://localhost:8080/sites
+  curl http://localhost:8080/sites
+done
+
+# one of the backends and the database will slightly increase in usage
+# 5mb for a backend ;-)
+kubectl top pods
+
+# let's start crawling the first 100 websites
+for i in {1..100}; do \
+  curl -H "Content-Type: application/json" \
+    -X POST -d "{\"siteId\":$i}" \
+    http://localhost:8080/crawls
+done
+
+# see difference (1m = 0.1% of a vcpu)
+kubectl top pods
+
+# show urls
+curl http://localhost:8080/pages
+
+# show logs of crawler
+kubectl logs --selector=app=crawler --namespace letsboot
 
 # delete cluster
-gcloud container clusters delete jonas1 --project letsboot
+gcloud container clusters delete jonas1 --project letsboot --region europe-west6
 
 # walkthrough end - do not remove -
 ```
