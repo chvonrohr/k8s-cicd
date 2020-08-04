@@ -8,33 +8,19 @@
   3. build chapters from the beginning towards the solution
   3.1. add introduction chapters with simplified examples if necessary
 
-* kubernetes configs:
-  * scheduler job (run to complete)
-
-* gitlab-ci for build and deployment (on master)
-  * use google cluster
-  * use gitlab registry
-  * !! move to repository root directory (will be copy pasted from solution-gitlab-ci.yml)
+* bug crawler backend call (test a crawl)
 
 * code documentation golang
+* write tests golang: xyz_test.go and test stage in gitlab-ci
 
-* scale backend to 2+ pods
-
-* scaling example of crawler - as soon as crawler running, start next crawler
-
-
-* check cluster login auf registry (gitlab registry)
-
-* write tests golang: xyz_test.go
+* https://theia-ide.org/
 
 * check commands on windows (\ problem new line)
 
-* linux virtual machine fully prepared
-  * UI, VS Code, SSH Key, google authenticated etc. => Eigener letsboot-participant@gmail.com user
-
-* JF: Finish frontned
+* JF: Finish frontend
 
 * nice to have / check
+  * scaling example of crawler - as soon as crawler running, start next crawler
   * database scaling
   * migrations (change database field example)
   * ssl for backend
@@ -360,6 +346,16 @@ kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
 # let's create our own cluster
 gcloud container clusters create jonas1 --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
+
+# allow kubernetes cluster to use your gitlab registry
+# for simplicty reasons we use the public google registry for the training to reduce the amount of authentication
+# 
+# kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+# 
+# to use gitlab registry change the deployment.yaml files of each pod to (image:)
+#       containers:
+#        - name: backend
+#          image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
 
 # for more information about options
 # gcloud container clusters create --help
