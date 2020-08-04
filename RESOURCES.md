@@ -1,5 +1,6 @@
 # Reading material
 
+* Awesome Kubernetes: https://github.com/ramitsurana/awesome-kubernetes
 * Containers and Docker:
   * How a container actually runs/is a process: https://www.youtube.com/watch?v=sK5i-N34im8&t=848s
 * Golang:
