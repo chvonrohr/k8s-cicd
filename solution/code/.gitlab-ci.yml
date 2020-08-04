@@ -12,6 +12,8 @@ variables:
   VERSION: $CI_COMMIT_SHORT_SHA
   # use git tag if available (like named versions v0.0.1)
   TAG: $CI_COMMIT_REF_SLUG
+  # set cluster name for deployment
+  CLUSTER_NAME: "cluster-1"
 
 # order of stages
 stages:
@@ -40,7 +42,7 @@ deploy_all:
   - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
   - gcloud components install kubectl
   # gets credentials for kubectl from gcloud, so kubectl can access this specific cluster
-  - gcloud container clusters get-credentials cluster-1 --region europe-west6 --project letsboot
+  - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
     - cd solution/code/deployments
     # customize the the deployment configuration (in this case we only change the versions)
