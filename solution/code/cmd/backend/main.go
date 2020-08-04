@@ -20,6 +20,7 @@ func main() {
 		panic(err)
 	}
 
+	// initialise rabbitmq connection
 	closeQueue := backend.InitialiseQueue()
 	defer closeQueue()
 	// initialise http handler

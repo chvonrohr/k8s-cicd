@@ -14,7 +14,17 @@ var (
 	channel *amqp.Channel
 )
 
+/**
+InitialiseQueue initialises a new connection to a rabbitmq server.
+
+It is non-blocking and returns a function used to close the connection.
+It expects viper and the existence of the following four viper variables: queue.username, queue.password, queue.host and queue.port.
+It will exit fatally if the connection fails.
+It declares the pages queue if it doesn't exist. The queue is durable and non-exclusive.
+*/
 func InitialiseQueue() (cancel func()) {
+
+	// configuration variables
 	var (
 		username = viper.GetString("queue.username")
 		password = viper.GetString("queue.password")
@@ -43,6 +53,9 @@ func InitialiseQueue() (cancel func()) {
 
 }
 
+/**
+QueuePage pushes a page to rabbitmq.
+*/
 func QueuePage(page model.Page) error {
 	bs, err := json.Marshal(&page)
 	if err != nil {
