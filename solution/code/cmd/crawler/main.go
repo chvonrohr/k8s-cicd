@@ -22,24 +22,33 @@ func main() {
 	util.InitialiseConfig("crawler")
 
 	var (
+		// query queue connection variables from config library
 		username = viper.GetString("queue.username")
 		password = viper.GetString("queue.password")
 		host     = viper.GetString("queue.host")
 		port     = viper.GetInt("queue.port")
+
+		// query backend endpoint url from config library
 		endpoint = viper.GetString("backend.url")
 	)
 
+	// create a new crawler sdk client (view internal/sdk)
 	apiClient := sdk.NewClient(endpoint)
 
+	// dial (connect) to rabbitmq
 	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d", username, password, host, port))
 	util.FailOnError(err, "Failed to connect to RabbitMQ")
+	// FailOnErrorF only runs the passed function when the deferred function is executed
 	defer util.FailOnErrorF(conn.Close, "Failed to close RabbitMQ connection")
+	// establish a new channel
 	ch, err := conn.Channel()
 	util.FailOnError(err, "Failed to open a channel")
 	defer util.FailOnErrorF(ch.Close, "Failed to close channel")
 
+	// declare a durable queue on the current channel
 	q, err := ch.QueueDeclare("pages", true, false, false, false, nil)
 
+	// ensure we crawl a maximum of five pages concurrently
 	util.FailOnError(ch.Qos(5, 0, false), "Failed to set rabbitmq qos")
 
 	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)

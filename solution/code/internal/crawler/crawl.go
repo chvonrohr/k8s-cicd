@@ -12,6 +12,7 @@ import (
 
 func Crawl(uri string) (response sdk.PageResponse, err error) {
 	request, _ := http.NewRequest("GET", uri, nil)
+	// set a custom user agent - some websites block default library user agents like the go useragent
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
 	r, err := http.DefaultClient.Do(request)
 	if err != nil {
