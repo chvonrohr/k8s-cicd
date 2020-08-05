@@ -8,9 +8,9 @@
 [ide.scripts]
   prebuild = "$COURSE/.skipper/prebuild.sh"
   build = "$COURSE/.skipper/build.sh"
-  postbuild = "$COURSE/.skipper/postbuild.sh"
-  start = "$COURSE/.skipper/start.sh"
-  stop = "$COURSE/.skipper/stop.sh"
+  postbuild = "" # "$COURSE/.skipper/postbuild.sh"
+  start = "" # "$COURSE/.skipper/start.sh"
+  stop = "" # "$COURSE/.skipper/stop.sh"
 
 [ide.env]
   GO11MODULES = "1"
@@ -32,7 +32,7 @@
   "@theia/terminal" = "next"
   "@theia/vsx-registry" = "next"
 
-[ide.devDependencies]
+[ide.devdependencies]
   "@theia/cli" = "next"
   "@theia/debug" = "next"
   

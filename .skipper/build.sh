@@ -1,7 +1,4 @@
-mkdir -p /home/go
-mkdir -p /home/go-tools
-chown -R $USER:$USER /home/go
-chown -R $USER:$USER /home/go-tools
+
 
 GO_VERSION=1.14.4
 GOOS=linux
