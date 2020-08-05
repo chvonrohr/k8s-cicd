@@ -10,6 +10,12 @@
 
 * bug crawler backend call (test a crawl)
 
+* bug frontend on google cloud
+
+* add volumes to crawler and backend 
+  * store html files
+  * expose html files through backend api
+
 * code documentation golang
 * write tests golang: xyz_test.go and test stage in gitlab-ci
 
@@ -18,6 +24,7 @@
 * check commands on windows (\ problem new line)
 
 * ingress example for local development
+
 
 * JF: Finish frontend
 
