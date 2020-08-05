@@ -22,4 +22,12 @@
 
 ## CGroups
 
-## Golang
+## Out of scope
+
+### Golang
+
+### Postgres
+
+### RabbitMQ
+
+### Angular
