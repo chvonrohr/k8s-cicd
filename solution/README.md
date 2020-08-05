@@ -394,8 +394,8 @@ helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot
 helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
 
 # applay deployments
-kubectl apply -k deployments
-kubectl get pods -n letsboot
+kubectl apply --kustomize deployments
+kubectl get pods --namespace letsboot
 
 # expose the services from your google cluster to your local system
 kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80 & 
