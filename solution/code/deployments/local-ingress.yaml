@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: local-ingress
+  namespace: letsboot
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: / 
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        #pathType: Prefix
+        backend:
+          serviceName: letsboot-backend
+          servicePort: 80
+      - path: /
+        #pathType: Prefix
+        backend:
+          serviceName: letsboot-frontend
+          servicePort: 80

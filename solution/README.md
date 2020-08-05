@@ -350,6 +350,16 @@ kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80
 # trick question: why can we not only expose the frontend? why do we need to expose the backend?
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
+# alternative let's take a sneak peak at ingress by installing a local ingress controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f deployments/local-ingress.yaml
+kubectl get ingress 
+
+
+
+## -------- Google Cluster
+
+
 # get google credentials for exising cluster - automatically done on creation
 # gcloud container clusters get-credentials gke_letsboot_europe-west6_jonas1
 
@@ -387,7 +397,7 @@ helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsbo
 kubectl apply -k deployments
 kubectl get pods -n letsboot
 
-# expose it locally
+# expose the services from your google cluster to your local system
 kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80 & 
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80 &
 
