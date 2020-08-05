@@ -1,39 +1,46 @@
 # course topics
 
-* Mini Introduction Container and Docker
+* Mini Introduction containerization and Docker
 * Create your own simple containers
-* Architecture of Kubernets from the developer's point of view
+* Architecture of Kubernetes from the developer's point of view
 * Overview example project (*Golang and *TypeScript)
-* Building Build Processes
-* Body Docker Container
+* Implementing build processes
+* Automated build of Docker containers
 * Private Container Registries in **Gitlab
 * Starting containers locally
 * Overview Configuration Kubernetes
-* Pods, Services, Ingres and Statefullsets
+* Pods, Services, Ingres and Statefulsets
 * Manual deployment on Kubernets cluster
-* Automation Build Process
-* Automation Deployment Process
+* Automation build process
+* Automation deployment process
 * Continuous Integration with Docker
-* Continuous Deployment on Kubernetes
+* Continuous Delivery on Kubernetes
 * CI/CD pipelines in **Gitlab
 * Trigger Run To Complete Jobs
 * Breakdown CI Script
 * Optimization of the build process
-* Deployment SQL Database
-* Deployment Message Queue
-* Configuration management with customizing
+* Deployment SQL Database to Kubernetes
+* Deployment Message Queue to Kubernetes
+* Configuration management with Kustomize
 * Deploy stateful sets with helmet
 * Deployment on Cloud Environment
-* First monitoring and adaptation Scaling
-* rolling updates
+* Monitoring and tailoring scaling parameters
+* Rolling updates
 * Database migration strategies
-* secrets management
+* Secrets management
 * Test and Prod Environment
 * Local testing Entire environment
 
 * additional topics:
   * RBAC role based access control for kubernetes (permissions)
   * 
+
+---
+
+
+
+
+---
 
 
 # Why containers
