@@ -17,6 +17,8 @@
 
 * check commands on windows (\ problem new line)
 
+* ingress example for local development
+
 * JF: Finish frontend
 
 * nice to have / check

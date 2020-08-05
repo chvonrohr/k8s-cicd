@@ -9,7 +9,7 @@
 * Private Container Registries in **Gitlab
 * Starting containers locally
 * Overview Configuration Kubernetes
-* Pods, Services, Ingres and Statefulsets
+* Pods, Services, Ingress and Statefulsets
 * Manual deployment on Kubernets cluster
 * Automation build process
 * Automation deployment process
