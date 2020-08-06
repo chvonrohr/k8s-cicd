@@ -226,7 +226,7 @@ EOF
 # note: helm init is not used/needed anymore
 
 kubectl create namespace metallb
-helm install --name metallb --namespace metallb stable/metallb
+helm install metallb --namespace metallb stable/metallb
 
 
 
