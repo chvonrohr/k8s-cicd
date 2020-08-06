@@ -133,21 +133,16 @@ kubeadm init \
   --apiserver-cert-extra-sans $internalip
 '
 
-# copy the join command from above, looks something like this:
-kubeadm join 135.181.41.130:6443 --token obrbtv.3dmjxqk16taqkhfq \
-    --discovery-token-ca-cert-hash sha256:69637b743c898bb2b978df4ca1ed08a334655c49482f14c07bcb1da3024021db 
+# get control plain config and merge it into your ~/.kube/config file (clusters, contexts, users)
+hcloud server ssh master-1 'cat /etc/kubernetes/admin.conf'
+kubectl config set-context kubernetes-admin@kubernetes
 
-# copy kube config
-hcloud server ssh master-1 '
-mkdir /root/.kube
-cp -i /etc/kubernetes/admin.conf /root/.kube/config
-'
+### now you can do all kubectl commands from your local machine
 
 # add hetzner cloud secrets for cloud controlers and network ip
 hetznerapitoken=xxxx
 networkid=$(hcloud network list -o columns=id -o noheader)
-hcloud server ssh master-1 "
-cat <<EOF | kubectl apply -f -
+cat << EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
@@ -165,33 +160,31 @@ metadata:
 stringData:
   token: \"$hetznerapitoken\"
 EOF
-"
+
+# check the master
+kubectl describe node master-1
 
 # deploy hetzner cloucd controler mangager (check for current version on git: https://github.com/hetznercloud/hcloud-cloud-controller-manager/tree/master/deploy)
-hcloud server ssh master-1 '
+
+# tryed to use the newer version
+#hcloud server ssh master-1 '
+#kubectl apply -f https://raw.githubusercontent.com/hetznercloud/hcloud-cloud-controller-manager/master/deploy/v1.6.1-networks.yaml
+#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
+#'
+
+# running it with the older version
 kubectl apply -f https://raw.githubusercontent.com/hetznercloud/hcloud-cloud-controller-manager/master/deploy/v1.6.1-networks.yaml
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
-'
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 # allow taint for uninitialized nodes
 ## todo: check error "Error from server (NotFound): daemonsets.apps "kube-flannel-ds-amd64" not found"
-hcloud server ssh master-1 "
-kubectl -n kube-system patch daemonset kube-flannel-ds-amd64 --type json -p '[{\"op\":\"add\",\"path\":\"/spec/template/spec/tolerations/-\",\"value\":{\"key\":\"node.cloudprovider.kubernetes.io/uninitialized\",\"value\":\"true\",\"effect\":\"NoSchedule\"}}]'
-kubectl -n kube-system patch deployment coredns --type json -p '[{\"op\":\"add\",\"path\":\"/spec/template/spec/tolerations/-\",\"value\":{\"key\":\"node.cloudprovider.kubernetes.io/uninitialized\",\"value\":\"true\",\"effect\":\"NoSchedule\"}}]'
-"
+kubectl -n kube-system patch daemonset kube-flannel-ds-amd64 --type json -p '[{"op":"add","path":"/spec/template/spec/tolerations/-","value":{"key":"node.cloudprovider.kubernetes.io/uninitialized","value":"true","effect":""}}]'
+kubectl -n kube-system patch deployment coredns --type json -p '[{"op":"add","path":"/spec/template/spec/tolerations/-","value":{"key":"node.cloudprovider.kubernetes.io/uninitialized","value":"true","effect":""}}]'
 
 # deploy hetzner storage cloud interface
-hcloud server ssh master-1 '
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/csi-api/release-1.14/pkg/crd/manifests/csidriver.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/csi-api/release-1.14/pkg/crd/manifests/csinodeinfo.yaml
 kubectl apply -f https://raw.githubusercontent.com/hetznercloud/csi-driver/master/deploy/kubernetes/hcloud-csi.yml
-'
-
-# get control plain config and merge it into your ~/.kube/config file (clusters, contexts, users)
-hcloud server ssh master-1 'cat /etc/kubernetes/admin.conf'
-
-# you should see new the new context for hetzner
-kubectl config get-contexts
 
 # join the workers
 hcloud server ssh master-1 'kubeadm token create --print-join-command'
@@ -202,7 +195,8 @@ runonworkers 'xxx'
 # check out your nodes
 kubectl get nodes
 
-# install helm
+# check: not needed anymore
+# install helm 
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ServiceAccount
@@ -225,9 +219,25 @@ subjects:
 EOF
 # note: helm init is not used/needed anymore
 
+# use metallb load balancer
 kubectl create namespace metallb
 helm install metallb --namespace metallb stable/metallb
+# todo: error
 
+# use nginx ingress controller instead
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+
+# remove taints - todo: why
+kubectl taint nodes --overwrite=true --all node.cloudprovider.kubernetes.io/uninitialized:NoSchedule-
+kubectl taint nodes --overwrite=true --all node.cloudprovider.kubernetes.io/uninitialized:NoSchedule-
+
+
+# delete servers again !! atention, this will delete everything
+hcloud server delete master-1
+hcloud server delete worker-1
+hcloud server delete worker-2
+
+# hint: remove the servers from your ~/.ssh/know-hosts
 
 
 # todo:
