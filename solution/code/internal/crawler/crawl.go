@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 	"sync"
 )
@@ -52,7 +53,12 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 			return response, err
 		}
 		sanitizedUri := strings.TrimPrefix(strings.TrimPrefix(uri, "http://"), "https://")
-		err = ioutil.WriteFile(fmt.Sprintf("%s/%04d/%s", dataDir, crawlId, sanitizedUri), bs, os.ModePerm)
+		p := fmt.Sprintf("%s/%04d/%s", dataDir, crawlId, sanitizedUri)
+		err = os.MkdirAll(path.Dir(p), os.ModeDir|os.ModePerm)
+		if err != nil {
+			return response, err
+		}
+		err = ioutil.WriteFile(p, bs, os.ModePerm)
 		if err != nil {
 			return response, err
 		}
