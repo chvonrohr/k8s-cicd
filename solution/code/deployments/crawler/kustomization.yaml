@@ -2,3 +2,4 @@ commonLabels:
   app: crawler
 resources:
   - deployment.yaml
+  - pvc.yaml

@@ -68,7 +68,7 @@ func main() {
 					continue
 				}
 				log.Printf("crawling %s\n", page.Url)
-				response, err := crawler.Crawl(page.Url)
+				response, err := crawler.Crawl(page.Url, page.CrawlID)
 				if err != nil {
 					log.Printf("error crawling %s: %s", page.Url, err)
 					if response.StatusCode == 0 {

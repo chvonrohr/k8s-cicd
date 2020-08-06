@@ -1,16 +1,26 @@
 package crawler
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/spf13/viper"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 	"golang.org/x/net/html"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
+	"sync"
 )
 
-func Crawl(uri string) (response sdk.PageResponse, err error) {
+var (
+	mkdirOnce = sync.Once{}
+)
+
+func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 	request, _ := http.NewRequest("GET", uri, nil)
 	// set a custom user agent - some websites block default library user agents like the go useragent
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
@@ -27,7 +37,29 @@ func Crawl(uri string) (response sdk.PageResponse, err error) {
 		return response, fmt.Errorf("invalid content type: %s", response.ContentType)
 	}
 	response.Ok = true
-	node, err := html.Parse(r.Body)
+	var reader io.Reader = r.Body
+
+	if viper.GetBool("crawler.dump") {
+		bs, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return response, err
+		}
+		dataDir := viper.GetString("crawler.data")
+		mkdirOnce.Do(func() {
+			err = os.MkdirAll(dataDir, os.ModeDir|os.ModePerm)
+		})
+		if err != nil {
+			return response, err
+		}
+		sanitizedUri := strings.TrimPrefix(strings.TrimPrefix(uri, "http://"), "https://")
+		err = ioutil.WriteFile(fmt.Sprintf("%s/%04d/%s", dataDir, crawlId, sanitizedUri), bs, os.ModePerm)
+		if err != nil {
+			return response, err
+		}
+		reader = bytes.NewReader(bs)
+	}
+
+	node, err := html.Parse(reader)
 	if err != nil {
 		return response, err
 	}
