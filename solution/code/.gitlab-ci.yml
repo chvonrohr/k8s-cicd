@@ -51,7 +51,7 @@ deploy_all:
     - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/crawler:$TAG
     - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/scheduler:$TAG
     # apply all deployment configurations to the cluster
-    # we do not "deploy" we tell the kubernetes claster to apply this configuration
+    # we do not "deploy" we tell the kubernetes cluster to apply this configuration
     # kubernetes will then start to do all the changes need to get to the state we defined
     # which also consists of pulling images and running them in containers (rolling updates etc.)
     - ../../../kustomize build . | kubectl apply --namespace letsboot -f -

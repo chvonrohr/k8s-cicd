@@ -26,7 +26,7 @@ spec:
               name: page-storage
           env:
             - name: LETSBOOT_BACKEND.URL
-              value: "backend"
+              value: "letsboot-backend"
             - name: LETSBOOT_QUEUE.HOST
               value: letsboot-queue-rabbitmq
             - name: LETSBOOT_QUEUE.USERNAME
