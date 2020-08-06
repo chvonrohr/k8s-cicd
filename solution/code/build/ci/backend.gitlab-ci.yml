@@ -34,7 +34,7 @@ build_backend:
   - docker push $GOOGLE_REPO/$APP:$TAG
   # usual authentication parts
   before_script:
-  # the $GCR_KEY is a secret we define in the gitlab settings - never put "secretes" in the script
+  # the $GCR_KEY is a secret we define in the gitlab settings - never put "secrets" in the script
   - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
   - docker login -u _json_key --password-stdin https://$GOOGLE_REGISTRY < ${HOME}/gcloud-service-key.json
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
