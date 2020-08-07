@@ -1,11 +1,10 @@
 #!/bin/bash
-trap 'read -p "
-run: $BASH_COMMAND
-"' DEBUG
 
-docker network rm letsboot
+#trap 'read -p "
+#run: $BASH_COMMAND
+#"' DEBUG
 
-if test -d "./code"; then
+if test -d "./deployments"; then
   echo 'dir check ok'
 else 
   echo 'you are in the wrong directory'
@@ -15,13 +14,15 @@ fi
 
 # delete binaries
 
-rm code/backend
-rm code/crawler
-rm code/scheduler
+rm backend
+rm crawler
+rm scheduler
 
-for container in $(docker ps --filter network=letsboot --format '{{.Names}}'); do \
+docker network rm letsboot
+
+for container in $(docker ps -a --filter network=letsboot --format '{{.Names}}'); do \
   docker stop $container
-  docker container rm $container
+  docker rm $container
 done
 
 for deployment in $(kubectl get deployments --namespace letsboot -o name); do \
