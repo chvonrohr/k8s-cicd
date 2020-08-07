@@ -36,6 +36,7 @@ RUN ng build --prod -c $configuration --base-href /
 
 # base image
 FROM nginx:1.17-alpine
+ENV BACKEND="/api"
 
 # copy artifact build from the 'build environment'
 COPY --from=build /app/dist/crawler /usr/share/nginx/html
@@ -45,4 +46,4 @@ COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 # run nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD /bin/bash -c "envsubst < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"

@@ -19,3 +19,6 @@ spec:
           image: eu.gcr.io/letsboot/kubernetes-course/frontend:latest
           ports:
             - containerPort: 80
+          env:
+            - name: BACKEND
+              value: https://api.crawler.letsboot.com
