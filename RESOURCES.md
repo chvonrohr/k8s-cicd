@@ -16,3 +16,5 @@
 * similar courses:
   * https://github.com/wardviaene/kubernetes-course
   * https://github.com/wardviaene/advanced-kubernetes-course
+* blog articles:
+  * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
