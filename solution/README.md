@@ -260,7 +260,7 @@ gcloud auth configure-docker eu.gcr.io
 docker tag letsboot-backend eu.gcr.io/letsboot/kubernetes-course/backend
 docker tag letsboot-crawler eu.gcr.io/letsboot/kubernetes-course/crawler
 docker tag letsboot-frontend eu.gcr.io/letsboot/kubernetes-course/frontend
-docker tag letsboot-scheduler eu.gcr.io/letsboot/kubernetes-course/frontend
+docker tag letsboot-scheduler eu.gcr.io/letsboot/kubernetes-course/scheduler
 
 docker push eu.gcr.io/letsboot/kubernetes-course/backend
 docker push eu.gcr.io/letsboot/kubernetes-course/crawler
