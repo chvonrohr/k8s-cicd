@@ -1,5 +1,10 @@
 # Reading material
 
+
+* Reference documentations:
+  * https://kubernetes.io/docs/
+  * https://docs.docker.com/
+  * https://docs.gitlab.com/ee/ci/
 * Awesome Kubernetes: https://github.com/ramitsurana/awesome-kubernetes
 * Containers and Docker:
   * How a container actually runs/is a process: https://www.youtube.com/watch?v=sK5i-N34im8&t=848s
@@ -13,8 +18,17 @@
 * https://stackshare.io/kubernetes
 * https://cri-o.io/#container-images
 * https://containerd.io/
+* Patterns and best pracitces
+  * https://12factor.net/
 * similar courses:
   * https://github.com/wardviaene/kubernetes-course
   * https://github.com/wardviaene/advanced-kubernetes-course
 * blog articles:
   * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
+  * https://medium.com/google-cloud/kubernetes-110-your-first-deployment-bf123c1d3f8
+* google cloud
+  * tutorials: https://cloud.google.com/kubernetes-engine/docs/tutorials
+
+* related solutions
+  * https://www.cloudfoundry.org/
+  * 
