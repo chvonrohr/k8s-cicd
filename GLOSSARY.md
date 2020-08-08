@@ -2,6 +2,10 @@
 
 ## Kubernetes
 
+### Context
+~/.kube/config
+Tip: Use different kube/config files by `KUBECONFIG=~/.kube/some-config; kubectl`
+
 ### Cluster
 
 ### Node
@@ -15,6 +19,9 @@
 ### StatefulSet
 
 ### Kustomize
+
+### Dashboard
+
 
 ## Container
 

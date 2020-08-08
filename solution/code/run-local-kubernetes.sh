@@ -4,10 +4,12 @@
 
 kubectl config use-context docker-desktop
 
+parallel --jobs 4 << EOF
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
 docker build -t letsboot-crawler -f build/package/crawler.Dockerfile .
 docker build -t letsboot-scheduler -f build/package/scheduler.Dockerfile .
 docker build -t letsboot-frontend -f build/package/frontend.Dockerfile .
+EOF
 
 docker tag letsboot-backend eu.gcr.io/letsboot/kubernetes-course/backend
 docker tag letsboot-crawler eu.gcr.io/letsboot/kubernetes-course/crawler

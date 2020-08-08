@@ -267,7 +267,7 @@ docker push eu.gcr.io/letsboot/kubernetes-course/crawler
 docker push eu.gcr.io/letsboot/kubernetes-course/frontend
 docker push eu.gcr.io/letsboot/kubernetes-course/scheduler
 
-## run everything on kubernetes
+## --- run everything on kubernetes
 
 # make sure you are in the correct context
 # either through the menu of your local docker desktop
@@ -281,6 +281,20 @@ kubectl config current-context
 
 # set local docker desktop context if not already the case
 kubectl config use-context docker-desktop
+
+# install dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+
+# make dashobard available
+kubectl proxy
+
+# get a token
+kubectl -n kube-system describe secret default 
+kubectl config set-credentials docker-for-desktop --token="<token from above>"
+
+# open in browser
+open "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login"
+
 
 # create namespace for kubernetes
 # note: only the images are used from docker, everything else is separate
