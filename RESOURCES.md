@@ -26,6 +26,7 @@
 * blog articles:
   * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
   * https://medium.com/google-cloud/kubernetes-110-your-first-deployment-bf123c1d3f8
+  * Docker Desktop vs Minikube: https://codefresh.io/kubernetes-tutorial/local-kubernetes-mac-minikube-vs-docker-desktop/
 * google cloud
   * tutorials: https://cloud.google.com/kubernetes-engine/docs/tutorials
 
