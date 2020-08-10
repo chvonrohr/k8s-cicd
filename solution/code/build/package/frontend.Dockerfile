@@ -46,4 +46,4 @@ COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 # run nginx
-CMD /bin/bash -c "envsubst < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+CMD /bin/sh -c "envsubst < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
