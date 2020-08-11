@@ -7,35 +7,7 @@
   2. break topics appart 
   3. build chapters from the beginning towards the solution
   3.1. add introduction chapters with simplified examples if necessary
-
-* bug crawler backend call (test a crawl)
-
-* bug frontend on google cloud
-
-* add volumes to crawler and backend 
-  * store html files
-  * expose html files through backend api
-
-* code documentation golang
-* write tests golang: xyz_test.go and test stage in gitlab-ci
-
-* https://theia-ide.org/
-
-* check commands on windows (\ problem new line)
-
-* ingress example for local development
-
-
-* JF: Finish frontend
-
-* nice to have / check
-  * scaling example of crawler - as soon as crawler running, start next crawler
-  * database scaling
-  * migrations (change database field example)
-  * ssl for backend
-  * e2e testing
-  * rest endpoint to generate artifical load to show scaling
-
+  
 ## Application overview
 
 * based on golang recommended structure:
