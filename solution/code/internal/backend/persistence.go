@@ -2,14 +2,23 @@ package backend
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"sync"
 )
 
+// InitialisePersistence creates a new database connection using config variables.
+//
+// The available variables are:
+// db.username - username
+// db.password - password
+// db.host - host
+// db.database - database
+// db.port - port (numeric)
 func InitialisePersistence() (*gorm.DB, error) {
 	var (
 		username = viper.GetString("db.username")

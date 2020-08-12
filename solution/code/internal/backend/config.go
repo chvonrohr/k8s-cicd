@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// InitialiseFlags registers a set of flags for use with the cli with our commander library.
 func InitialiseFlags() {
 	// server flags
 	pflag.String("host", "0.0.0.0", "host to bind server to")

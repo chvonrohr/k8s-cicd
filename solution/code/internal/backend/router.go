@@ -12,6 +12,7 @@ import (
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
 )
 
+// InitialiseRouter sets up a new routing instance and configures paths as well as requests.
 func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 
 	r.Use(cors.New(cors.Config{
