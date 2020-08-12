@@ -2,6 +2,7 @@ package model
 
 import "github.com/jinzhu/gorm"
 
+// PageState is the state of a page, as determined by its current crawl status.
 type PageState string
 
 var (
@@ -11,6 +12,8 @@ var (
 	ErroredState PageState = "errored"
 )
 
+// Page represents a single url. It contains a status code, a content type and a state.
+// It can also have n parent Pages, forming a tree.
 type Page struct {
 	gorm.Model
 	StatusCode  int       `json:"statusCode"`

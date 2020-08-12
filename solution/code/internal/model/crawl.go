@@ -2,6 +2,9 @@ package model
 
 import "github.com/jinzhu/gorm"
 
+// Crawl represents a single crawl. A crawl contains n Pages and a parent Site.
+// It is an abstract object to help us manage multiple "Crawls" for a page while
+// maintaining the RESTful principles.
 type Crawl struct {
 	gorm.Model
 	Site   Site   `json:"site"`

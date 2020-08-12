@@ -8,6 +8,27 @@ import (
 	"github.com/spf13/viper"
 )
 
+// InitialiseConfig initialises a generic config.
+//
+// Any registered flags are available as environment variables under the `LETSBOOT` prefix:
+// e.g. db.username => LETSBOOT_DB.USERNAME=letsboot
+//
+// Any registered flags are also available as command line arguments:
+// e.g. db.username => ./app --db.username=letsboot
+//
+// Any registered flags are also available within toml, yaml, json or xml configuration files:
+// e.g. db.username => app.toml
+// [db]
+// username = letsboot
+//
+// The config library looks for config files in the following paths:
+// - /etc/letsboot/
+// - $HOME/.letsboot/
+// - ./config/
+// - . (working directory)
+//
+// The name of the config file ([app].toml) depends on the argument passed to InitialiseConfig:
+// e.g. "backend" => /etc/letsboot/backend.toml, backend.yaml, backend.json...
 func InitialiseConfig(name string) {
 
 	// look for env variables in the format "LETSBOOT_PORT=1338"

@@ -11,10 +11,13 @@ import (
 	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
 )
 
+// Client is the main resource used to interact with the crawler application.
 type Client struct {
 	HttpClient *http.Client
 	Endpoint   string
 }
+
+// PageResponse is a response as given by the crawler. This is mainly used internally.
 type PageResponse struct {
 	StatusCode  int
 	Urls        []string
@@ -22,6 +25,7 @@ type PageResponse struct {
 	Ok          bool
 }
 
+// NewClient returns a new client to the given backend endpoint.
 func NewClient(endpoint string) *Client {
 	return &Client{
 		HttpClient: &http.Client{
@@ -37,6 +41,7 @@ func NewClient(endpoint string) *Client {
 	}
 }
 
+// PageCallback is used by the crawler to call back a page response to the backend.
 func (c *Client) PageCallback(page model.Page, response PageResponse) error {
 	bs, err := json.Marshal(&response)
 	if err != nil {
@@ -47,6 +52,7 @@ func (c *Client) PageCallback(page model.Page, response PageResponse) error {
 	return err
 }
 
+// CreateSite can be used to create a new site with a given struct.
 func (c *Client) CreateSite(site model.Site) error {
 	bs, err := json.Marshal(&site)
 	if err != nil {
@@ -56,6 +62,8 @@ func (c *Client) CreateSite(site model.Site) error {
 	_, err = c.HttpClient.Post(fmt.Sprintf("%s/sites", c.Endpoint), "application/json", r)
 	return err
 }
+
+// CreateCrawl can be used to create a new crawl with a given struct.
 func (c *Client) CreateCrawl(crawl model.Crawl) error {
 	bs, err := json.Marshal(&crawl)
 	if err != nil {
@@ -66,6 +74,7 @@ func (c *Client) CreateCrawl(crawl model.Crawl) error {
 	return err
 }
 
+// GetSites can be used to get a list of sites from the api.
 func (c *Client) GetSites() ([]model.Site, error) {
 	r, err := c.HttpClient.Get(fmt.Sprintf("%s/sites", c.Endpoint))
 	if err != nil {
@@ -79,6 +88,8 @@ func (c *Client) GetSites() ([]model.Site, error) {
 	err = json.Unmarshal(bs, &sites)
 	return sites, err
 }
+
+// GetCrawlsForSite returns a list of all crawls fora  given site.
 func (c *Client) GetCrawlsForSite(site int) ([]model.Crawl, error) {
 	r, err := c.HttpClient.Get(fmt.Sprintf("%s/crawls?site=%d", c.Endpoint, site))
 	if err != nil {
@@ -92,6 +103,8 @@ func (c *Client) GetCrawlsForSite(site int) ([]model.Crawl, error) {
 	err = json.Unmarshal(bs, &crawls)
 	return crawls, err
 }
+
+// GetPagesForCrawl returns a list of pages for a given crawl.
 func (c *Client) GetPagesForCrawl(crawl int) ([]model.Page, error) {
 	r, err := c.HttpClient.Get(fmt.Sprintf("%s/pages?crawl=%d", c.Endpoint, crawl))
 	if err != nil {
