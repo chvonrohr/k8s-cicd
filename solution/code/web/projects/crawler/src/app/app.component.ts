@@ -9,7 +9,7 @@ import { timeout } from 'rxjs/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'crawler';
+  title = 'Crawler';
   sites: Observable<any>;
   url: string;
   tryUrls = ['/api', 'http://localhost:8080', 'http://localhost/api'];
