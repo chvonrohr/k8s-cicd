@@ -261,10 +261,11 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/a
 kubectl proxy
 
 # get a token
-kubectl -n kube-system describe secret default 
-kubectl config set-credentials docker-for-desktop --token="<token from above>"
+dashboard_token=$(kubectl -n kube-system describe secret default |grep "token:"|awk '{ print $2 }') 
+kubectl config set-credentials docker-for-desktop --token="$dashboard_token"
+echo $dashboard_token
 
-# open in browser
+# open in browser and copy the token to authenticate the dashboard
 open "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login"
 
 
@@ -338,9 +339,10 @@ kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 
 # alternative let's take a sneak peak at ingress by installing a local ingress controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
-kubectl apply -f deployments/local-ingress.yaml
-kubectl get ingress 
 
+# we prepareted a ingress configuration for localhost
+kubectl apply -f deployments/local-ingress.yaml
+kubectl get ingress
 
 
 ## -------- Google Cluster
@@ -420,6 +422,20 @@ curl http://localhost:8080/pages
 
 # show logs of crawler
 kubectl logs --selector=app=crawler --namespace letsboot
+
+# install dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+
+# make dashobard available
+kubectl proxy
+
+# get a token
+dashboard_token=$(kubectl -n kube-system describe secret default |grep "token:"|awk '{ print $2 }') 
+kubectl config set-credentials docker-for-desktop --token="$dashboard_token"
+echo $dashboard_token
+
+# open in browser and copy the token to authenticate the dashboard
+open "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login"
 
 # delete cluster
 gcloud container clusters delete jonas1 --project letsboot --region europe-west6
