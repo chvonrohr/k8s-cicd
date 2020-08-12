@@ -49,10 +49,6 @@ ng generate application crawler --prefix crl --routing true --style scss
 ## walkthrough
 
 ```bash
-# path cleanup.sh
-```
-
-```bash
 # walkthrough start - do not remove -
 
 # this walthrough expects you to have everything installed (see INSTALL.md)
@@ -355,8 +351,10 @@ kubectl get ingress
 # get google credentials for exising cluster - automatically done on creation
 # gcloud container clusters get-credentials gke_letsboot_europe-west6_jonas1
 
+clustername=jonas1 # please change to your firstname for the training
+
 # let's create our own cluster
-gcloud container clusters create jonas1 --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
+gcloud container clusters create $clustername --project letsboot --region europe-west6 --machine-type e2-small --num-nodes 1
 
 # allow kubernetes cluster to use your gitlab registry
 # for simplicty reasons we use the public google registry for the training to reduce the amount of authentication
@@ -372,7 +370,7 @@ gcloud container clusters create jonas1 --project letsboot --region europe-west6
 # gcloud container clusters create --help
 
 # switch context to the new cluster
-kubectl config use-context gke_letsboot_europe-west6_jonas1
+kubectl config use-context gke_letsboot_europe-west6_$clustername
 
 # check if there are any pods (should be empty)
 kubectl get pods -n letsboot
@@ -393,19 +391,42 @@ kubectl get pods --namespace letsboot
 kubectl port-forward --namespace letsboot service/letsboot-backend 8080:80 & 
 kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80 &
 
+# open frontend
+http://localhost:4201
+
 # show environment variables you get as a pod
 kubectl run -i --tty busybox --image=busybox --restart=Never --namespace letsboot -- env; kubectl delete pod busybox
+
+# install dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+
+# make dashobard available through a proxy
+kubectl proxy
+
+# get a token - but this time from google
+gcloud container clusters get-credentials $clustername --zone europe-west6 --project letsboot
+
+dashboard_token=$(gcloud config config-helper |grep "access_token:"|awk '{ print $2 }') 
+echo $dashboard_token
+
+# open in browser and copy the token to authenticate the dashboard
+open "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login"
+
 
 # experiment 
 # let's create some load
 kubectl top pods
 
+# create 100 pages to crawl
 for i in {1..100}; do \
   curl -H "Content-Type: application/json" \
     -X POST -d '{"url":"https://www.letsboot.com","interval":3600000}' \
     http://localhost:8080/sites
   curl http://localhost:8080/sites
 done
+
+# show urls
+curl http://localhost:8080/pages
 
 # one of the backends and the database will slightly increase in usage
 # 5mb for a backend ;-)
@@ -421,25 +442,8 @@ done
 # see difference (1m = 0.1% of a vcpu)
 kubectl top pods
 
-# show urls
-curl http://localhost:8080/pages
-
 # show logs of crawler
 kubectl logs --selector=app=crawler --namespace letsboot
-
-# install dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
-
-# make dashobard available
-kubectl proxy
-
-# get a token
-dashboard_token=$(kubectl -n kube-system describe secret default |grep "token:"|awk '{ print $2 }') 
-kubectl config set-credentials docker-for-desktop --token="$dashboard_token"
-echo $dashboard_token
-
-# open in browser and copy the token to authenticate the dashboard
-open "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login"
 
 # delete cluster
 gcloud container clusters delete jonas1 --project letsboot --region europe-west6
