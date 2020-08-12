@@ -9,7 +9,7 @@ import { timeout } from 'rxjs/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'crawler';
+  title = 'Crawler';
   sites: Observable<any>;
   url: string;
   tryUrls = ['/api', 'http://localhost:8080', 'http://localhost/api'];
@@ -29,8 +29,12 @@ export class AppComponent implements OnInit {
         .pipe(timeout(100))
         .subscribe(
           response => {
-            this.url = tryUrl;
-            this.getSites();
+            if(response === 'backend works' ) {
+              this.url = tryUrl;
+              this.getSites();
+            } else {
+              this.tryUrl(index + 1);
+            }
           },
           error => {
             this.tryUrl(index + 1);

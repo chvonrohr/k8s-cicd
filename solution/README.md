@@ -446,7 +446,7 @@ kubectl top pods
 kubectl logs --selector=app=crawler --namespace letsboot
 
 # delete cluster
-gcloud container clusters delete jonas1 --project letsboot --region europe-west6
+gcloud container clusters delete $clustername --project letsboot --region europe-west6
 
 # walkthrough end - do not remove -
 ```
