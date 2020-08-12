@@ -49,6 +49,10 @@ ng generate application crawler --prefix crl --routing true --style scss
 ## walkthrough
 
 ```bash
+# path cleanup.sh
+```
+
+```bash
 # walkthrough start - do not remove -
 
 # this walthrough expects you to have everything installed (see INSTALL.md)
