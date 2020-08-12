@@ -25,5 +25,6 @@ require (
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/h2non/gock.v1 v1.0.15
 	gopkg.in/ini.v1 v1.57.0 // indirect
 )

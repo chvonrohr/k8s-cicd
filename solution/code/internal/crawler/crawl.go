@@ -71,18 +71,14 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 		reader = bytes.NewReader(bs)
 	}
 
-	node, err := html.Parse(reader)
+	uris, err := parseNodes(reader)
 	if err != nil {
 		return response, err
 	}
 	parsedUri, _ := url.Parse(uri)
-	anchors := crawlNode(node)
 	response.Urls = make([]string, 0)
-	for _, anchor := range anchors {
-		anchorUri := getHref(anchor)
-		if strings.HasPrefix(anchorUri, "/") {
-			anchorUri = fmt.Sprintf("%s://%s%s", parsedUri.Scheme, parsedUri.Host, anchorUri)
-		}
+	for _, anchorUri := range uris {
+		anchorUri = formatUri(anchorUri, parsedUri)
 		if isValidUri(parsedUri, anchorUri) {
 			response.Urls = append(response.Urls, anchorUri)
 		}
@@ -90,6 +86,33 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 	return
 }
 
+func parseNodes(r io.Reader) (uris []string, err error) {
+	uris = make([]string, 0)
+	node, err := html.Parse(r)
+	if err != nil {
+		return
+	}
+	anchors := crawlNode(node)
+	for _, anchor := range anchors {
+		uri := getHref(anchor)
+		uris = append(uris, uri)
+	}
+	return
+}
+
+// formatUri prepends the given uri with a base scheme and host if the url is relative
+// it returns the raw input uri otherwise
+func formatUri(uri string, baseUri *url.URL) string {
+	if strings.HasPrefix(uri, "/") {
+		return fmt.Sprintf("%s://%s%s", baseUri.Scheme, baseUri.Host, uri)
+	}
+	return uri
+}
+
+// isValidUri checks if the uri is valid by making sure:
+// - it's non-empty
+// - it can be parsed
+// - it has the same host as the base uri
 func isValidUri(parent *url.URL, uri string) bool {
 	if uri == "" {
 		return false
@@ -102,6 +125,7 @@ func isValidUri(parent *url.URL, uri string) bool {
 	return parent.Host == parsedUri.Host
 }
 
+// getHref returns the href for an anchor node
 func getHref(anchor *html.Node) string {
 	for _, attribute := range anchor.Attr {
 		if attribute.Key == "href" {
