@@ -3,9 +3,6 @@ package crawler
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
-	"golang.org/x/net/html"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,12 +12,21 @@ import (
 	"path"
 	"strings"
 	"sync"
+
+	"github.com/spf13/viper"
+	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
+	"golang.org/x/net/html"
 )
 
 var (
 	mkdirOnce = sync.Once{}
 )
 
+// Crawl processes a uri by making a GET request to it and extracting anchor tags from it.
+// It then returns a page response containing information about the request.
+//
+// Optionally, it can also dump the raw http response body to a file (it will do so if the flag `crawler.dump` is set.
+// In this case, it will write the file to the given data directory `crawler.data`.
 func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 	request, _ := http.NewRequest("GET", uri, nil)
 	// set a custom user agent - some websites block default library user agents like the go useragent

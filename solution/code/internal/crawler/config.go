@@ -2,6 +2,7 @@ package crawler
 
 import "github.com/spf13/pflag"
 
+// InitialiseFlags registers a set of flags for use with the cli with our commander library.
 func InitialiseFlags() {
 
 	pflag.String("backend.url", "http://backend", "base url of backend")
