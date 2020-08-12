@@ -29,8 +29,12 @@ export class AppComponent implements OnInit {
         .pipe(timeout(100))
         .subscribe(
           response => {
-            this.url = tryUrl;
-            this.getSites();
+            if(response === 'backend works' ) {
+              this.url = tryUrl;
+              this.getSites();
+            } else {
+              this.tryUrl(index + 1);
+            }
           },
           error => {
             this.tryUrl(index + 1);
