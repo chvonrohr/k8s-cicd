@@ -96,6 +96,9 @@ docker run --name letsboot-database \
   -e POSTGRES_DB="letsboot" \
   -p 5432:5432 -d --network letsboot postgres
 
+# create directory for docker volume
+mkdir /home/letsboot/docker-volume/
+
 # build backend
 docker build -t letsboot-backend -f build/package/backend.Dockerfile .
 
@@ -105,6 +108,7 @@ docker run -d --name letsboot-backend -p 8080:8080 \
   -e LETSBOOT_QUEUE.HOST=letsboot-queue \
   -e LETSBOOT_DB.PASSWORD="supersecure" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
+  -v /home/letsboot/docker-volume/:/var/data \
   --network letsboot letsboot-backend
 
 # build crawler
@@ -115,6 +119,7 @@ docker run -d --name letsboot-crawler \
   -e LETSBOOT_QUEUE.HOST=letsboot-queue \
   -e LETSBOOT_BACKEND.URL="http://letsboot-backend:8080" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
+  -v /home/letsboot/docker-volume/:/var/data \
   --network letsboot letsboot-crawler
 
 # build scheduler
@@ -215,6 +220,9 @@ ng serve -o
 # use email address and token to login to registry:
 
 docker login registry.gitlab.com
+
+# how to use local images for local development
+# https://kind.sigs.k8s.io/docs/user/quick-start/#loading-an-image-into-your-cluster
 
 # docker build -t registry.gitlab.com/letsboot/core/kubernetes-course .
 # docker push registry.gitlab.com/letsboot/core/kubernetes-course
@@ -463,3 +471,7 @@ gcloud container clusters delete $clustername --project letsboot --region europe
 
 # walkthrough end - do not remove -
 ```
+
+
+## fun youtube videos in ascii on theia
+
