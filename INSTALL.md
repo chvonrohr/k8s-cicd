@@ -1,47 +1,120 @@
 
 # Installation
 
-## Notes
+Thank you for participating in a letsboot.com Kuberentes training.
 
-* non default namespace to prevent interaction with existing setups: "letsboot"
+For everyone:
+* gitlab.com user 
+* fill in our preparation survey
 
-## Use Prepared Virtual Machine 
+## Letsboot Virtual Desktop
 
-* Todo: how to manage gitlab users
-* Virtual Box Image 
-* Minimal Linux (with Dekstop)
-* SSH Key for gitlab
-* curl
-* https://helm.sh/docs/intro/install/
-* Windows: check: use install bash or zsh to have shellscript maybe /bin/ utils
+* We provide you a completly browser based (Theia) virtual desktop environment with all tools, configurations, permissions and the course material. 
 
-## Local Kubernetes Setup
+* The only thing you need is a working laptop with Chrome and a gitlab user. (On request in advance, we can provide a training laptop.)
 
-### Check Existing setup:
+## Local setup (Optional)
 
-Check in your commandline if you already run a kubernetes or docker version:
+If you want to be able to do as much as possible on your local setup, you'll need the following tools.
+For beginners we recommend to do the training with our virtual desktop environment.
+Contact us if you have any issues or questions about the setup beforehand.
 
-```sh
+**Important: For "one day" trainings, we can not support local setup issues during the training.**
+
+### Basic local setup
+
+With this setup you can do most of the training locally, and for the google cloud part, you can switch to Theia.
+
+#### Windows:
+
+Disclaimer: There are many ways to install software, we prefere to use chocolately on windows.
+
+Todo: check bash / powershel / ssh on windows...
+
+* docker for desktop - https://www.docker.com/products/docker-desktop
+* https://chocolatey.org/ - to install commands with choco
+* node.js - https://nodejs.org/en/
+* git - `choco install git`
+* ssh - `choco install ssh`
+* helm - `choco install helm`
+* golang - `choco install golang`
+* bash - `choco install bash`
+  * you can do everything with powershell, but some examples are simpler to do in bash or zsh
+* angular - `npm install -g @angular/cli`
+* reveal-md - `npm install -g reveal-md` (optional)
+
+#### Mac:
+
+Disclaimer: There are many ways to install software, we prefere to use homebrew on mac.
+
+* docker for desktop - https://www.docker.com/products/docker-desktop
+* https://brew.sh - to install commands with brew
+* git (already installed)
+* ssh (already installed) & private / public key
+  * add your public key to your gitlab user
+* node.js - we recommend: https://github.com/nvm-sh/nvm
+* helm - `brew install helm`
+* golang - `brew install golang`
+* parallel - `brew install parallel` (gnu parallel)
+* angular - `npm install -g @angular/cli`
+* reveal-md - `npm install -g reveal-md` (optional)
+
+#### Linux:
+
+Please refere to your distributions documentation or package manager.
+
+* docker
+* kind - https://kind.sigs.k8s.io/docs/user/quick-start/
+* git
+* ssh - including private / public key
+  * add your public key to your gitlab user
+* node.js - we recommend: https://github.com/nvm-sh/nvm
+* helm
+* golang
+* parallel (gnu parallel)
+* angular - `npm install -g @angular/cli`
+* reveal-md - `npm install -g reveal-md` (optional)
+
+#### Check your setup
+
+In the terminal the following commands have to be available:
+
+```bash
+# these commands have to show a version (we don't have a specific version requirement)
 docker --version
 kubectl version
+helm version
+git --version
+ssh -V
+npm --version
+
+# has to show something like "Kubernetes master is running at"
 kubectl cluster-info
+
+# this should start a busybox "linux" shell in docker
+# you can leave it with the "exit" command
+docker run -it --network letsboot  busybox
+
+# this should start a busybox "linux" shell in your current kubernetes context
+# you can leave it with the "exit" command
+kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
 ```
 
-If not sure what to do use our virtual machine provided bellow:
+If you have issues or questions with this setup contact us: info@letsboot.com
 
-* If you only have docker but no kubectl you need to install Kubernetes.
-* If you only have kubectl Client-Version but no Server-Version, you need to install a Cluster.
-* Check if your kubectl cluster-info shows a remote cluster you have to change to a local one.
-  * With "Docker Desktop" just use the docker menu to change "context"
-* If you use "Docker Desktop" change to "Kubernetes Integration"
+### Advanced Setup
 
-### No existing installation:
+If you want to do the remote cluster setup on google in your own environment you also need the following accounts and tools:
 
-* install docker for desktop and activate Kubernetes integration: 
-    * https://www.docker.com/products/docker-desktop
+* google cloud account
+* create a google cloud project
+* connect billing to your google cloud project
+* google-cloud-sdk - https://cloud.google.com/sdk/install
+* authenticate gcloud command with `gcloud login`
 
-### Install additional software
+To test your setup run the following commands:
 
-* golang
-* nvm: node.js & npm & angular
-* git
+```bash
+# shows a list of your google cloud projects
+gcloud projects list
+```
