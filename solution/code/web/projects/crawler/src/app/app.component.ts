@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   title = 'Crawler';
   sites: Observable<any>;
   url: string;
-  tryUrls = ['/api', 'http://localhost:8080', 'http://localhost/api', 'http://' + window.location.hostname];
+  tryUrls = [ 'http://' + window.location.hostname, '/api', 'http://localhost:8080', 'http://localhost/api'];
   error: string;
 
   constructor(private http: HttpClient) {
