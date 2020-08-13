@@ -179,9 +179,13 @@ docker run -it --network letsboot  busybox
 # how to run backend and crawler localy (ie. for debugging with breakpoints)
 docker stop letsboot-backend
 docker stop letsboot-crawler
+docker stop letsboot-frontend
 
 # get dependencies to build on host
 go mod download
+
+# run all go tests
+go test ./...
 
 # backend (host)
 go build ./cmd/backend
@@ -192,10 +196,19 @@ go build ./cmd/crawler
 # crawler (host)
 go build ./cmd/scheduler
 
-# run with database access
-./backend --db.password="supersecure" --queue.password="megasecure" &
-./crawler --queue.password="megasecure" &
+# run with database access in separate terminal windows
+./backend --db.password="supersecure" --queue.password="megasecure" 
+./crawler --queue.password="megasecure" 
 ./scheduler "https://localhost:8080" 
+
+# run frontend locally
+cd web/
+
+# run tests
+ng test
+
+# serve and open browser
+ng serve -o
 
 # push docker images to gitlab registry
 # create token with registry_read und registry_write https://gitlab.com/profile/personal_access_tokens
