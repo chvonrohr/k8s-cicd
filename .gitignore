@@ -5,3 +5,8 @@
 solution/code/crawler
 solution/code/backend
 solution/code/scheduler
+
+00-all-slides.md
+export
+
+.DS_Store
