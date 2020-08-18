@@ -33,3 +33,7 @@
 * related solutions
   * https://www.cloudfoundry.org/
   * 
+
+* interesting images
+  * remote desktop: https://hub.docker.com/r/kasmweb/desktop
+  * 
