@@ -2,7 +2,7 @@
 
 Note: We assume you have a running cluster.
 
----
+----
 
 ## Add pod manually
 
@@ -15,7 +15,7 @@ kubectl delete deployment hello-http1
 
 Note: This will create one pod within a deployment hello-http. To remove it we'll remove the deployment. It's recommended to do everything decleratively with yaml files.
 
----
+----
 
 ## Declerative approach
 
@@ -33,7 +33,7 @@ spec:
 
 Note: We call it hello-http2 so you can separate it from the first manually created if it is still running.
 
----
+----
 
 ## Tell K8S to apply it
 
@@ -46,7 +46,7 @@ kubectl describe pod hello-http2
 
 Note: This will not create a deployment but only a single independant pod.
 
----
+----
 
 ## Access pod with http
 
@@ -56,7 +56,7 @@ kubectl port-forward hello-http2 8282:80
 
 Note: This works for local and remote clusters.
 
----
+----
 
 ## Remove by yaml
 
@@ -64,7 +64,7 @@ Note: This works for local and remote clusters.
 kubectl delete -f hello-http.yaml
 ```
 
----
+----
 
 ## Put it into a deployment
 
@@ -90,7 +90,7 @@ spec:
         image: strm/helloworld-http
 ```
 
----
+----
 
 ## "Apply" deployment
 
@@ -100,7 +100,7 @@ kubectl get pods
 kubectl get deployments
 ```
 
----
+----
 
 ## Adapt and apply changed yaml
 
@@ -119,7 +119,7 @@ kubectl get pods
 
 Note: You change the declaration of what you want, and kubernetes will do each step to get there.
 
----
+----
 
 ## Let's change an image
 
@@ -140,5 +140,5 @@ spec:
 
 * That's whay we need services :-).
 
----
+----
 

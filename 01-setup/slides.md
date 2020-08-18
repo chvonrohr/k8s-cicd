@@ -1,11 +1,11 @@
 # Check Setup
 
----
+----
 
 ## v1: Web IDE
 ## v2: local setup
 
----
+----
 
 ## Web IDE / Theia
 
@@ -14,7 +14,7 @@
   * user: participant
   * password: BrowserCoding
 
----
+----
 
 ## Web IDE / Theia
 

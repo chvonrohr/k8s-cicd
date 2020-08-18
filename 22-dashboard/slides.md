@@ -2,7 +2,7 @@
 
 Note: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 
----
+----
 
 ## Install Dashboard
 
@@ -14,7 +14,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/a
 kubectl proxy
 ```
 
----
+----
 
 ## Get Authentication
 
