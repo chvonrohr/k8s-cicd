@@ -10,3 +10,5 @@ solution/code/scheduler
 export
 
 .DS_Store
+
+*node_modules*

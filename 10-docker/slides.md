@@ -51,3 +51,49 @@ docker run -d -p 8080:80 docker/getting-started
 * `-d ` detached
 * `-p host:container` bind port
 * `docker/getting-started` image name
+
+
+----
+
+# Write first Dockerfile
+
+```bash
+cd minimal-app
+```
+
+```Dockerfile
+FROM node:12-alpine
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+RUN echo this will run on build
+CMD ["node", "src/index.js"]
+```
+Note: We use the official example from docker
+
+----
+
+## build image from Dockerfile
+
+```bash
+docker build -t minimal-app .
+```
+
+* `-t minimal-app` tag for your image
+* `. ` folder containing the Dockerfile
+* downloads layers (will be cached)
+* builds image from layers
+* runs yarn command
+
+----
+
+## run first docker container
+
+```bash
+docker run -dp 4000:3000 minimal-app
+open http://localhost:4000
+```
+
+* run detached
+* bind host port 4000 to contianer port 3000
+* open http://localhost:4000 in your browser
