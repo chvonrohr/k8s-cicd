@@ -39,3 +39,15 @@ Note:
 * Docker container is a standardized, encapsulated environment that runs applications. A container is managed using the Docker API or CLI.
 * Docker image is a read-only template used to build containers. Images are used to store and ship applications.
 * Docker service allows containers to be scaled across multiple Docker daemons. The result is known as a swarm, a set of cooperating daemons that communicate through the Docker API.
+
+----
+
+# Run tutorial
+
+```bash 
+docker run -d -p 8080:80 docker/getting-started
+```
+
+* `-d ` detached
+* `-p host:container` bind port
+* `docker/getting-started` image name
