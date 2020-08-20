@@ -57,25 +57,24 @@ docker run -d -p 8080:80 docker/getting-started
 
 # Write first Dockerfile
 
-```bash
-cd minimal-app
-```
-
+create: minimal-app/Dockerfile
 ```Dockerfile
 FROM node:12-alpine
 WORKDIR /app
 COPY . .
 RUN yarn install --production
-RUN echo this will run on build
+RUN echo -e "\033[1;31m this will run on build \033[0m"
 CMD ["node", "src/index.js"]
 ```
-Note: We use the official example from docker
+
+Note: We use the official example from docker in this first lesson.
 
 ----
 
 ## build image from Dockerfile
 
 ```bash
+cd minimal-app
 docker build -t minimal-app .
 ```
 
@@ -97,3 +96,68 @@ open http://localhost:4000
 * run detached
 * bind host port 4000 to contianer port 3000
 * open http://localhost:4000 in your browser
+
+
+----
+
+## update container
+
+change: minimal-app/static/index.html
+```html
+...
+<body>
+    <h1> Some Change </h1>
+    ...
+```
+
+```bash
+cd minimal-app/
+docker build -t minimal-app .
+docker run -dp 4000:3000 minimal-app
+```
+
+> You'll get an error.
+
+Note: We could run it on another port. So run several version on different ports - we don't want that here.
+
+----
+
+## remove container
+
+```bash
+# get the container id 
+docker ps
+# stop the container with the matching id
+docker stop CONTAINER-ID
+# remove image
+docker rm CONTAINER-ID
+# run it again with a proper name
+docker run -dp 4000:3000 minimal-app
+```
+
+> or in one step `docker rm -f CONTAINER-ID`
+
+Note: Late we'll see how a Kubernetes kann do this replacement automatically.
+
+----
+
+## put a image on a registry
+
+1. create account on hub.docker.com
+2. login `docker login -u YOUR-USER-NAME`
+1. create a repository: https://hub.docker.com/repository/create
+2. name ist 'minimal-app'
+3. list images `docker image ls`
+4. tag your image `docker tag minimal-app YOUR-USER-NAME/minimal-app`
+5. push it `docker push YOUR-USER-NAME/minimal-app`
+
+Note: We'll use our own registry in future exercises.
+
+----
+
+## run image from registry somewhere
+
+* go to: http://play-with-docker.com/
+* login to get a docker playground
+* click "add new instance" to create playground environment
+* run your image `docker run -dp 3000:3000 YOUR-USER-NAME/getting-started`
