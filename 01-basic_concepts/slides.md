@@ -4,8 +4,16 @@
 
 ### what is a container
 
+* an isolated process or group of processes
+  * resource restrictions (cpu, memory, network...)
+  * separate file system
+  * separate network / ports
+  * no direct access or visibility to other processes / containers
+  * 
+
 > a process isolated in it's own environment by the operating system
 
+Note: cbroup, namespaces, 
 
 ---
 
@@ -13,7 +21,7 @@
 
 ----
 
-### history fun
+### history of managing infrastrucutre
 
 * everything on a server
 * shared hosting
@@ -22,6 +30,15 @@
 * virtual servers for everything
 * containers
 * ...
+
+----
+
+
+### history containers
+
+* 
+
+> At Red Hat we like to say, "Containers are Linux—Linux is Containers."
 
 ----
 
