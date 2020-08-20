@@ -2,6 +2,7 @@
 
 * online environments
   * https://labs.play-with-docker.com/
+  * https://training.play-with-kubernetes.com/kubernetes-workshop/
 
 * Reference documentations:
   * https://kubernetes.io/docs/
@@ -25,9 +26,12 @@
 
 * kubernetes provider
   * https://www.presslabs.com/blog/kubernetes-cloud-providers-2019/#3-azure-kubernetes-service-aks
-* https://stackshare.io/kubernetes
-* https://cri-o.io/#container-images
-* https://containerd.io/
+  
+
+* eco system 
+  * https://stackshare.io/kubernetes
+  * https://cri-o.io/#container-images
+  * https://containerd.io/
 
 * Patterns and best pracitces
   * https://12factor.net/
@@ -36,10 +40,14 @@
   * https://github.com/wardviaene/kubernetes-course
   * https://github.com/wardviaene/advanced-kubernetes-course
 
-* blog articles:
+* insightfull blog articles:
   * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
   * https://medium.com/google-cloud/kubernetes-110-your-first-deployment-bf123c1d3f8
   * Docker Desktop vs Minikube: https://codefresh.io/kubernetes-tutorial/local-kubernetes-mac-minikube-vs-docker-desktop/
+  * etcd: https://medium.com/better-programming/a-closer-look-at-etcd-the-brain-of-a-kubernetes-cluster-788c8ea759a5
+  * history of linux containers: https://opensource.com/article/18/1/history-low-level-container-runtimes
+
+* podcast: https://kubernetespodcast.com/
 
 * google cloud
   * tutorials: https://cloud.google.com/kubernetes-engine/docs/tutorials
@@ -51,3 +59,14 @@
 * interesting images
   * remote desktop: https://hub.docker.com/r/kasmweb/desktop
   * 
+
+* important git projects
+  * https://github.com/containerd/containerd - the deamon managing continers with runc
+  * https://github.com/opencontainers/runc - the reference, and also the most used, container implementation
+
+* certifications
+  * http://cncf.io/certifications/cka
+
+* ecosystem
+  * https://cilium.io/
+  * Kubernetes reboot system: https://github.com/weaveworks/kured
