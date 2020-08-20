@@ -12,3 +12,5 @@ export
 .DS_Store
 
 *node_modules*
+
+10-docker/minimal-app/Dockerfile
