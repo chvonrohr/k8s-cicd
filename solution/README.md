@@ -281,7 +281,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/a
 # make dashobard available
 kubectl proxy
 
-# get a token
+# get a token - use kind-kind insted of docker-for-desktop if on theia
 dashboard_token=$(kubectl -n kube-system describe secret default |grep "token:"|awk '{ print $2 }') 
 kubectl config set-credentials docker-for-desktop --token="$dashboard_token"
 echo $dashboard_token
@@ -311,6 +311,9 @@ helm install letsboot-queue --set replicaCount=3 bitnami/rabbitmq -n letsboot
 helm install letsboot-database --set global.postgresql.postgresqlDatabase=letsboot,global.postgresql.postgresqlUsername=letsboot bitnami/postgresql -n letsboot
 
 # more about scaling and replicas of postgres here: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+
+# show stateful sets for rabbit-mq and letsboot-database
+kubectl get statefulsets -n letsboot
 
 # hint: we now use the passwords directly from the secrets
 #       which are set by the helm statefullsets
@@ -471,7 +474,3 @@ gcloud container clusters delete $clustername --project letsboot --region europe
 
 # walkthrough end - do not remove -
 ```
-
-
-## fun youtube videos in ascii on theia
-
