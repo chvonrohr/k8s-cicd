@@ -36,11 +36,9 @@
 * Patterns and best pracitces
   * https://12factor.net/
 
-* similar courses:
-  * https://github.com/wardviaene/kubernetes-course
-  * https://github.com/wardviaene/advanced-kubernetes-course
 
 * insightfull blog articles:
+  * security: don't use env variables for passwords: https://diogomonica.com/2017/03/27/why-you-shouldnt-use-env-variables-for-secret-data/
   * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
   * https://medium.com/google-cloud/kubernetes-110-your-first-deployment-bf123c1d3f8
   * Docker Desktop vs Minikube: https://codefresh.io/kubernetes-tutorial/local-kubernetes-mac-minikube-vs-docker-desktop/
@@ -57,15 +55,19 @@
   * 
 
 * interesting images
-  * remote desktop: https://hub.docker.com/r/kasmweb/desktop
-  * 
+  * network debugging: https://hub.docker.com/r/nicolaka/netshoot
+  * remote desktop: https://hub.docker.com/r/dorowu/ubuntu-desktop-lxde-vnc/
 
 * important git projects
   * https://github.com/containerd/containerd - the deamon managing continers with runc
   * https://github.com/opencontainers/runc - the reference, and also the most used, container implementation
 
-* certifications
+* certifications & courses
   * http://cncf.io/certifications/cka
+  * https://www.edx.org/course/introduction-to-kubernetes
+  * https://github.com/wardviaene/kubernetes-course
+  * https://github.com/wardviaene/advanced-kubernetes-course
+
 
 * ecosystem
   * https://cilium.io/
