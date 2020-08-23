@@ -13,4 +13,8 @@ export
 
 *node_modules*
 
-10-docker/minimal-app/Dockerfile
+todo-app/.dockerignore
+todo-app/Dockerfile
+todo-app/docker-compose.yml
+
+multistage-demo/Dockerfile
