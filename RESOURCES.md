@@ -29,6 +29,8 @@
   
 
 * eco system 
+  * interactive overview: https://landscape.cncf.io/
+  * Cloud native computing foundation projects -  https://www.cncf.io/projects/
   * https://stackshare.io/kubernetes
   * https://cri-o.io/#container-images
   * https://containerd.io/
