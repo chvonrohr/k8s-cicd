@@ -1,0 +1,128 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "crawler": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/crawler",
+      "sourceRoot": "projects/crawler/src",
+      "prefix": "crl",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/crawler",
+            "index": "projects/crawler/src/index.html",
+            "main": "projects/crawler/src/main.ts",
+            "polyfills": "projects/crawler/src/polyfills.ts",
+            "tsConfig": "projects/crawler/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/crawler/src/favicon.ico",
+              "projects/crawler/src/assets"
+            ],
+            "styles": [
+              "projects/crawler/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/crawler/src/environments/environment.ts",
+                  "with": "projects/crawler/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "crawler:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "crawler:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "crawler:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/crawler/src/test.ts",
+            "polyfills": "projects/crawler/src/polyfills.ts",
+            "tsConfig": "projects/crawler/tsconfig.spec.json",
+            "karmaConfig": "projects/crawler/karma.conf.js",
+            "assets": [
+              "projects/crawler/src/favicon.ico",
+              "projects/crawler/src/assets"
+            ],
+            "styles": [
+              "projects/crawler/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/crawler/tsconfig.app.json",
+              "projects/crawler/tsconfig.spec.json",
+              "projects/crawler/e2e/tsconfig.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/crawler/e2e/protractor.conf.js",
+            "devServerTarget": "crawler:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "crawler:serve:production"
+            }
+          }
+        }
+      }
+    }},
+  "defaultProject": "crawler"
+}
