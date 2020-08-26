@@ -14,5 +14,13 @@ spec:
       containers:
         - name: queue
           image: rabbitmq:3
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: user
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq-password
+                  name: queue-rabbitmq
           ports:
             - containerPort: 5672

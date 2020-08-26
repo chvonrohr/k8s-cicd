@@ -5,10 +5,3 @@ resources:
 
 images:
   - name: postgres
-
-namePrefix: letsboot-
-
-secretGenerator:
-  - name: database-postgresql
-    literals:
-      - postgresql-password=letsboot

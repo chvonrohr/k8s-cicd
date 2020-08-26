@@ -27,7 +27,7 @@ spec:
             - name: LETSBOOT_QUEUE.PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: letsboot-queue-rabbitmq
+                  name: queue-rabbitmq
                   key: rabbitmq-password
             - name: LETSBOOT_DB.HOST
               value: letsboot-database-postgresql
@@ -38,5 +38,5 @@ spec:
             - name: LETSBOOT_DB.PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: letsboot-database-postgresql
+                  name: database-postgresql
                   key: postgresql-password

@@ -34,5 +34,5 @@ spec:
             - name: LETSBOOT_QUEUE.PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: letsboot-queue-rabbitmq
+                  name: queue-rabbitmq
                   key: rabbitmq-password
