@@ -4,6 +4,8 @@ bases:
 - crawler
 - frontend
 - scheduler
+# - database
+# - rabbitmq
 
 namespace: letsboot
 namePrefix: letsboot-

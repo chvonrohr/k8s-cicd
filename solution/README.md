@@ -297,6 +297,7 @@ kubectl create namespace letsboot
 # set letsboot as our current namespace
 kubectl config set-context --current --namespace=letsboot
 
+
 # hint: the rabbbitmq and postgres setups we use on kubernetes are NOT the
 # same as on docker, as we want clustering and management of statefull 
 # sets which we don't have in docker

@@ -37,3 +37,15 @@ EXPOSE 8080
 docker run -P # -P takes the port from Dockerfile
 
 ```
+
+
+## Kubernetes
+
+
+```bash
+
+
+# get ip adresses for running pods
+k get pod -o wide
+
+```
