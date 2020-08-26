@@ -1,0 +1,13 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+
+images:
+  - name: rabbitmq
+
+namePrefix: letsboot-
+
+secretGenerator:
+  - name: queue-rabbitmq
+    literals:
+      - rabbitmq-password=letsboot

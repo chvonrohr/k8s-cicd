@@ -1,0 +1,14 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+  - pvc.yaml
+
+images:
+  - name: postgres
+
+namePrefix: letsboot-
+
+secretGenerator:
+  - name: database-postgresql
+    literals:
+      - postgresql-password=letsboot
