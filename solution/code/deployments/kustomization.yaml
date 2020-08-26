@@ -4,8 +4,8 @@ bases:
 - crawler
 - frontend
 - scheduler
-# - database
-# - rabbitmq
+- database
+- rabbitmq
 
 namespace: letsboot
 namePrefix: letsboot-
@@ -23,3 +23,11 @@ images:
 - name: eu.gcr.io/letsboot/kubernetes-course/scheduler
   newName: eu.gcr.io/letsboot/kubernetes-course/scheduler
   newTag: latest
+
+secretGenerator:
+  - name: database-postgresql
+    literals:
+      - postgresql-password=letsboot
+  - name: queue-rabbitmq
+    literals:
+      - rabbitmq-password=letsboot
