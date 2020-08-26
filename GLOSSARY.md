@@ -2,6 +2,13 @@
 
 ## Docker
 
+* container image format
+* method for building container images (Dockerfile/docker build)
+* way to manage container images (docker images, docker rm , etc.)
+* way to manage instances of containers (docker ps, docker rm , etc.)
+* way to share container images (docker push/pull)
+* way to run containers (docker run)
+
 ### Image
 
 ### Layer
@@ -12,6 +19,11 @@
 
 ### Volume Driver Plugins
 NFS, SFTP, NetApp, Ceph, S3...
+
+### Registry
+
+### runc
+
 
 ## Kubernetes
 
@@ -51,9 +63,14 @@ Tip: Use different kube/config files by `KUBECONFIG=~/.kube/some-config; kubectl
 
 ## Container
 
-### Registry
+### Container Runtime
 
 ### CGroups
+
+### namespaces
+
+### SELinux
+
 
 ## Out of scope
 

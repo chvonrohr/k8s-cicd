@@ -46,6 +46,7 @@
   * Docker Desktop vs Minikube: https://codefresh.io/kubernetes-tutorial/local-kubernetes-mac-minikube-vs-docker-desktop/
   * etcd: https://medium.com/better-programming/a-closer-look-at-etcd-the-brain-of-a-kubernetes-cluster-788c8ea759a5
   * history of linux containers: https://opensource.com/article/18/1/history-low-level-container-runtimes
+  * container runtime confusion: https://www.ianlewis.org/en/container-runtimes-part-1-introduction-container-r
 
 * podcast: https://kubernetespodcast.com/
 
