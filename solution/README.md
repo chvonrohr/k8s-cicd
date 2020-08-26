@@ -89,7 +89,7 @@ docker run -d --hostname rabbitmq --name letsboot-queue \
   rabbitmq:3 
   
 
-# mariadb - directly creates database and user
+# postgresql - directly creates database and user
 docker run --name letsboot-database \
   -e POSTGRES_PASSWORD="supersecure" \
   -e POSTGRES_USER="letsboot" \
