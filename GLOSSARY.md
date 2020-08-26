@@ -71,8 +71,16 @@ Tip: Use different kube/config files by `KUBECONFIG=~/.kube/some-config; kubectl
 
 ### SELinux
 
-
 ## Out of scope
+
+### Easteregg
+
+```bash
+# run on theia in a terminal
+ls /usr/games/ 
+# have some fun
+/usr/games/ninvaders 
+```
 
 ### Golang
 
