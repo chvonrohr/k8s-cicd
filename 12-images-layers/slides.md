@@ -28,6 +28,9 @@ fc7d43a7d637        4 days ago          /bin/sh -c yarn install --production    
 <missing>           4 months ago        /bin/sh -c #(nop) ADD file:b91adb67b670d3a6f…   5.61MB 
 ```
 
+Note: 
+The `<missing>` IMAGE history entries refer to steps of the used image, which are not separate images and therfore do not have their own "ID" in the docker hub.
+
 ----
 
 ## optimization example - 1/3

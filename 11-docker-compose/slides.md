@@ -3,7 +3,7 @@
 * each container should do one thing (process)
 * applications need more than one process
 
----- 
+----
 
 ## let's add MariaDB to our app
 
@@ -131,6 +131,8 @@ services:
 volumes:
   todo-mariadb:
 ```
+
+> Kubernetes is very similar.
 
 ----
 

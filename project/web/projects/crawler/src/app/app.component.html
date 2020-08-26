@@ -1,0 +1,13 @@
+<h1>{{title}}</h1>
+
+{{url}}
+{{error}}
+
+<ul>
+  <li *ngFor="let site of sites | async">
+    {{site.url}}
+  </li>
+</ul>
+
+<input #siteToAdd>
+<button (click)="addSite(siteToAdd.value)">add</button>

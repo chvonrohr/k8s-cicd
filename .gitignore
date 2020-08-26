@@ -18,3 +18,13 @@ todo-app/Dockerfile
 todo-app/docker-compose.yml
 
 multistage-demo/Dockerfile
+
+project/build/*.yml
+project/build/*/*Dockerfile*
+project/build/*/*.yml
+
+project/deployments/*.yml
+project/deployments/*/*.yml
+
+project/.dockerignore
+project/.gitlab-ci.yml
