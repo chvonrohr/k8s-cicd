@@ -5,7 +5,7 @@
 
 Notes: Started 2013. Not the first doing container, but the first doing it well.
 
----
+----
 
 # Docker Facts
 
@@ -20,7 +20,7 @@ Notes: Started 2013. Not the first doing container, but the first doing it well.
 * 68.6k Stacks on Stackshare (vs. ?, 6.2k vagrant)
 * main contributors: Docker team, Google, Microsoft, Cisco, Huawei, IBM, and Red Hat.
 
---- 
+----
 
 # Ecosystem
 
@@ -42,15 +42,12 @@ Note:
 
 ----
 
-# Run tutorial
+# First container
 
-```bash 
-docker run -d -p 8080:80 docker/getting-started
-```
-
-* `-d ` detached
-* `-p host:container` bind port
-* `docker/getting-started` image name
+1. todo-app
+2. write image configuration (Dockerfile)
+2. build image
+3. run container from image
 
 
 ----
@@ -89,12 +86,12 @@ docker build -t todo-app .
 ## run first docker container
 
 ```bash
-docker run -dp 4000:3000 todo-app
+docker run -d -p 4000:3000 todo-app
 open http://localhost:4000
 ```
 
-* run detached
-* bind host port 4000 to contianer port 3000
+* `-d` run detached
+* `-p` bind host port 4000 to contianer port 3000
 * open http://localhost:4000 in your browser
 
 ----
@@ -269,7 +266,7 @@ Note:
 docker logs -f CONTAINER-ID
 ```
 
----- 
+----
 
 ## recap
 
@@ -298,7 +295,7 @@ docker exec -it CONTAINER-ID /bin/bash
 docker logs -f CONTAINER-ID
 ```
 
----
+----
 
 ## let's have some fun
 

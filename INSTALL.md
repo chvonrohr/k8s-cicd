@@ -5,6 +5,7 @@ Thank you for participating in a letsboot.com Kuberentes training.
 
 For everyone:
 * gitlab.com user 
+* hub.docker.com user
 * fill in our preparation survey
 
 ## Letsboot Virtual Desktop
@@ -42,6 +43,7 @@ Todo: check bash / powershel / ssh on windows...
   * you can do everything with powershell, but some examples are simpler to do in bash or zsh
 * angular - `npm install -g @angular/cli`
 * reveal-md - `npm install -g reveal-md` (optional)
+
 
 #### Mac:
 
