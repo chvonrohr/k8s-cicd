@@ -274,13 +274,13 @@
  
 
 /* letsboot */
+
 .reveal {
   background:url("/theme/assets/letsboot-com.png");
   /* background-position: calc(100% - 20px) 20px; */
   background-position: 20px 20px;
   background-size: 12%;
   background-repeat: no-repeat;
-  zoom:0.8;
 }
 
 .reveal h1,
@@ -290,6 +290,10 @@
 .reveal h5,
 .reveal h6 {
   text-transform: none;
+}
+
+.reveal p {
+  font-size: 36px;
 }
 
 .reveal .slides {
@@ -305,7 +309,8 @@
 }
 
 .reveal pre>code {
-  font-size: 1.2em;
+  font-size: 1em;
+  font-family: "Roboto Mono";
 }
 
 .reveal p>code {

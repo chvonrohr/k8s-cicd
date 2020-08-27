@@ -44,8 +44,16 @@ docker run -P # -P takes the port from Dockerfile
 
 ```bash
 
+alias k=kubectl
+
 
 # get ip adresses for running pods
 k get pod -o wide
+
+# namespace
+k create namespace NAMESPACE-NAME
+
+# set default namespace
+kubectl config set-context --current --namespace=letsboot
 
 ```

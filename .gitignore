@@ -15,16 +15,16 @@ export
 
 todo-app/.dockerignore
 todo-app/Dockerfile
-todo-app/docker-compose.yml
+todo-app/docker-compose.y*ml
 
 multistage-demo/Dockerfile
 
-project/build/*.yml
-project/build/*/*Dockerfile*
-project/build/*/*.yml
+project-start/build/*.y*ml
+project-start/build/*/*Dockerfile*
+project-start/build/*/*.y*ml
 
-project/deployments/*.yml
-project/deployments/*/*.yml
+project-start/deployments/*.y*ml
+project-start/deployments/*/*.y*ml
 
-project/.dockerignore
-project/.gitlab-ci.yml
+project-start/.dockerignore
+project-start/.gitlab-ci.y*ml
