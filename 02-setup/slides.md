@@ -23,11 +23,20 @@
 
 ----
 
+## overall hints
+
+* use `tab` key a lot - autocompletion is installed
+* write the commands, don't copy paste
+* get used to the commands, you'll use them a lot
+
+----
+
 ## training material
 
 path/you/should/be/in
 ```bash
 echo "execute in shell"
+kubectl exec -it database-TAB -- /bin/sh # -TAB means press tab
 ```
 
 path/filename.yml
@@ -47,11 +56,21 @@ some:
 * or use powershell - commands may have to be sligthly adapte (ie. \ )
 
 
+
 ----
 
-## overall hints
+## Yaml Basics
 
-* use `tab` key a lot - autocompletion is installed
-* write the commands, don't copy paste
-* get used to the commands, you'll use them a lot
-
+```yaml
+element1: value
+object1: { object: { variable: value }}
+object2:
+  object2: 
+    variable: value
+array1: [ 'value1', 'value2', object: { variable: value }]
+array2: 
+  - value1
+  - value2
+  - object: 
+    varialbe: value
+```
