@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler
+  labels:
+    app: crawler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crawler
+  template:
+    metadata:
+      labels:
+        app: crawler
+    spec:
+      volumes:
+        - name: page-storage
+      containers:
+        - name: crawler
+          image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/data
+              name: page-storage
+          env:
+            - name: LETSBOOT_BACKEND.URL
+              value: "backend"
+            - name: LETSBOOT_QUEUE.HOST
+              value: queue-rabbitmq
+            - name: LETSBOOT_QUEUE.USERNAME
+              value: user
+            - name: LETSBOOT_QUEUE.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: queue-rabbitmq
+                  key: rabbitmq-password

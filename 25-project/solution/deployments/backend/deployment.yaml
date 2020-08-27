@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: LETSBOOT_QUEUE.HOST
+              value: queue-rabbitmq
+            - name: LETSBOOT_QUEUE.USERNAME
+              value: user
+            - name: LETSBOOT_DB.HOST
+              value: database-postgresql
+            - name: LETSBOOT_DB.DATABASE
+              value: letsboot
+            - name: LETSBOOT_DB.USERNAME
+              value: letsboot
+            - name: LETSBOOT_DB.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-postgresql
+                  key: postgresql-password
+            - name: LETSBOOT_QUEUE.PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: queue-rabbitmq
+                  key: rabbitmq-password
