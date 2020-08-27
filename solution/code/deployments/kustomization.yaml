@@ -7,7 +7,6 @@ bases:
 - database
 - rabbitmq
 
-namespace: letsboot
 namePrefix: letsboot-
 
 images:
