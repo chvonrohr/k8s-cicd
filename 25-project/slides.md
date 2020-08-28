@@ -92,7 +92,7 @@ spec:
 ## Frontend apply service
 
 ```bash
-kubectl apply -f deployments/frontend/service.yaml
+kubectl apply --recursive -f deployments/
 kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend
 ```
@@ -178,7 +178,7 @@ kubectl create secret generic database-postgresql \
 ## Run database
 
 ```bash
-k apply -f deployments/database/deployment.yaml
+kubectl apply --recursive -f deployments/
 k get pods
 k descripe pods database
 ```
@@ -530,3 +530,18 @@ spec:
 ```
 
 have fun: `http://localhost/`
+
+----
+
+# Google Kubernetes Engine
+
+```bash
+kubectl config get-contexts
+kubectl config use-context gke-TAB
+kubectl create namespace letsboot
+kubectl apply --recursive -f deployments/
+kubectl describe ingress
+```
+
+Note:
+* check ingress
