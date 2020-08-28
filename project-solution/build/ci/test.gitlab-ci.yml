@@ -7,3 +7,11 @@ test_go:
     - export GO111MODULE=on
     - go mod download
     - go test ./...
+
+test_frontend:
+  stage: test
+  image: trion/ng-cli-karma
+  script:
+    - cd project-solution/web
+    - npm ci
+    - ng test --progress false --watch false
