@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
 )
 
 var (
