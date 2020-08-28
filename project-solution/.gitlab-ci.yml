@@ -17,8 +17,8 @@ variables:
 
 # order of stages
 stages:
-- build
 - test # todo
+- build
 - deploy
 
 # this is the "deploy_all" job belonging to the "deploy" stage
