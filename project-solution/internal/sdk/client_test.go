@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
 	"gopkg.in/h2non/gock.v1"
 )
 
