@@ -139,6 +139,8 @@ Later we'll see how a Kubernetes kann do this "replacement" automatically.
 All todos are gone, as the data of the container is gone with it.
 We do not update within the container like in linux with "apt update", we build a new version and replace the container.
 
+https://docs.docker.com/get-started/overview/
+
 ----
 
 ## put a image on a registry

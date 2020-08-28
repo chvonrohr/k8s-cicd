@@ -40,12 +40,14 @@
 
 
 * insightfull blog articles:
+  * lessons learned from borg, omega and kubernetes (google): https://queue.acm.org/detail.cfm?id=2898444 
   * security: don't use env variables for passwords: https://diogomonica.com/2017/03/27/why-you-shouldnt-use-env-variables-for-secret-data/
   * https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16
   * https://medium.com/google-cloud/kubernetes-110-your-first-deployment-bf123c1d3f8
   * Docker Desktop vs Minikube: https://codefresh.io/kubernetes-tutorial/local-kubernetes-mac-minikube-vs-docker-desktop/
   * etcd: https://medium.com/better-programming/a-closer-look-at-etcd-the-brain-of-a-kubernetes-cluster-788c8ea759a5
   * history of linux containers: https://opensource.com/article/18/1/history-low-level-container-runtimes
+  * simple namespaces and cgroups example: https://jvns.ca/blog/2016/10/10/what-even-is-a-container/
   * container runtime series: 
     * https://www.ianlewis.org/en/container-runtimes-part-1-introduction-container-r
     * https://www.ianlewis.org/en/container-runtimes-part-2-anatomy-low-level-contai
@@ -70,6 +72,7 @@
 * important git projects
   * https://github.com/containerd/containerd - the deamon managing continers with runc
   * https://github.com/opencontainers/runc - the reference, and also the most used, container implementation
+  * ? https://github.com/google/cadvisor - cAdvisor for messuring container metrics
 
 * certifications & courses
   * http://cncf.io/certifications/cka

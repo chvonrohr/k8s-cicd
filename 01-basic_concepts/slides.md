@@ -4,6 +4,7 @@
 
 ### what is a container
 
+* an image and instructions how to run it
 * an isolated process or group of processes
   * resource restrictions (cpu, memory, network...)
   * separate file system
