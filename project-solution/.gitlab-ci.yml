@@ -46,15 +46,15 @@ deploy_all:
   script:
     - cd project-solution/deployments
     # customize the the deployment configuration (in this case we only change the versions)
-    - ../../../kustomize edit set image $GITLAB_REPO/backend:$TAG
-    - ../../../kustomize edit set image $GITLAB_REPO/frontend:$TAG
-    - ../../../kustomize edit set image $GITLAB_REPO/crawler:$TAG
-    - ../../../kustomize edit set image $GITLAB_REPO/scheduler:$TAG
+    - ../../kustomize edit set image $GITLAB_REPO/backend:$TAG
+    - ../../kustomize edit set image $GITLAB_REPO/frontend:$TAG
+    - ../../kustomize edit set image $GITLAB_REPO/crawler:$TAG
+    - ../../kustomize edit set image $GITLAB_REPO/scheduler:$TAG
     # apply all deployment configurations to the cluster
     # we do not "deploy" we tell the kubernetes cluster to apply this configuration
     # kubernetes will then start to do all the changes need to get to the state we defined
     # which also consists of pulling images and running them in containers (rolling updates etc.)
-    - ../../../kustomize build . | kubectl apply --namespace letsboot -f -
+    - ../../kustomize build . | kubectl apply --namespace letsboot -f -
   
 include:
 - local: project-solution/build/ci/backend.gitlab-ci.yml
