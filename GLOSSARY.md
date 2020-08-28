@@ -27,6 +27,8 @@ NFS, SFTP, NetApp, Ceph, S3...
 
 ## Kubernetes
 
+https://kubernetes.io/docs/reference/glossary/?fundamental=true 
+
 ### Context
 ~/.kube/config
 Tip: Use different kube/config files by `KUBECONFIG=~/.kube/some-config; kubectl`
