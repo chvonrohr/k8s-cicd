@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/sdk"
 	"log"
 	"strconv"
 	"time"

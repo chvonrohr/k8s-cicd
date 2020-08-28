@@ -8,10 +8,10 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/streadway/amqp"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/crawler"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/crawler"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/util"
 )
 
 func main() {

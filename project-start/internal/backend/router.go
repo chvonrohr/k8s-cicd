@@ -8,8 +8,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/sdk"
 )
 
 // InitialiseRouter sets up a new routing instance and configures paths as well as requests.

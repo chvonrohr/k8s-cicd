@@ -4,7 +4,7 @@ build_crawler:
     paths:
     - /var/lib/docker/aufs
   script:
-  - docker build -t $GITLAB_REPO/$APP:$VERSION -f solution/code/build/package/$APP.Dockerfile solution/code/
+  - docker build -t $GITLAB_REPO/$APP:$VERSION -f project-solution/build/package/$APP.Dockerfile project-solution/
   - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$VERSION
   - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
   - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$TAG

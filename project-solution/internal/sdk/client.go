@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
 )
 
 // Client is the main resource used to interact with the crawler application.

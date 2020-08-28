@@ -44,7 +44,7 @@ deploy_all:
   # gets credentials for kubectl from gcloud, so kubectl can access this specific cluster
   - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
-    - cd solution/code/deployments
+    - cd project-solution/deployments
     # customize the the deployment configuration (in this case we only change the versions)
     - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/backend:$TAG
     - ../../../kustomize edit set image eu.gcr.io/letsboot/kubernetes-course/frontend:$TAG
@@ -57,7 +57,8 @@ deploy_all:
     - ../../../kustomize build . | kubectl apply --namespace letsboot -f -
   
 include:
-- local: solution/code/build/ci/backend.gitlab-ci.yml
-- local: solution/code/build/ci/frontend.gitlab-ci.yml
-- local: solution/code/build/ci/crawler.gitlab-ci.yml
-- local: solution/code/build/ci/scheduler.gitlab-ci.yml
+- local: project-solution/build/ci/backend.gitlab-ci.yml
+- local: project-solution/build/ci/frontend.gitlab-ci.yml
+- local: project-solution/build/ci/crawler.gitlab-ci.yml
+- local: project-solution/build/ci/scheduler.gitlab-ci.yml
+- local: project-solution/build/ci/test.gitlab-ci.yml

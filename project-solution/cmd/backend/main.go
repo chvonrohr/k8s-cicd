@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/backend"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/backend"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/util"
 )
 
 func main() {

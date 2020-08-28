@@ -1,0 +1,6 @@
+
+test_go:
+  stage: test
+  image: golang
+  script:
+    - go test ./project-solution/...

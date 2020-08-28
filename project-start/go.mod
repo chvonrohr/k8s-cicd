@@ -1,4 +1,4 @@
-module gitlab.com/letsboot/core/kubernetes-course/solution/code/core
+module gitlab.com/letsboot/core/kubernetes-course/project-solution
 
 go 1.14
 

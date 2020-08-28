@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/core/internal/model"
 )
 
 // InitialisePersistence creates a new database connection using config variables.

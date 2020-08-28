@@ -14,7 +14,7 @@ import (
 	"sync"
 
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/solution/code/core/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/sdk"
 	"golang.org/x/net/html"
 )
 
