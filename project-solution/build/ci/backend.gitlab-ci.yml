@@ -25,13 +25,17 @@ build_backend:
   # docker is smart and doesn't repeat anything, even if we state it here twice
   # this is an important trick as we don't want to have any if/else in these scripts
   - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$TAG
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:latest
   - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:latest
   # push to gitlab repo
   - docker push $GITLAB_REPO/$APP:$VERSION
   - docker push $GITLAB_REPO/$APP:$TAG
+  - docker push $GITLAB_REPO/$APP:latest
   # push to google repo
   - docker push $GOOGLE_REPO/$APP:$VERSION
   - docker push $GOOGLE_REPO/$APP:$TAG
+  - docker push $GOOGLE_REPO/$APP:latest
   # usual authentication parts
   before_script:
   # the $GCR_KEY is a secret we define in the gitlab settings - never put "secrets" in the script

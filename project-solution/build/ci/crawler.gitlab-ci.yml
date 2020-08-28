@@ -5,13 +5,25 @@ build_crawler:
     - /var/lib/docker/aufs
   script:
   - docker build -t $GITLAB_REPO/$APP:$VERSION -f project-solution/build/package/$APP.Dockerfile project-solution/
+  # docker images for commits without a tag are not deployed in our case
+  # but we still push them to the docker registry for debugging 
+  # and to have a full build to see possible errors
   - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$VERSION
-  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
+  # if no tag is defined, $TAG is the the same as $VERSION 
+  # docker is smart and doesn't repeat anything, even if we state it here twice
+  # this is an important trick as we don't want to have any if/else in these scripts
   - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:$TAG
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GOOGLE_REPO/$APP:latest
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:$TAG
+  - docker tag $GITLAB_REPO/$APP:$VERSION $GITLAB_REPO/$APP:latest
+  # push to gitlab repo
   - docker push $GITLAB_REPO/$APP:$VERSION
   - docker push $GITLAB_REPO/$APP:$TAG
+  - docker push $GITLAB_REPO/$APP:latest
+  # push to google repo
   - docker push $GOOGLE_REPO/$APP:$VERSION
   - docker push $GOOGLE_REPO/$APP:$TAG
+  - docker push $GOOGLE_REPO/$APP:latests
   tags:
   - docker
   stage: build
