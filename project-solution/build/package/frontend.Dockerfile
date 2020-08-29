@@ -12,9 +12,6 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# install angular cli
-RUN yarn global @angular/cli
-
 # install and cache app dependencies
 COPY web/package.json .
 COPY web/yarn.lock .
