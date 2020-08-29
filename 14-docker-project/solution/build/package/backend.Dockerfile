@@ -4,10 +4,9 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0  go build ./cmd/backend
-
+RUN CGO_ENABLED=0 go build ./cmd/backend
 FROM scratch
-WORKDIR /app
+WORKDIR /app 
 COPY --from=build /app/backend /app/backend
 COPY --from=build /app/config/backend.* .
 ENTRYPOINT ["/app/backend"]
