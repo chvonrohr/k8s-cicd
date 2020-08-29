@@ -13,4 +13,7 @@ spec:
           containers:
             - name: scheduler
               image: eu.gcr.io/letsboot/kubernetes-course/scheduler
+              env:
+                - name: SCHEDULE_URL
+                  value: http://backend/schedule
           restartPolicy: Never
