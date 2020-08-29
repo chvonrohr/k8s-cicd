@@ -12,7 +12,12 @@ export class AppComponent implements OnInit {
   title = 'Crawler';
   sites: Observable<any>;
   url: string;
-  tryUrls = [ 'http://' + window.location.hostname, '/api', 'http://localhost:8080', 'http://localhost/api'];
+  tryUrls = [
+    'http://' + window.location.hostname,
+    'http://' + window.location.hostname + ':8080',
+    '/api',
+    'http://localhost:8080',
+    'http://localhost/api'];
   error: string;
 
   constructor(private http: HttpClient) {
@@ -29,7 +34,7 @@ export class AppComponent implements OnInit {
         .pipe(timeout(100))
         .subscribe(
           response => {
-            if(response === 'backend works' ) {
+            if (response === 'backend works') {
               this.url = tryUrl;
               this.getSites();
             } else {
