@@ -1,4 +1,3 @@
-
 test_go:
   stage: test
   image: golang
@@ -13,5 +12,5 @@ test_frontend:
   image: trion/ng-cli-karma
   script:
     - cd project-solution/web
-    - yarn install
+    - npm ci
     - ng test --progress false --watch false
