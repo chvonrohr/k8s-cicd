@@ -5,7 +5,7 @@ bases:
 - frontend
 - scheduler
 - database
-- rabbitmq
+- queue
 
 namePrefix: letsboot-
 

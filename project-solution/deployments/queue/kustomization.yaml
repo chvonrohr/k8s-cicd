@@ -3,4 +3,4 @@ resources:
   - service.yaml
 
 images:
-  - name: rabbitmq
+  - name: queue
