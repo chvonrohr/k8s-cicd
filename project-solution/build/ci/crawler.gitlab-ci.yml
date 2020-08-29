@@ -23,7 +23,7 @@ build_crawler:
   # push to google repo
   - docker push $GOOGLE_REPO/$APP:$VERSION
   - docker push $GOOGLE_REPO/$APP:$TAG
-  - docker push $GOOGLE_REPO/$APP:latests
+  - docker push $GOOGLE_REPO/$APP:latest
   tags:
   - docker
   stage: build
