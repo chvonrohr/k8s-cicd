@@ -1,14 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels: { app: frontend }
+  creationTimestamp: null
+  labels:
+    app: frontend
   name: frontend
 spec:
   replicas: 1
-  selector: { matchLabels: { app: frontend } } 
+  selector:
+    matchLabels:
+      app: frontend
+  strategy: {}
   template:
-    metadata: { labels: { app: frontend } }
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontend
     spec:
       containers:
       - image: eu.gcr.io/letsboot/kubernetes-course/frontend
         name: frontend
+        resources: {}
+status: {}

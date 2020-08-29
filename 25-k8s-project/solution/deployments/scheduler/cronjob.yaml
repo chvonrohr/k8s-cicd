@@ -1,16 +1,25 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
+  creationTimestamp: null
   name: scheduler
 spec:
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 3
-  schedule: "*/1 * * * *"
   jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: scheduler
     spec:
       template:
+        metadata:
+          creationTimestamp: null
         spec:
           containers:
-            - name: scheduler
-              image: eu.gcr.io/letsboot/kubernetes-course/scheduler
-          restartPolicy: Never
+          - image: eu.gcr.io/letsboot/kubernetes-course/scheduler:latest
+            name: scheduler
+            env: 
+            - name: SCHEDULE_URL
+              value: "http://backend:8080/schedule"
+            resources: {}
+          restartPolicy: OnFailure
+  schedule: '* * * * *'
+status: {}

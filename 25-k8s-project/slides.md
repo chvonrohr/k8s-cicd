@@ -25,10 +25,11 @@ kubectl config set-context --current --namespace=letsboot
 
 ## Generate file with kubectl
 
+project-start/
 ```bash
-kubectl run frontend  \
-    --image eu.gcr.io/letsboot/kubernetes-course/frontend \
-    --namespace letsboot --dry-run -o yaml
+kubectl create deployment frontend \
+  --image=eu.gcr.io/letsboot/kubernetes-course/frontend \
+  --dry-run=client -o yaml > deployments/frontend/deployment.yaml
 ```
 
 ----
@@ -40,13 +41,13 @@ deployments/frontend/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels: { app: frontend }
+  labels: { app: frontend } # change run to app
   name: frontend
 spec:
   replicas: 1
-  selector: { matchLabels: { app: frontend } } 
+  selector: { matchLabels: { app: frontend } }  # change run to app
   template:
-    metadata: { labels: { app: frontend } }
+    metadata: { labels: { app: frontend } } # change run to app
     spec:
       containers:
       - image: eu.gcr.io/letsboot/kubernetes-course/frontend
@@ -67,11 +68,22 @@ kubectl describe pod frontend
 kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend # will not work
 curl IP-OF-FRONTEND-POD
+exit # we are in the netshoot container
 ```
+
+> now we need a services
+
+Note:
+* run a split terminal with `watch kubectl get all -o wide`
 
 ----
 
 ## Frontend create service
+
+```bash
+kubectl create service nodeport frontend --tcp=80:80 \
+  -o yaml --dry-run=client > deployments/frontend/service.yaml
+```
 
 deployments/frontend/service.yaml
 ```yaml
@@ -87,90 +99,85 @@ spec:
   type: NodePort
 ```
 
+> service provides dns lookup and "connects" to an available matching pod
+
 ----
 
 ## Frontend apply service
 
 ```bash
+# apply all manifests
 kubectl apply --recursive -f deployments/
 kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend
+exit
 ```
+
+> now we can use dns - but only within the cluster namespace (security)
 
 ----
 
 ## Database 1/3 - deployment
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: database
-  name: database
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: database
-  template:
-    metadata:
-      labels:
-        app: database
-    spec:
+```bash
+kubectl create deployment database --image=postgres \
+  -o yaml --dry-run=client > deployments/database/deployment.yaml
 ```
 
 ----
 
-## Database 2/3 - volume
+## Database 2/3 - volume
 
+deployments/database/deployment.yaml
 ```yaml
+apiVersion: apps/v1
+kind: Deployment
 #...
+    spec:
+      containers:
+      - image: postgres
+        name: postgres
+        resources: {}
+        # add volume mount
+        volumeMounts: 
+          - mountPath: /var/lib/postgresql
+            name: data
+      # add volume claim
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: database
-#...
+status: {}
 ```
 
 ----
 
-## Database 3/3 - container
-
-```yaml
-#...
-      containers:
-        - image: postgres
-          name: postgres
-          volumeMounts:
-            - mountPath: /var/lib/postgresql
-              name: data
-          ports:
-            - containerPort: 5432
-#...
-```
-
-----
-
-## Database 4/4 - env and secret
+## Database 3/3 - env and secret
 
 ```bash
 kubectl create secret generic database-postgresql \
   --from-literal=postgresql-password=ItsComplicated!
 ```
 
+deployments/database/deployment.yaml
 ```yaml
 #...
-          env:
-            - name: POSTGRES_USER
-              value: letsboot
-            - name: POSTGRES_DB
-              value: letsboot
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: database-postgresql
-                  key: postgresql-password
+    spec:
+      containers:
+      - image: postgres
+        name: postgres
+        # add:
+        env:
+          - name: POSTGRES_USER
+            value: letsboot
+          - name: POSTGRES_DB
+            value: letsboot
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: database-postgresql
+                key: postgresql-password
+#...
 ```
 
 ----
@@ -180,7 +187,7 @@ kubectl create secret generic database-postgresql \
 ```bash
 kubectl apply --recursive -f deployments/
 k get pods
-k descripe pods database
+k describe pods database
 ```
 
 > it will not start until the volume is created
@@ -189,6 +196,9 @@ k descripe pods database
 
 ## Database volume
 
+* no kubectl create for volumes
+
+deployments/database/pvc.yaml
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -205,28 +215,17 @@ spec:
 ```bash
 kubectl apply --recursive -f deployments/
 k describe pvc database
-k get pods
+k describe pods database
 ```
 
 ----
 
 ## Database service
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: database-postgresql
-spec:
-  type: ClusterIP
-  selector:
-    app: database
-  ports:
-    - port: 5432
-      targetPort: 5432
-```
-
 ```bash
+kubectl create service clusterip database --tcp=5432:5432 \
+  -o yaml --dry-run=client > deployments/database/service.yaml
+
 kubectl apply --recursive -f deployments/
 ```
 
@@ -243,24 +242,14 @@ psql -U letsboot -W # use password above
 
 ## Rabbitmq 1/2 - deployment
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: queue
-spec:
-  selector:
-    matchLabels:
-      app: queue
-  template:
-    metadata:
-      labels:
-        app: queue
+```bash
+kubectl create deployment queue --image=rabbitmq:3 \
+  -o yaml --dry-run=client > deployments/queue/deployment.yaml
 ```
 
 ----
 
-## Rabbitmq 2/2 - container
+## Rabbitmq 2/2 - env and secret
 
 ```bash
 kubectl create secret generic queue-rabbitmq \
@@ -268,42 +257,32 @@ kubectl create secret generic queue-rabbitmq \
 ```
 
 ```yaml
-
+#...
     spec:
       containers:
-        - name: queue
-          image: rabbitmq:3
-          env:
-            - name: RABBITMQ_DEFAULT_USER
-              value: user
-            - name: RABBITMQ_DEFAULT_PASS
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq-password
-                  name: queue-rabbitmq
-          ports:
-            - containerPort: 5672
+      - image: rabbitmq:3
+        name: rabbitmq
+        # add:
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            value: user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                key: rabbitmq-password
+                name: queue-rabbitmq
+#...
 ```
 
 ----
 
 ### Rabbitmq - service
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: queue-rabbitmq
-spec:
-  type: ClusterIP
-  selector:
-    app: queue
-  ports:
-    - port: 5672
-      targetPort: 5672
-```
 
 ```bash
+kubectl create service clusterip queue --tcp=5672:5672 \
+  -o yaml --dry-run=client > deployments/queue/service.yaml
+
 kubectl apply --recursive -f deployments/
 ```
 
@@ -311,6 +290,7 @@ kubectl apply --recursive -f deployments/
 
 ## Pages Storage Perstistend Volume Claim
 
+deployments/crawler/pvc.yaml
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -330,79 +310,56 @@ kubectl apply --recursive -f deployments/
 
 ----
 
-## Backend 1/4 - deployment
+## Backend 1/2 - deployment
 
-deployments/backend/deployment.yaml
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: backend
-  labels:
-    app: backend
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: backend
-# ...
+```bash
+kubectl create deployment backend --image=eu.gcr.io/letsboot/kubernetes-course/backend:latest \
+  -o yaml --dry-run=client > deployments/backend/deployment.yaml
 ```
 
 ----
 
-## Backend 2/4 - container
+## Backend 2/4 - deployment env  & secrets
 
 ```yaml
-#...
-  template:
-    metadata:
-      labels:
-        app: backend
-    spec:
+# ...      
       containers:
-        - name: backend
-          image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
-          ports:
-            - containerPort: 8080
-          env:
+      - image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+        name: backend
+        # add
+        env:
+          - name: LETSBOOT_QUEUE.HOST
+            value: queue
+          - name: LETSBOOT_QUEUE.USERNAME
+            value: user
+          - name: LETSBOOT_DB.HOST
+            value: database
+          - name: LETSBOOT_DB.DATABASE
+            value: letsboot
+          - name: LETSBOOT_DB.USERNAME
+            value: letsboot
+          - name: LETSBOOT_QUEUE.PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: queue-rabbitmq
+                key: rabbitmq-password
+          - name: LETSBOOT_DB.PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: database-postgresql
+                key: postgresql-password
 # ...
 ```
 
 ----
 
-## Backend 3/4 - env variables
+## Backend - service
 
-```yaml
-# ...
-            - name: LETSBOOT_QUEUE.HOST
-              value: queue-rabbitmq
-            - name: LETSBOOT_QUEUE.USERNAME
-              value: user
-            - name: LETSBOOT_DB.HOST
-              value: database-postgresql
-            - name: LETSBOOT_DB.DATABASE
-              value: letsboot
-            - name: LETSBOOT_DB.USERNAME
-              value: letsboot
-# ...
-```
+```bash
+kubectl create service nodeport backend --tcp=80:8080 \
+  -o yaml --dry-run=client > deployments/backend/service.yaml
 
-----
-
-## Backend 4/4 - secrets
-
-```yaml
-# ...
-            - name: LETSBOOT_QUEUE.PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: queue-rabbitmq
-                  key: rabbitmq-password
-            - name: LETSBOOT_DB.PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: database-postgresql
-                  key: postgresql-password
+kubectl apply --recursive -f deployments/
 ```
 
 ----
@@ -422,75 +379,58 @@ exit
 
 ## Crawler - repeat
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: crawler
-  labels:
-    app: crawler
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: crawler
-  template:
-    metadata:
-      labels:
-        app: crawler
-    spec:
-      volumes:
-        - name: page-storage
-      containers:
-        - name: crawler
-          image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - mountPath: /var/data
-              name: page-storage
-          env:
-            - name: LETSBOOT_BACKEND.URL
-              value: "backend"
-            - name: LETSBOOT_QUEUE.HOST
-              value: "queue-rabbitmq
-            - name: LETSBOOT_QUEUE.USERNAME
-              value: user
-            - name: LETSBOOT_QUEUE.PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: queue-rabbitmq
-                  key: rabbitmq-password
+```bash
+kubectl create deployment crawler --image=eu.gcr.io/letsboot/kubernetes-course/crawler:latest \
+  -o yaml --dry-run=client > deployments/crawler/deployment.yaml
 ```
 
----- 
+```yaml
+#...
+    spec:
+      containers:
+      - image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
+        name: crawler
+        volumeMounts:
+          - mountPath: /var/data
+            name: page-storage
+        env:
+          - name: LETSBOOT_BACKEND.URL
+            value: "backend"
+          - name: LETSBOOT_QUEUE.HOST
+            value: "queue"
+          - name: LETSBOOT_QUEUE.USERNAME
+            value: user
+          - name: LETSBOOT_QUEUE.PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: queue-rabbitmq
+                key: rabbitmq-password        
+      volumes:
+        - name: page-storage
+```
 
-## Crawler - no service
-
-* it listens to the queue so no service needed
+> no service needed
 
 ----
 
 ## Scheduler - Cronjob / Batch
 
+```bash
+k create cronjob scheduler --schedule='* * * * *' \
+  --image=eu.gcr.io/letsboot/kubernetes-course/scheduler:latest \
+  -o yaml --dry-run=client > deployments/scheduler/cronjob.yaml
+```
+
 deployments/scheduler/cronjob.yaml
 ```yaml
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: scheduler
-spec:
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 3
-  schedule: "@hourly"
-  jobTemplate:
-    spec:
-      template:
-        spec:
+# ...
           containers:
-            - name: scheduler
-              image: eu.gcr.io/letsboot/kubernetes-course/scheduler
-          restartPolicy: Never
+          - image: eu.gcr.io/letsboot/kubernetes-course/scheduler:latest
+            name: scheduler
+            env: 
+            - name: SCHEDULE_URL
+              value: "http://backend:8080/schedule"
+# ...
 ```
 
 ```bash
@@ -502,34 +442,44 @@ k get cronjobs
 ## Ingress
 
 ```bash
+# install nginx ingress on kind
 kubectl apply -f \
 https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
 ```
 
-deployments/local-ingress.yaml
+deployments/ingress.yaml
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: local-ingress
-  namespace: letsboot
+  name: web-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - http:
       paths:
-      - path: /api/?(.*)
+      - path: /api/*
         backend:
           serviceName: backend
           servicePort: 80
-      - path: /(.*)
+      - path: /*
         backend:
           serviceName: frontend
           servicePort: 80
 ```
 
-have fun: `http://localhost/`
+```bash
+echo open: http://$PARTICIPANT_NAME.letsboot.com/
+```
+
+Note:
+* use portforward instead:
+
+```bash
+k port-forward service/backend 8080:80 --address 0.0.0.0
+k port-forward service/frontend 4200:80 --address 0.0.0.0
+```
 
 ----
 
@@ -537,10 +487,17 @@ have fun: `http://localhost/`
 
 ```bash
 kubectl config get-contexts
-kubectl config use-context gke-TAB
+kubectl config use-context gke
 kubectl create namespace letsboot
+
+kubectl create secret generic database-postgresql \
+  --from-literal=postgresql-password=ItsComplicated!
+
+kubectl create secret generic queue-rabbitmq \
+  --from-literal=rabbitmq-password=MoreSecrets!
+
 kubectl apply --recursive -f deployments/
-kubectl describe ingress
+kubectl get ingress -o wide # takes a view minutes till you get public ip
 ```
 
 Note:

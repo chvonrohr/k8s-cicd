@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: queue
+  name: queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: queue
+    spec:
+      containers:
+      - image: rabbitmq:3
+        name: rabbitmq
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            value: user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                key: rabbitmq-password
+                name: queue-rabbitmq
+        resources: {}
+status: {}

@@ -3,16 +3,16 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: frontend
-  name: frontend
+    app: queue
+  name: queue
 spec:
   ports:
-  - name: 80-80
-    port: 80
+  - name: 5672-5672
+    port: 5672
     protocol: TCP
-    targetPort: 80
+    targetPort: 5672
   selector:
-    app: frontend
-  type: NodePort
+    app: queue
+  type: ClusterIP
 status:
   loadBalancer: {}
