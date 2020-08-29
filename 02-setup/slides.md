@@ -28,6 +28,10 @@
 * use `tab` key a lot - autocompletion is installed
 * write the commands, don't copy paste
 * get used to the commands, you'll use them a lot
+* use `ctrl+c` to exit running processes
+* use `exit` command if you are in remote shell
+* use new terminals if you want to run things in parllel
+* click on links in the Theia shell
 
 ----
 

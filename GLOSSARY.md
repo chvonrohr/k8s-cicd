@@ -29,6 +29,10 @@ NFS, SFTP, NetApp, Ceph, S3...
 
 https://kubernetes.io/docs/reference/glossary/?fundamental=true 
 
+### Manifest
+Specification of a Kubernetes API object in JSON or YAML format.[-]
+A manifest specifies the desired state of an object that Kubernetes will maintain when you apply the manifest. Each configuration file can contain multiple manifests.
+
 ### Context
 ~/.kube/config
 Tip: Use different kube/config files by `KUBECONFIG=~/.kube/some-config; kubectl`
