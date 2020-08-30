@@ -46,6 +46,11 @@ docker run -P # -P takes the port from Dockerfile
 
 alias k=kubectl
 
+# start network debugging container with console
+kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
+
+# start busybox container with console
+kubectl run -i --tty busybox --rm  --image=busybox --restart=Never -- sh
 
 # get ip adresses for running pods
 k get pod -o wide
