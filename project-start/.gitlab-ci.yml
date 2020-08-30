@@ -1,0 +1,7 @@
+# to support local docker in docker gitlab-runner 
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+
+# add your ci/cd code here:
+

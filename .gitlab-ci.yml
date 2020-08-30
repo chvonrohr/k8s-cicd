@@ -3,3 +3,4 @@
 # to switch gitlab-ci scripts quickly
 include:
 - local: project-solution/.gitlab-ci.yml
+#- local: project-start/.gitlab-ci.yml

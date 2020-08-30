@@ -38,7 +38,6 @@ docker run -P # -P takes the port from Dockerfile
 
 ```
 
-
 ## Kubernetes
 
 
