@@ -25,7 +25,7 @@ COPY web/ .
 # RUN ng e2e --port 4202
 
 # generate build
-RUN ng build --prod -c $configuration --base-href /
+RUN ng build --prod -c $configuration --base-href / --source-map=false
 
 ############
 ### prod ###
