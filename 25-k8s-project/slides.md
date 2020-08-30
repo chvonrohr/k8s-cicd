@@ -429,7 +429,7 @@ deployments/scheduler/cronjob.yaml
             name: scheduler
             env: 
             - name: SCHEDULE_URL
-              value: "http://backend:8080/schedule"
+              value: "http://backend/schedule"
 # ...
 ```
 
