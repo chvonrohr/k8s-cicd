@@ -1,6 +1,6 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 // PageState is the state of a page, as determined by its current crawl status.
 type PageState string

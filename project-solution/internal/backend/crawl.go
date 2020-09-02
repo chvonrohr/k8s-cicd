@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
+	"gorm.io/gorm"
 )
 
 // crawlSite wraps around crawlSiteWrapped and wraps the passed siteId in a Site struct

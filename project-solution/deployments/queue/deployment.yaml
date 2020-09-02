@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: queue
 spec:
+  serviceName: queue-rabbitmq
   selector:
     matchLabels:
       app: queue
@@ -11,6 +12,7 @@ spec:
       labels:
         app: queue
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: queue
           image: rabbitmq:3
