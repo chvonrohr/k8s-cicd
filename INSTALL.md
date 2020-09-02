@@ -6,13 +6,13 @@ Thank you for participating in a letsboot.com Kuberentes training.
 For everyone:
 * gitlab.com user 
 * hub.docker.com user
-* fill in our preparation survey
+* fill in our preparation survey: https://letsboot.com/kbprep
 
 ## Letsboot Virtual Desktop
 
-* We provide you a completly browser based (Theia) virtual desktop environment with all tools, configurations, permissions and the course material. 
+* We provide you a completly browser based (Theia) virtual desktop environment with all tools, clusters, configurations, permissions and the course material. 
 
-* The only thing you need is a working laptop with Chrome and a gitlab user. (On request in advance, we can provide a training laptop.)
+* The thing you need is a working laptop with Chrome. (On request in advance, we can provide a training laptop.)
 
 ## Local setup (Optional)
 
@@ -40,7 +40,7 @@ Todo: check bash / powershel / ssh on windows...
 * helm - `choco install helm`
 * golang - `choco install golang`
 * bash - `choco install bash`
-  * you can do everything with powershell, but some examples are simpler to do in bash or zsh
+  * you can do everything with powershell, but you need to adapt some commands
 * angular - `npm install -g @angular/cli`
 * reveal-md - `npm install -g reveal-md` (optional)
 
@@ -89,34 +89,36 @@ helm version
 git --version
 ssh -V
 npm --version
+go version
 
 # has to show something like "Kubernetes master is running at"
 kubectl cluster-info
 
 # this should start a busybox "linux" shell in docker
 # you can leave it with the "exit" command
-docker run -it --network letsboot  busybox
+docker run -it --rm busybox
 
 # this should start a busybox "linux" shell in your current kubernetes context
 # you can leave it with the "exit" command
-kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+kubectl run -i --tty busybox --image=busybox --rm --restart=Never -- sh
 ```
 
 If you have issues or questions with this setup contact us: info@letsboot.com
 
 ### Advanced Setup
 
-If you want to do the remote cluster setup on google in your own environment you also need the following accounts and tools:
+If you want to do the remote cluster setup on google in your own environment you also need the following accounts and tools: (We will provide a personal cluster for every participant.)
 
 * google cloud account
 * create a google cloud project
 * connect billing to your google cloud project
-* google-cloud-sdk - https://cloud.google.com/sdk/install
+* install google-cloud-sdk - https://cloud.google.com/sdk/install
 * authenticate gcloud command with `gcloud login`
+* create minimal cluster:
 
-To test your setup run the following commands:
+** Important: this will lead to cost. **
 
 ```bash
-# shows a list of your google cloud projects
-gcloud projects list
+gcloud container clusters create CLUSTER-NAME --preemptible --zone europe-west6-a --machine-type e2-small
+gcloud container clusters get-credentials CLUSTER-NAME --zone europe-west6-a
 ```
