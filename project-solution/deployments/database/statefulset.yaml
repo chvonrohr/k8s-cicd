@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: database
@@ -9,15 +9,22 @@ spec:
   selector:
     matchLabels:
       app: database
+  serviceName: database-postgresql
+  volumeClaimTemplates:
+    - metadata:
+        name: database
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
   template:
     metadata:
       labels:
         app: database
     spec:
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: database
+      terminationGracePeriodSeconds: 10
       containers:
         - image: postgres
           name: postgres
@@ -33,6 +40,6 @@ spec:
                   key: postgresql-password
           volumeMounts:
             - mountPath: /var/lib/postgresql
-              name: data
+              name: database
           ports:
             - containerPort: 5432
