@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -28,7 +29,7 @@ func main() {
 				log.Fatal(err)
 			}
 			for _, site := range sites {
-				log.Printf("%04d - %s", site.ID, site.Url)
+				fmt.Printf("%04d - %s\n", site.ID, site.Url)
 			}
 		},
 	}
@@ -88,7 +89,7 @@ func main() {
 				log.Fatal(err)
 			}
 			for _, crawl := range crawls {
-				log.Printf("%04d - %s - %s", crawl.ID, crawl.CreatedAt, crawl.Site.Url)
+				fmt.Printf("%04d - %s - %s\n", crawl.ID, crawl.CreatedAt, crawl.Site.Url)
 			}
 		},
 	}
@@ -127,7 +128,7 @@ func main() {
 				log.Fatal(err)
 			}
 			for _, page := range pages {
-				log.Printf("%04d - [%s, %03d] - %s", page.ID, page.State, page.StatusCode, page.Url)
+				fmt.Printf("%04d - [%s, %03d] - %s\n", page.ID, page.State, page.StatusCode, page.Url)
 			}
 		},
 	}
