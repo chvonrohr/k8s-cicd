@@ -25,6 +25,11 @@ type PageResponse struct {
 	Ok          bool
 }
 
+type SchedulerResponse struct {
+	ScheduledCount  int
+	ScheduledCrawls []model.Crawl
+}
+
 // NewClient returns a new client to the given backend endpoint.
 func NewClient(endpoint string) *Client {
 	return &Client{
@@ -53,14 +58,22 @@ func (c *Client) PageCallback(page model.Page, response PageResponse) error {
 }
 
 // CreateSite can be used to create a new site with a given struct.
-func (c *Client) CreateSite(site model.Site) error {
+func (c *Client) CreateSite(site model.Site) (model.Site, error) {
 	bs, err := json.Marshal(&site)
 	if err != nil {
-		return err
+		return site, err
 	}
 	r := bytes.NewReader(bs)
-	_, err = c.HttpClient.Post(fmt.Sprintf("%s/sites", c.Endpoint), "application/json", r)
-	return err
+	response, err := c.HttpClient.Post(fmt.Sprintf("%s/sites", c.Endpoint), "application/json", r)
+	if err != nil {
+		return site, err
+	}
+	bs, err = ioutil.ReadAll(response.Body)
+	err = json.Unmarshal(bs, &site)
+	if err != nil {
+		return model.Site{}, err
+	}
+	return site, err
 }
 
 // CreateCrawl can be used to create a new crawl with a given struct.
@@ -117,4 +130,18 @@ func (c *Client) GetPagesForCrawl(crawl int) ([]model.Page, error) {
 	var pages []model.Page
 	err = json.Unmarshal(bs, &pages)
 	return pages, err
+}
+
+func (c *Client) Schedule() (SchedulerResponse, error) {
+	r, err := c.HttpClient.Post(fmt.Sprintf("%s/schedule", c.Endpoint), "", nil)
+	if err != nil {
+		return SchedulerResponse{}, err
+	}
+	var response *SchedulerResponse
+	bs, err := ioutil.ReadAll(r.Body)
+	err = json.Unmarshal(bs, &response)
+	if err != nil {
+		return SchedulerResponse{}, err
+	}
+	return *response, err
 }

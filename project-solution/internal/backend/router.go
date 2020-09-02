@@ -106,7 +106,8 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 			return
 		}
 		GetTx(c).Save(&site)
-
+		c.JSON(200, site)
+		return
 	})
 	r.POST("/crawls", func(c *gin.Context) {
 		tx := GetTx(c)
@@ -115,7 +116,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 			c.AbortWithStatusJSON(500, err)
 			return
 		}
-		err := crawlSiteWrapped(tx, crawl)
+		crawl, err := crawlSiteWrapped(tx, crawl)
 		if err != nil {
 			FailTx(c)
 			c.AbortWithStatusJSON(500, err)
@@ -130,21 +131,24 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		tx := GetTx(c)
 		var sites []model.Site
 		tx.Preload("Crawls", func(db *gorm.DB) *gorm.DB {
-			return db.Order("crawls.createdAt DESC")
+			return db.Order("crawls.created_at DESC")
 		}).Find(&sites)
+		response := sdk.SchedulerResponse{}
 		for _, site := range sites {
 			if len(site.Crawls) > 0 && time.Since(site.Crawls[0].CreatedAt) < site.Interval {
 				continue
 			}
 			// create crawl for site
-			err := crawlSite(tx, site.ID)
+			crawl, err := crawlSite(tx, site.ID)
 			if err != nil {
 				FailTx(c)
 				c.AbortWithStatusJSON(500, err)
 				return
 			}
+			response.ScheduledCount++
+			response.ScheduledCrawls = append(response.ScheduledCrawls, crawl)
 		}
-		c.Status(204)
+		c.JSON(200, response)
 		return
 
 	})

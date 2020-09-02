@@ -20,7 +20,7 @@ If you want to be able to do as much as possible on your local setup, you'll nee
 For beginners we recommend to do the training with our virtual desktop environment.
 Contact us if you have any issues or questions about the setup beforehand.
 
-**Important: For "one day" trainings, we can not support local setup issues during the training.**
+**WARNING: For "one day" trainings, we can not support local setup issues during the training.**
 
 ### Basic local setup
 
@@ -105,7 +105,7 @@ kubectl run -i --tty busybox --image=busybox --rm --restart=Never -- sh
 
 If you have issues or questions with this setup contact us: info@letsboot.com
 
-### Advanced Setup
+### Advanced Setup
 
 If you want to do the remote cluster setup on google in your own environment you also need the following accounts and tools: (We will provide a personal cluster for every participant.)
 
@@ -116,7 +116,7 @@ If you want to do the remote cluster setup on google in your own environment you
 * authenticate gcloud command with `gcloud login`
 * create minimal cluster:
 
-** Important: this will lead to cost. **
+**WARNING: this will lead to cost.**
 
 ```bash
 gcloud container clusters create CLUSTER-NAME --preemptible --zone europe-west6-a --machine-type e2-small
@@ -125,3 +125,5 @@ gcloud container clusters get-credentials CLUSTER-NAME --zone europe-west6-a
 # to delete use:
 gcloud container clusters delete CLUSTER-NAME
 ```
+
+
