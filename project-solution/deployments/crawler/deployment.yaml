@@ -18,6 +18,11 @@ spec:
         - name: page-storage
       containers:
         - name: crawler
+          resources:
+            requests:
+              memory: 15M
+            limits:
+              memory: 25M
           image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
           ports:
             - containerPort: 80
