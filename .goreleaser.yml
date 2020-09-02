@@ -1,4 +1,5 @@
 # .goreleaser.yml
+project_name: letsboot-cli
 builds:
   - env:
       - CGO_ENABLED=0
