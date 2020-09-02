@@ -1,4 +1,5 @@
-# Kubernetes DevOps
+# DevOps: 
+# CI/CD with Kubernetes
 
 Notes: Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
 
@@ -8,11 +9,16 @@ Notes: Let's run applications in containers with docker, orchestrate them in Kub
 
 ![letsboot team](../assets/letsboot-team.png)
 
-<!-- .element style="padding-right:200px; padding-left:200px" -->
+<!-- .element style="width: 50%;" -->
 
-Notes: Founded 2016. Group of Software Engineers providing hands on courses, coaching and consulting. Topics: Frontend, Backend and DevOps.
+Note: 
+* letsboot.com started 2016
+* Group of Software Engineers providing hands on courses, coaching and consulting.
+* Goal: Teach topics we love as hands-on bootup trainings.
 
 ----
+
+> skip for workshoptage
 
 ## Let's say Hello
 
@@ -20,18 +26,27 @@ Notes: Founded 2016. Group of Software Engineers providing hands on courses, coa
 * Expectations
 * Questions
 
-Note: Trainer starts to introduce herself/himself and then everyone says their name, company, background, expectations and questions.
+Note:
+* Trainer starts to introduce herself/himself and then everyone says their name, company, background, expectations and questions.
 
 ----
 
-## Agenda
+## Agenda - Workshoptage 2020:
 
-* check setup
-* docker introduction
-* basic docker ci on gitlab
-* kubernetes introduction
+* Introduction and Setup (00, 01)
+* Containers (02)
+* Docker Introduction (10, 12, 13)
+  * Course project & Docker (15)
+* Kubernetes Introduction (20, 21, 22)
+  * Course project & Kubernetes  (25)
+* CI/CD Introduction (30)
+  * Course project & Gitlab-CI (35)
+
+> Tailored/reduced for workshoptage.ch
 
 Note:
+
+* Remove chapters not use before training.
 * Introduction to containers using Docker
   * Why Docker?
   * Architecture and concepts
@@ -55,4 +70,5 @@ Continuous Integration & Delivery
   * Creation of CI script based on **Gitlab-CI
   * Extension script by delivery to Kubernetes
   * Delivery to "productive" cluster
+
 
