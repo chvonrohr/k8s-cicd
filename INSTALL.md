@@ -14,7 +14,7 @@ For everyone:
 
 * The thing you need is a working laptop with Chrome. (On request in advance, we can provide a training laptop.)
 
-## Local setup (Optional)
+## Local setup (Advanced - optional)
 
 If you want to be able to do as much as possible on your local setup, you'll need the following tools.
 For beginners we recommend to do the training with our virtual desktop environment.
@@ -121,4 +121,7 @@ If you want to do the remote cluster setup on google in your own environment you
 ```bash
 gcloud container clusters create CLUSTER-NAME --preemptible --zone europe-west6-a --machine-type e2-small
 gcloud container clusters get-credentials CLUSTER-NAME --zone europe-west6-a
+
+# to delete use:
+gcloud container clusters delete CLUSTER-NAME
 ```
