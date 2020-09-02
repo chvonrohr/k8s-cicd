@@ -11,6 +11,7 @@ func InitialiseFlags() {
 	pflag.Int("port", 8080, "port to bind server to")
 
 	// persistence flags
+	pflag.String("db.type", "sqlite", "database type") // sqlite or postgres
 	pflag.String("db.host", "localhost", "database hostname")
 	pflag.Int("db.port", 3306, "database port")
 	pflag.String("db.username", "root", "database username")

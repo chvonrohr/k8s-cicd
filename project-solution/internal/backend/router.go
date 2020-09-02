@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/sdk"
+	"gorm.io/gorm"
 )
 
 // InitialiseRouter sets up a new routing instance and configures paths as well as requests.

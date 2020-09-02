@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
 	"gopkg.in/h2non/gock.v1"
+	"gorm.io/gorm"
 )
 
 func TestNewClient(t *testing.T) {

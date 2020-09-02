@@ -5,10 +5,11 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // InitialisePersistence creates a new database connection using config variables.
@@ -20,23 +21,39 @@ import (
 // db.database - database
 // db.port - port (numeric)
 func InitialisePersistence() (*gorm.DB, error) {
+
 	var (
-		username = viper.GetString("db.username")
-		password = viper.GetString("db.password")
-		host     = viper.GetString("db.host")
-		port     = viper.GetInt("db.port")
-		database = viper.GetString("db.database")
+		dialector gorm.Dialector
+		dbType    = viper.GetString("db.type")
 	)
+
+	if dbType == "sqlite" {
+		dialector = sqlite.Open(viper.GetString("db.file"))
+	} else if dbType == "postgres" {
+		var (
+			username = viper.GetString("db.username")
+			password = viper.GetString("db.password")
+			host     = viper.GetString("db.host")
+			port     = viper.GetInt("db.port")
+			database = viper.GetString("db.database")
+		)
+		dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable", host, port, username, database, password)
+		dialector = postgres.Open(dsn)
+	} else {
+		panic(fmt.Sprintf("invalid database type %s", dbType))
+	}
+
 	// format dsn based on above values
-	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable", host, port, username, database, password)
-	db, err := gorm.Open("postgres", dsn)
+	db, err := gorm.Open(dialector, &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	db.AutoMigrate(&model.Site{})
-	db.AutoMigrate(&model.Crawl{})
-	db.AutoMigrate(&model.Page{})
+	// migrate models
+	err = db.AutoMigrate(&model.Site{}, &model.Crawl{}, &model.Page{})
+	if err != nil {
+		panic(err)
+	}
 
 	return db, nil
 }
