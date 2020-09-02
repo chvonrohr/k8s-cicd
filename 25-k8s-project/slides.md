@@ -99,14 +99,20 @@ spec:
   type: NodePort
 ```
 
-> service provides dns lookup and "connects" to an available matching pod
+* service provides dns lookup and "connects" to an available matching pod
+* NodePort = Port is bound to the IP of each Node the pod is running on
 
 ----
 
 ## Frontend apply service
 
+Show differences/changes:
 ```bash
-# apply all manifests
+kubectl diff -f
+```
+
+Apply and test it:
+```bash
 kubectl apply --recursive -f deployments/
 kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend
@@ -149,6 +155,9 @@ kind: Deployment
             claimName: database
 status: {}
 ```
+
+Note:
+* databases will need stateful sets to keep data consistent 
 
 ----
 
@@ -228,6 +237,8 @@ kubectl create service clusterip database --tcp=5432:5432 \
 
 kubectl apply --recursive -f deployments/
 ```
+
+* ClusterIP means, the service is only available form inside the cluster
 
 Note:
 
@@ -470,7 +481,7 @@ spec:
 ```
 
 ```bash
-echo open: http://$PARTICIPANT_NAME.letsboot.com/
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 ```
 
 Note:

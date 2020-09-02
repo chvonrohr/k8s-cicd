@@ -71,7 +71,7 @@ docker run -d \
 cd web
 yarn install
 ng serve --host 0.0.0.0 --disable-host-check # ctrl+c to exit
-echo open: http://$PARTICIPANT_NAME.letsboot.com:4200/
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
 ng build --prod
 ls dist/crawler/
 ```
@@ -131,7 +131,7 @@ docker build -t frontend \
 docker run -d --name letsboot-frontend \
   --network letsboot -p 4201:80 frontend 
 
-echo open: http://$PARTICIPANT_NAME.letsboot.com:4201/
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/
 ```
 
 ----
@@ -190,7 +190,7 @@ docker run -d --name backend -p 8080:8080 \
   -v /home/letsboot/docker-volume/:/var/data \
   --network letsboot backend
 
-echo open: http://$PARTICIPANT_NAME.letsboot.com:8080/sites
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 ```
 
 ----
@@ -198,9 +198,9 @@ echo open: http://$PARTICIPANT_NAME.letsboot.com:8080/sites
 ## Test app 
 
 ```bash
-echo open: http://$PARTICIPANT_NAME.letsboot.com:4201/ 
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/ 
 echo add website
-echo check data: http://$PARTICIPANT_NAME.letsboot.com:8080/sites
+echo check data: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 ```
 
 ----
