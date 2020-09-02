@@ -17,9 +17,10 @@ variables:
 
 # order of stages
 stages:
-- test # todo
+- test
 - build
 - deploy
+- release
 
 # this is the "deploy_all" job belonging to the "deploy" stage
 deploy_all:
@@ -55,10 +56,25 @@ deploy_all:
     # kubernetes will then start to do all the changes need to get to the state we defined
     # which also consists of pulling images and running them in containers (rolling updates etc.)
     - ../../kustomize build . | kubectl apply --namespace letsboot -f -
-  
+
+# cli release
+release:
+  stage: release
+  image: goreleaser/goreleaser:latest
+  variables:
+    # Disable shallow cloning so that goreleaser can diff between tags to
+    # generate a changelog.
+    GIT_DEPTH: 0
+  # Only run this release job for tags, not every commit (for example).
+  only:
+    refs:
+      - tags
+  script:
+    - release --rm-dist
+
 include:
-- local: project-solution/build/ci/backend.gitlab-ci.yml
-- local: project-solution/build/ci/frontend.gitlab-ci.yml
-- local: project-solution/build/ci/crawler.gitlab-ci.yml
-- local: project-solution/build/ci/scheduler.gitlab-ci.yml
-- local: project-solution/build/ci/test.gitlab-ci.yml
+  - local: project-solution/build/ci/backend.gitlab-ci.yml
+  - local: project-solution/build/ci/frontend.gitlab-ci.yml
+  - local: project-solution/build/ci/crawler.gitlab-ci.yml
+  - local: project-solution/build/ci/scheduler.gitlab-ci.yml
+  - local: project-solution/build/ci/test.gitlab-ci.yml
