@@ -2,6 +2,8 @@ package backend
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +30,12 @@ func InitialisePersistence() (*gorm.DB, error) {
 	)
 
 	if dbType == "sqlite" {
-		dialector = sqlite.Open(viper.GetString("db.file"))
+		dbFile := viper.GetString("db.file")
+		err := os.MkdirAll(path.Dir(dbFile), os.ModeDir|os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
+		dialector = sqlite.Open(dbFile)
 	} else if dbType == "postgres" {
 		var (
 			username = viper.GetString("db.username")
