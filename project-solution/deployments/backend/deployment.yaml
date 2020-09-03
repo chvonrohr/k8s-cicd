@@ -16,6 +16,22 @@ spec:
     spec:
       containers:
         - name: backend
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 10
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 10
+            initialDelaySeconds: 5
           image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
           ports:
             - containerPort: 8080
