@@ -345,6 +345,10 @@ ul > li:before {
   font-size: 0.9em;
 }
 
+.reveal span.hljs-comment {
+  color: green !important;
+}
+
 .reveal code.lang-txt {
     color: #333;
     background: #f8f8f8;

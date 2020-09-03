@@ -1,4 +1,30 @@
-# basic concepts
+## It's all about 
+# Containers
+
+![shipping containers](https://media.giphy.com/media/6AFldi5xJQYIo/giphy.gif)
+
+----
+
+### Evolution of
+## Running Applications
+
+![server to virtualized to containers](../assets/container-evolution.png)
+<!-- .element style="width: 75%;" -->
+
+Note:
+* Run all apps on (a) physical machines:
+  * Resource conflicts => one app slows down the rest
+  * Security
+  * environment / version conflicts
+  * Time to get a new machine
+  * Updating the OS
+  * Scaling
+  * Run a server per app:
+    * bad utilisation
+* Use virutalisation
+  * separate os and environment
+  * 
+
 
 ----
 

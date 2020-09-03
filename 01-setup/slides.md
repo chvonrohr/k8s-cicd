@@ -53,19 +53,25 @@ Contains:
 
 ## training material
 
-path/you/should/be/in
+#### command:
+
+path/to_to_be_in/
 ```bash
 echo "execute in shell"
 kubectl exec -it database-TAB -- /bin/sh # -TAB means press tab
 ```
+
+#### file:
 
 path/filename.yml
 ```yaml
 some:
   thing:
     edit: change
-
-# ... (there is more code on the next page)
+    #... more code in file
+    change_me_to: value
+    element: value
+# ... more code here
 ```
 
 ----
@@ -85,15 +91,15 @@ some:
 ## Yaml Basics
 
 ```yaml
-element1: value
-object1: { object: { variable: value }}
+key1: value
+object1: { object: { key: value }}
 object2:
-  object2: 
-    variable: value
-array1: [ 'value1', 'value2', object: { variable: value }]
-array2: 
+  object: 
+    key: value
+list1: [ 'value1', 'value2', object: { key: value }]
+list2: 
   - value1
   - value2
   - object: 
-    varialbe: value
+    key: value
 ```
