@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
 	"log"
 	"strconv"
 	"time"
@@ -25,11 +26,15 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 	// create transaction for each request
 	r.Use(PersistenceMiddleware(db))
 
-	r.GET("", func(c *gin.Context) {
+	endpoints := make(util.EndpointGroup, 0)
+	endpoints = append(endpoints, r.Group("/"))
+	endpoints = append(endpoints, r.Group("/api"))
+
+	endpoints.GET("", func(c *gin.Context) {
 		c.String(200, "backend works")
 	})
 
-	r.POST("/callback/:pageId", func(c *gin.Context) {
+	endpoints.POST("/callback/:pageId", func(c *gin.Context) {
 		tx := GetTx(c)
 		parentId, err := strconv.Atoi(c.Param("pageId"))
 		if err != nil {
@@ -72,13 +77,13 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		c.Status(200)
 	})
 
-	r.GET("/sites", func(c *gin.Context) {
+	endpoints.GET("/sites", func(c *gin.Context) {
 		var sites []model.Site
 		GetTx(c).Find(&sites)
 		c.JSON(200, &sites)
 		return
 	})
-	r.GET("/crawls", func(c *gin.Context) {
+	endpoints.GET("/crawls", func(c *gin.Context) {
 		var crawls []model.Crawl
 		tx := GetTx(c)
 		if siteQuery := c.Query("site"); siteQuery != "" {
@@ -88,7 +93,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		c.JSON(200, &crawls)
 		return
 	})
-	r.GET("/pages", func(c *gin.Context) {
+	endpoints.GET("/pages", func(c *gin.Context) {
 		var pages []model.Page
 		tx := GetTx(c)
 		if crawlQuery := c.Query("crawl"); crawlQuery != "" {
@@ -99,7 +104,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		return
 	})
 
-	r.POST("/sites", func(c *gin.Context) {
+	endpoints.POST("/sites", func(c *gin.Context) {
 		var site model.Site
 		if err := c.BindJSON(&site); err != nil {
 			c.AbortWithStatusJSON(500, err)
@@ -109,7 +114,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		c.JSON(200, site)
 		return
 	})
-	r.POST("/crawls", func(c *gin.Context) {
+	endpoints.POST("/crawls", func(c *gin.Context) {
 		tx := GetTx(c)
 		var crawl model.Crawl
 		if err := c.BindJSON(&crawl); err != nil {
@@ -127,7 +132,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 
 	})
 
-	r.POST("/schedule", func(c *gin.Context) {
+	endpoints.POST("/schedule", func(c *gin.Context) {
 		tx := GetTx(c)
 		var sites []model.Site
 		tx.Preload("Crawls", func(db *gorm.DB) *gorm.DB {
