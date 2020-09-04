@@ -83,7 +83,7 @@ Note:
 * look at the "Use cache" notes for each Step/layer
 ----
 
-## optimization example - 3/3
+## .dockerignore
 
 Add `node_modules` to .dockerignore
 
@@ -101,14 +101,14 @@ time docker build --no-cache -t todo-app .
 
 ----
 
-## multi stage builds
+## Multistage Builds
 
 * separate build container step
 * no build dependencies in final image
 
 ----
 
-## without multistage
+## Without multistage
 ### course project frontend
 
 project-start/web/Dockerfile
@@ -130,7 +130,7 @@ docker images # look for frontend - ca. 773MB size
 
 -----
 
-## with multistage
+## With multistage
 ### course project frontend
 
 project-start/web/Dockerfile
@@ -149,5 +149,12 @@ COPY --from=build /app/dist/crawler /usr/share/nginx/html
 project-start/web/
 ```bash
 docker build -t frontend-slim .
-docker images # look for frontend-slim - ca. 773MB size
+docker images # look for frontend-slim - ca. 22MB size
 ```
+
+Note:
+* it starts with a baseimage for build
+* built dependencies get installed
+* software gets built
+* the final base image is selected
+* the built files get copied to the final base image
