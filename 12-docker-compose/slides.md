@@ -1,4 +1,4 @@
-# docker compose
+# Docker compose
 
 * each container should do one thing (process)
 * applications need more than one process

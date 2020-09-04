@@ -365,6 +365,7 @@ ul > li:before {
 }
 
 .reveal blockquote p {
+  font-size: 0.8em;
   margin: 0;
 }
 

@@ -15,7 +15,7 @@
 
 * open: http://FIRSTNAME.sk.letsboot.com:3000
 * login with:
-  * user: letsboot
+  * user: FIRSTNAME
   * password: Workshoptage.
 
 ----
@@ -63,11 +63,12 @@ Contains:
 
 #### command:
 
-path/to_to_be_in/
+project-start/web/
 ```bash
 echo "execute in shell"
 kubectl exec -it database-TAB -- /bin/sh # -TAB means press tab
 ```
+<small>no path means you can run it in any folder<small>
 
 #### file:
 
@@ -89,6 +90,7 @@ some:
 * use `tab` key a lot - autocompletion is installed
 * less copy & paste more typing & tabbing
   * get used to the commands, you'll use them a lot
+* use `alt+arrows left right` to navigate the commandline cursor
 * use `ctrl+c` to exit running processes
 * use `exit` command if you are in remote shell
 * use multiple terminals if you want to run things in parallel

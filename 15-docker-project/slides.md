@@ -1,5 +1,10 @@
-# Our Project in Docker
+## Course Project in Docker
+### Website crawler
 
+![project crawler](../assets/the-project.png)
+<!-- .element style="width:60%" -->
+
+Note:
 * backend - core logic and api
 * frontend - add websites and see data
 * crawler - listens to the queue and crawls website
@@ -9,24 +14,45 @@
 
 ----
 
-## our plan
+## The plan
 
-1. create network
-2. run RabbitMQ
-3. run PostgreSQL
-4. build containers
-5. run containers
-6. ? deploy to registry
-7. ? build in gitlab-ci
+1. create a network
+2. run PostgreSQL image
+3. run RabbitMQ image
+4. write Dockerfiles
+5. build and run containers
+6. push to registry
+----
+
+## Create network
+
+```bash
+# network for containers talking to each other
+docker network create letsboot
+```
 
 ----
 
-## create network
+## PostgreSQL
 
 ```bash
-# create a docker network for the containers to talk in
-docker network create letsboot
+# postgresql - directly creates database and user
+docker run -d \
+  --name database \
+  --network letsboot \
+  -e POSTGRES_PASSWORD="supersecure" \
+  -e POSTGRES_USER="letsboot" \
+  -e POSTGRES_DB="letsboot" \
+  postgres
 ```
+https://hub.docker.com/_/postgres
+
+Hint: No port needed for internal use.
+
+Note:
+* we give it a name for docker internal dns
+* we want it to run in our container network
+* we give it Environment variables specified by the image
 
 ----
 
@@ -38,7 +64,6 @@ docker run -d \
   --name queue \
   --hostname rabbitmq \
   --network letsboot \
-  -p 5672:5672 \
   -e RABBITMQ_DEFAULT_PASS="megasecure" \
   -e RABBITMQ_DEFAULT_USER=letsboot \
   rabbitmq
@@ -46,29 +71,16 @@ docker run -d \
 
 Note: 
 * The hostname in this case is only for rabbitmq important, for networking we use the --name
+* Check: we don't need the port forward if we only want to talk to the queue from other containeers
 
 ----
 
-## PostgreSQL
-
-```bash
-# postgresql - directly creates database and user
-docker run -d \
-  --name database \
-  --network letsboot \
-  -p 5432:5432 \
-  -e POSTGRES_PASSWORD="supersecure" \
-  -e POSTGRES_USER="letsboot" \
-  -e POSTGRES_DB="letsboot" \
-  postgres
-```
-
-----
+> skip
 
 ## Frontend - manual build
 
+project-start/web/
 ```bash
-cd web
 yarn install
 ng serve --host 0.0.0.0 --disable-host-check # ctrl+c to exit
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
@@ -90,34 +102,29 @@ ls dist/crawler/
 
 ----
 
-## Frontend - container multistage 1/2
+## Frontend - Dockerfile
 
 web/.dockerignore
 ```txt
 node_modules
 ```
 
-build/ci/package/frontend.Dockerfile
+project-start/build/package/frontend.Dockerfile
 ```Dockerfile
-FROM node:12 as build
+FROM node:12-alpine AS build
 WORKDIR /app
 COPY web/yarn.lock .
 COPY web/package.json .
 RUN yarn install
-COPY web/ .
-RUN node_modules/.bin/ng build --prod
-# ...
-```
+COPY . .
+RUN node_modules/.bin/ng build --prod --source-map=false --build-optimizer=false
 
-----
-
-## Frontend - multistage 2/2
-
-build/ci/package/frontend.Dockerfile
-```Dockerfile
-FROM nginx:stable
+FROM nginx:alpine
 COPY --from=build /app/dist/crawler /usr/share/nginx/html
 ```
+
+Note:
+* From no on we'll keep the Dockerfiles in the build/ci/package folders
 
 ----
 
@@ -136,7 +143,19 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/
 
 ----
 
-## Backend - multistage 1/2 
+> skip
+
+## Backend - run and build manually
+
+```bash
+go mod download
+go build ./cmd/backend
+./backend --db.password="supersecure" --queue.password="megasecure" 
+```
+
+----
+
+## Backend - Dockerfile
 
 build/ci/package/backend.Dockerfile
 ```Dockerfile
@@ -147,22 +166,6 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build ./cmd/backend
-# ...
-```
-
-Note:
-* we will use a scratch image, as go is statically compiled and doesn't need anything
-
-
-----
-
-## Backend - multistage 2/2 scratch
-
-`scratch` the empty base image of everything
-
-build/ci/package/backend.Dockerfile
-```Dockerfile
-# ...
 FROM scratch
 WORKDIR /app 
 COPY --from=build /app/backend /app/backend
@@ -170,8 +173,12 @@ COPY --from=build /app/config/backend.* .
 ENTRYPOINT ["/app/backend"]
 ```
 
-Note: 
+> `scratch` the (empty) base image of base images
+
+Note:
+* we will use a scratch image, as go is statically compiled and doesn't need anything
 * As golang is statically compiled we don't need anything else
+* Attention: We run this go app in the root context, we'll show how to add a user in a further chapter
 
 ----
 

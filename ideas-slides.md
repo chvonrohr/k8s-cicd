@@ -19,3 +19,9 @@ wget -O todo-container.gz.bz2 https://file.io/YOUR-URL
 bzip2 -d todo-container.gz.bz2
 docker import todo-container.gz todo-container
 ```
+
+---
+
+# Debug within docker
+
+https://code.visualstudio.com/docs/containers/debug-node

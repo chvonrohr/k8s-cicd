@@ -278,6 +278,8 @@ docker exec CONTAINER-ID cat /data.txt
 
 ```
 
+<small>Sidenote: beware of mailious images (ie. hidden minders)</small>
+
 Note: 
 * each running container has it's own layer for changes
 * exec executes a command in a container
@@ -355,7 +357,7 @@ docker logs -f CONTAINER-ID
 
 ----
 
-# Exercise Mode
+# Exercise Mode - volumes
 
 > open 10-docker/slides.md
 

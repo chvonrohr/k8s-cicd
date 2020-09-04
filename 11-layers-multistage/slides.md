@@ -92,12 +92,16 @@ todo-app/.dockerignore
 node_modules
 ```
 
-```bash
-# compare before and after
-time docker build --no-cache -t todo-app .
-```
-
 > make sure you don't copy unclean files into image
+
+----
+
+# Exercise Mode - layers
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/6w4SdNcShkCZfycrxI/giphy.gif)
+<!-- .element style="width: 40%" -->
 
 ----
 
@@ -128,7 +132,7 @@ docker build -t frontend .
 docker images # look for frontend - ca. 773MB size
 ```
 
------
+----
 
 ## With multistage
 ### course project frontend
@@ -158,3 +162,12 @@ Note:
 * software gets built
 * the final base image is selected
 * the built files get copied to the final base image
+
+----
+
+# Exercise Mode - multi stage
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/j70sGTgTllIgE/giphy.gif)
+<!-- .element style="width=50%" -->
