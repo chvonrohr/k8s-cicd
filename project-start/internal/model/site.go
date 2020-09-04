@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // Site is the top most object in the crawling order. Each site has up to n crawls, each of which have n pages.

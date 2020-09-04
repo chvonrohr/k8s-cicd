@@ -53,6 +53,7 @@ func main() {
 
 	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 
+	log.Printf("data dir: %s\n", viper.GetString("crawler.data"))
 	log.Println("listening to queue...")
 
 	for {

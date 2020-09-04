@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { timeout } from 'rxjs/operators';
+import {shareReplay, tap, timeout} from 'rxjs/operators';
+import {Crawl, Page, Site} from './model';
 
 @Component({
   selector: 'crl-root',
@@ -10,8 +11,11 @@ import { timeout } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   title = 'Crawler';
-  sites: Observable<any>;
+  sites: Observable<Site[]>;
   url: string;
+  selectedSite: Site;
+  crawls: Observable<Crawl[]>;
+  pages: Observable<Page[]>;
   tryUrls = [
     'http://' + window.location.hostname,
     'http://' + window.location.hostname + ':8080',
@@ -19,15 +23,16 @@ export class AppComponent implements OnInit {
     'http://localhost:8080',
     'http://localhost/api'];
   error: string;
+  selectedCrawl: Crawl;
 
   constructor(private http: HttpClient) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.tryUrl(0);
   }
 
-  tryUrl(index) {
+  tryUrl(index): void {
     const tryUrl = this.tryUrls[index];
     if (tryUrl !== undefined) {
       this.http.get(tryUrl, { responseType: 'text' })
@@ -44,20 +49,49 @@ export class AppComponent implements OnInit {
           error => {
             this.tryUrl(index + 1);
           }
-        )
+        );
     } else {
-      this.error = 'no running backend found'
+      this.error = 'no running backend found';
     }
   }
 
-  getSites() {
-    this.sites = this.http.get(this.url + '/sites');
+  getSites(): void {
+    this.sites = this.http.get<Site[]>(this.url + '/sites');
   }
 
-  addSite(site) {
+  addSite(site): void {
+    // todo: @wingsuitist - interval is 100 milliseconds
     this.http.post(this.url + '/sites', { url: site, interval: 100 }).subscribe(
       response => this.getSites(),
       error => this.error = error.message
     );
   }
+
+  selectSite(site: Site): void {
+    this.selectedSite = site;
+    this.loadCrawlsForSite(site);
+  }
+
+  private loadCrawlsForSite(site: Site): void {
+    this.crawls = this.http.get<Crawl[]>(`${this.url}/crawls?site=${site.ID}`)
+      .pipe(
+        shareReplay(1),
+        tap(crawls => {
+          if (crawls.length > 0 ) {
+            this.selectCrawl(crawls[crawls.length - 1]);
+          }
+        })
+      );
+    this.crawls.subscribe();
+  }
+
+  selectCrawl(crawl: Crawl): void {
+    this.selectedCrawl = crawl;
+    this.loadPagesForCrawl(crawl);
+  }
+
+  private loadPagesForCrawl(crawl: Crawl): void {
+    this.pages = this.http.get<Page[]>(`${this.url}/pages?site=${crawl.ID}`);
+  }
+
 }

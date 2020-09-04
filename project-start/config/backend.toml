@@ -2,14 +2,21 @@ host = "0.0.0.0"
 port = 8080
 
 [db]
+type = "sqlite" # alternatively postgres
+# sqlite settings
+file = "/var/db/crawler.db"
+# postgres settings
 host = "localhost"
 port = 5432
 username = "letsboot"
 password = "xxx" # default example - use environment variables / kubernetes secrets
-database = "letsboot" 
+database = "letsboot"
 
 [queue]
 host = "localhost"
 port = 5672
 username = "letsboot"
 password = "xxx" # default example - use environment variables / kubernetes secrets
+
+[crawler]
+data = "/var/data"

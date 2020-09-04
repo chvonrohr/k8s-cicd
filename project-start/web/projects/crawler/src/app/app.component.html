@@ -3,11 +3,28 @@
 {{url}}
 {{error}}
 
+<input #siteToAdd>
+<button (click)="addSite(siteToAdd.value)">add</button>
+
 <ul>
-  <li *ngFor="let site of sites | async">
+  <li (click)="selectSite(site)" [class.selected]="site === selectedSite" *ngFor="let site of sites | async">
     {{site.url}}
   </li>
 </ul>
 
-<input #siteToAdd>
-<button (click)="addSite(siteToAdd.value)">add</button>
+<section *ngIf="selectedCrawl">
+  Pages for site: {{selectedSite.url}} - count: {{(pages | async)?.length}}
+
+  <table>
+    <tr>
+      <th>status</th>
+      <th>url</th>
+    </tr>
+    <tr *ngFor="let page of pages | async">
+      <td>{{page.statusCode}}</td>
+      <td>{{page.url}}</td>
+    </tr>
+  </table>
+</section>
+
+<a href="https://www.letsboot.com" target="_blank">by letsboot.com</a>

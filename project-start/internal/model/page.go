@@ -1,6 +1,6 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 // PageState is the state of a page, as determined by its current crawl status.
 type PageState string
@@ -16,11 +16,12 @@ var (
 // It can also have n parent Pages, forming a tree.
 type Page struct {
 	gorm.Model
-	StatusCode  int       `json:"statusCode"`
-	ContentType string    `json:"contentType"`
-	Crawl       Crawl     `json:"crawl"`
-	CrawlID     int       `json:"crawlId" gorm:"column:crawl_id"`
-	Url         string    `json:"url" gorm:"index:url"`
-	State       PageState `json:"state"`
-	Parents     []Page    `json:"-" gorm:"many2many:page_ref_table;association_jointable_foreignkey:parent_id"`
+	StatusCode    int       `json:"statusCode"`
+	ContentType   string    `json:"contentType"`
+	Crawl         Crawl     `json:"crawl"`
+	CrawlID       int       `json:"crawlId" gorm:"column:crawl_id"`
+	Url           string    `json:"url" gorm:"index:url"`
+	State         PageState `json:"state"`
+	Parents       []Page    `json:"-" gorm:"many2many:page_ref_table;association_jointable_foreignkey:parent_id"`
+	FileAvailable bool      `json:"fileAvailable"`
 }

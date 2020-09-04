@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"bytes"
+	"crypto/md5"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -58,8 +59,8 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 		if err != nil {
 			return response, err
 		}
-		sanitizedUri := strings.TrimPrefix(strings.TrimPrefix(uri, "http://"), "https://")
-		p := fmt.Sprintf("%s/%04d/%s", dataDir, crawlId, sanitizedUri)
+
+		p := fmt.Sprintf("%s/%04d/%x.html", dataDir, crawlId, md5.Sum([]byte(uri)))
 		err = os.MkdirAll(path.Dir(p), os.ModeDir|os.ModePerm)
 		if err != nil {
 			return response, err
@@ -69,6 +70,7 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 			return response, err
 		}
 		reader = bytes.NewReader(bs)
+		response.Dumped = true
 	}
 
 	uris, err := parseNodes(reader)

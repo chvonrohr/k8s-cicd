@@ -1,15 +1,19 @@
 package backend
 
 import (
+	"crypto/md5"
+	"fmt"
+	"github.com/spf13/viper"
+	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
 	"log"
 	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
 	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/sdk"
+	"gorm.io/gorm"
 )
 
 // InitialiseRouter sets up a new routing instance and configures paths as well as requests.
@@ -25,11 +29,15 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 	// create transaction for each request
 	r.Use(PersistenceMiddleware(db))
 
-	r.GET("", func(c *gin.Context) {
+	endpoints := make(util.EndpointGroup, 0)
+	endpoints = append(endpoints, r.Group("/"))
+	endpoints = append(endpoints, r.Group("/api"))
+
+	endpoints.GET("", func(c *gin.Context) {
 		c.String(200, "backend works")
 	})
 
-	r.POST("/callback/:pageId", func(c *gin.Context) {
+	endpoints.POST("/callback/:pageId", func(c *gin.Context) {
 		tx := GetTx(c)
 		parentId, err := strconv.Atoi(c.Param("pageId"))
 		if err != nil {
@@ -67,18 +75,44 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		}
 		parent.StatusCode = response.StatusCode
 		parent.ContentType = response.ContentType
+		parent.FileAvailable = response.Dumped
 		tx.Save(&parent)
 
 		c.Status(200)
 	})
+	endpoints.POST("/schedule", func(c *gin.Context) {
+		tx := GetTx(c)
+		var sites []model.Site
+		tx.Preload("Crawls", func(db *gorm.DB) *gorm.DB {
+			return db.Order("crawls.created_at DESC")
+		}).Find(&sites)
+		response := sdk.SchedulerResponse{}
+		for _, site := range sites {
+			if len(site.Crawls) > 0 && time.Since(site.Crawls[0].CreatedAt) < site.Interval {
+				continue
+			}
+			// create crawl for site
+			crawl, err := crawlSite(tx, site.ID)
+			if err != nil {
+				FailTx(c)
+				c.AbortWithStatusJSON(500, err)
+				return
+			}
+			response.ScheduledCount++
+			response.ScheduledCrawls = append(response.ScheduledCrawls, crawl)
+		}
+		c.JSON(200, response)
+		return
 
-	r.GET("/sites", func(c *gin.Context) {
+	})
+
+	endpoints.GET("/sites", func(c *gin.Context) {
 		var sites []model.Site
 		GetTx(c).Find(&sites)
 		c.JSON(200, &sites)
 		return
 	})
-	r.GET("/crawls", func(c *gin.Context) {
+	endpoints.GET("/crawls", func(c *gin.Context) {
 		var crawls []model.Crawl
 		tx := GetTx(c)
 		if siteQuery := c.Query("site"); siteQuery != "" {
@@ -88,7 +122,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		c.JSON(200, &crawls)
 		return
 	})
-	r.GET("/pages", func(c *gin.Context) {
+	endpoints.GET("/pages", func(c *gin.Context) {
 		var pages []model.Page
 		tx := GetTx(c)
 		if crawlQuery := c.Query("crawl"); crawlQuery != "" {
@@ -99,23 +133,24 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 		return
 	})
 
-	r.POST("/sites", func(c *gin.Context) {
+	endpoints.POST("/sites", func(c *gin.Context) {
 		var site model.Site
 		if err := c.BindJSON(&site); err != nil {
 			c.AbortWithStatusJSON(500, err)
 			return
 		}
 		GetTx(c).Save(&site)
-
+		c.JSON(200, site)
+		return
 	})
-	r.POST("/crawls", func(c *gin.Context) {
+	endpoints.POST("/crawls", func(c *gin.Context) {
 		tx := GetTx(c)
 		var crawl model.Crawl
 		if err := c.BindJSON(&crawl); err != nil {
 			c.AbortWithStatusJSON(500, err)
 			return
 		}
-		err := crawlSiteWrapped(tx, crawl)
+		crawl, err := crawlSiteWrapped(tx, crawl)
 		if err != nil {
 			FailTx(c)
 			c.AbortWithStatusJSON(500, err)
@@ -126,26 +161,33 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 
 	})
 
-	r.POST("/schedule", func(c *gin.Context) {
+	endpoints.GET("/pages/:pageId", func(c *gin.Context) {
+		var page model.Page
 		tx := GetTx(c)
-		var sites []model.Site
-		tx.Preload("Crawls", func(db *gorm.DB) *gorm.DB {
-			return db.Order("crawls.createdAt DESC")
-		}).Find(&sites)
-		for _, site := range sites {
-			if len(site.Crawls) > 0 && time.Since(site.Crawls[0].CreatedAt) < site.Interval {
-				continue
-			}
-			// create crawl for site
-			err := crawlSite(tx, site.ID)
-			if err != nil {
-				FailTx(c)
-				c.AbortWithStatusJSON(500, err)
+		format := c.Query("format")
+		if format == "" {
+			format = "json"
+		}
+
+		tx.Where("id = ?", c.Param("pageId")).Find(&page)
+
+		switch format {
+		case "json":
+			c.JSON(200, page)
+			return
+		case "html":
+			if !page.FileAvailable {
+				c.String(404, "File is not available for this page.")
+				c.Writer.WriteHeaderNow()
+				c.Abort()
 				return
 			}
+			c.Header("Content-Type", "text/html")
+			path := fmt.Sprintf("%s/%04d/%x.html", viper.GetString("crawler.data"), page.CrawlID, md5.Sum([]byte(page.Url)))
+			c.File(path)
+			return
 		}
-		c.Status(204)
-		return
 
 	})
+
 }
