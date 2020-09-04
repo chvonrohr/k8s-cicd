@@ -7,9 +7,8 @@
 ## Agenda:
 
 1. create and use namespace
-2. create kubernetes configuratoins
-2. apply to local cluster
-3. split up and optimize
+2. create kubernetes manifests
+3. apply to local cluster
 4. apply to google cluster
 
 ----
@@ -32,6 +31,8 @@ kubectl create deployment frontend \
   --dry-run=client -o yaml > deployments/frontend/deployment.yaml
 ```
 
+> for simplicit we use our public registry for now
+
 ----
 
 ## Frontend minimal deployment
@@ -41,13 +42,13 @@ deployments/frontend/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels: { app: frontend } # change run to app
+  labels: { app: frontend }
   name: frontend
 spec:
   replicas: 1
-  selector: { matchLabels: { app: frontend } }  # change run to app
+  selector: { matchLabels: { app: frontend } } 
   template:
-    metadata: { labels: { app: frontend } } # change run to app
+    metadata: { labels: { app: frontend } }
     spec:
       containers:
       - image: eu.gcr.io/letsboot/kubernetes-course/frontend
@@ -59,8 +60,9 @@ Note:
 
 ----
 
-## Frontend apply
+## Frontend - apply and test
 
+project-start/
 ```bash
 kubectl apply -f deployments/frontend/deployment.yaml
 kubectl get pods
@@ -80,23 +82,32 @@ Note:
 
 ## Frontend create service
 
+project-start/
 ```bash
 kubectl create service nodeport frontend --tcp=80:80 \
   -o yaml --dry-run=client > deployments/frontend/service.yaml
 ```
 
-deployments/frontend/service.yaml
+deployments/frontend/service.yaml (no changes)
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
+  creationTimestamp: null
+  labels:
+    app: frontend
   name: frontend
 spec:
   ports:
-    - port: 80
+  - name: 80-80
+    port: 80
+    protocol: TCP
+    targetPort: 80
   selector:
     app: frontend
   type: NodePort
+status:
+  loadBalancer: {}
 ```
 
 * service provides dns lookup and "connects" to an available matching pod
@@ -107,8 +118,9 @@ spec:
 ## Frontend apply service
 
 Show differences/changes:
+project-start/
 ```bash
-kubectl diff -f
+kubectl diff -f deployments
 ```
 
 Apply and test it:
@@ -129,6 +141,8 @@ exit
 kubectl create deployment database --image=postgres \
   -o yaml --dry-run=client > deployments/database/deployment.yaml
 ```
+
+* will be changed to statefulset in the future
 
 ----
 
@@ -158,6 +172,7 @@ status: {}
 
 Note:
 * databases will need stateful sets to keep data consistent 
+* when kubernetes creates or replaces database pods, and has multiple running, there will be data damage to postgres
 
 ----
 
@@ -227,6 +242,8 @@ k describe pvc database
 k describe pods database
 ```
 
+* Applications must wait gracefully for resources!
+
 ----
 
 ## Database service
@@ -289,7 +306,6 @@ kubectl create secret generic queue-rabbitmq \
 
 ### Rabbitmq - service
 
-
 ```bash
 kubectl create service clusterip queue --tcp=5672:5672 \
   -o yaml --dry-run=client > deployments/queue/service.yaml
@@ -330,7 +346,7 @@ kubectl create deployment backend --image=eu.gcr.io/letsboot/kubernetes-course/b
 
 ----
 
-## Backend 2/4 - deployment env  & secrets
+## Backend 2/2 - deployment env  & secrets
 
 ```yaml
 # ...      
@@ -349,6 +365,8 @@ kubectl create deployment backend --image=eu.gcr.io/letsboot/kubernetes-course/b
             value: letsboot
           - name: LETSBOOT_DB.USERNAME
             value: letsboot
+          - name: LETSBOOT_DB.TYPE
+            value: postgres
           - name: LETSBOOT_QUEUE.PASSWORD
             valueFrom:
               secretKeyRef:
@@ -406,9 +424,9 @@ kubectl create deployment crawler --image=eu.gcr.io/letsboot/kubernetes-course/c
             name: page-storage
         env:
           - name: LETSBOOT_BACKEND.URL
-            value: "backend"
+            value: backend
           - name: LETSBOOT_QUEUE.HOST
-            value: "queue"
+            value: queue
           - name: LETSBOOT_QUEUE.USERNAME
             value: user
           - name: LETSBOOT_QUEUE.PASSWORD
@@ -452,20 +470,31 @@ k get cronjobs
 
 ## Ingress
 
+* install ingress controller on kind
+
 ```bash
 # install nginx ingress on kind
-kubectl apply -f \
-https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+# wait until it's running
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
 ```
+
+> common way to install manifests in kubernetes
+
+---
+
+## Configure ingress
 
 deployments/ingress.yaml
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: web-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  name: local-ingress
 spec:
   rules:
   - http:
@@ -481,6 +510,7 @@ spec:
 ```
 
 ```bash
+kubectl apply -f deployments --recursive
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 ```
 
