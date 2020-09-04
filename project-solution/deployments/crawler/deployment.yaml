@@ -20,9 +20,9 @@ spec:
         - name: crawler
           resources:
             requests:
-              memory: 15M
+              memory: 20M
             limits:
-              memory: 25M
+              memory: 30M
           image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
           ports:
             - containerPort: 80

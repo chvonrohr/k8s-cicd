@@ -16,6 +16,13 @@ spec:
     spec:
       containers:
         - name: frontend
+          resources:
+            requests:
+              cpu: 2m
+              memory: 3M
+            limits:
+              cpu: 5m
+              memory: 5M
           image: eu.gcr.io/letsboot/kubernetes-course/frontend:latest
           ports:
             - containerPort: 80
