@@ -11,6 +11,8 @@ func InitialiseFlags() {
 	pflag.Int("port", 8080, "port to bind server to")
 
 	// persistence flags
+	pflag.String("db.type", "sqlite", "database type")             // sqlite or postgres
+	pflag.String("db.file", "/var/db/crawler.db", "database file") // sqlite
 	pflag.String("db.host", "localhost", "database hostname")
 	pflag.Int("db.port", 3306, "database port")
 	pflag.String("db.username", "root", "database username")
@@ -22,5 +24,7 @@ func InitialiseFlags() {
 	pflag.String("queue.username", "guest", "queue username")
 	pflag.String("queue.password", "guest", "queue password")
 	pflag.Int("queue.port", 5672, "queue port")
+
+	pflag.String("crawler.data", "/var/data", "data dir for crawler dump files")
 
 }
