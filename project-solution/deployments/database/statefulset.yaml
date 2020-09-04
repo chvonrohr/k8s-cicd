@@ -27,6 +27,9 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - image: postgres
+          resources:
+            requests:
+              memory: 100M
           name: postgres
           env:
             - name: POSTGRES_USER
