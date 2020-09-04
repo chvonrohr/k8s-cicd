@@ -1,3 +1,4 @@
+> skip
 # Docker compose
 
 * each container should do one thing (process)

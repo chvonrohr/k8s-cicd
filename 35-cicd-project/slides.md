@@ -67,6 +67,8 @@ git push
 echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 ```
 
+> check pipeline for url
+
 ----
 
 ## check ci/cd process
@@ -143,7 +145,7 @@ echo "open https://gitlab.com/$GIT_REPO/container_registry"
 
 ----
 
-## build stage
+## Build
 
 1. copy snipped for frontend, crawler and scheduler
 2. replace variable.APP 
@@ -165,6 +167,8 @@ build_scheduler:
 
 ----
 
+> skip (is done automatcially)
+
 ## set google service account
 
 1. get prepared service account and open gitlab ci/cd 
@@ -180,7 +184,7 @@ echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
 
 ----
 
-## deployment stage
+## Deployment 
 
 get cluster name
 ```bash
@@ -197,20 +201,37 @@ deploy_all:
   tags: [ docker ]
   image: google/cloud-sdk:alpine
   before_script:
-  - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-  - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
-  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-  - gcloud components install kubectl
-  - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+    - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+    - gcloud components install kubectl
+    - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
     - kubectl apply -f project-start/deployments --recursive
 ```
 
 ----
 
-## But? Versions? Registry?
+## Versions - Kustomize
 
-* we need a way to set images in deployments
+project-start/deployments/kustomization
+```yaml
+resources:
+  - deployments/database/service.yaml
+  - deployments/database/statefulset.yaml
+  - deployments/frontend/deployment.yaml
+  - deployments/frontend/service.yaml
+  - deployments/ingress.yaml
+  - deployments/crawler/deployment.yaml
+  - deployments/crawler/pvc.yaml
+  - deployments/scheduler/cronjob.yaml
+  - deployments/backend/deployment.yaml
+  - deployments/backend/service.yaml
+  - deployments/namespace.yaml
+  - deployments/queue/service.yaml
+  - deployments/queue/statefulset.yaml
+```
 
 ----
+
 

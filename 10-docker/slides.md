@@ -88,7 +88,7 @@ FROM node:12-alpine
 WORKDIR /app
 COPY . .
 RUN yarn install --production
-RUN echo -e "\033[1;31m this will run on build \033[0m"
+RUN echo -e "this command will run on build"
 CMD ["node", "src/index.js"]
 ```
 
@@ -392,4 +392,4 @@ docker logs -f CONTAINER-ID
 docker run -dp 6080:80 dorowu/ubuntu-desktop-lxde-vnc
 ```
 
-open: http://FIRSTNAME.sk.letsboot.com:6000
+open: http://FIRSTNAME.sk.letsboot.com:6080

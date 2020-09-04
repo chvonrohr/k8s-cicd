@@ -1,2 +1,2 @@
 FROM curlimages/curl
-CMD curl $SCHEDULE_URL
+CMD curl -X POST $SCHEDULE_URL

@@ -35,7 +35,7 @@ Note:
 
 * Introduction and Setup <small>(00, 01)</small>
 * Containers <small>(02)</small>
-* Docker Introduction <small>(10, 12, 13)</small>
+* Docker Introduction <small>(10, 11)</small>
   * Course project & Docker <small>(15)</small>
 * Kubernetes Introduction <small>(20, 21, 22)</small>
   * Course project & Kubernetes  <small>(25)</small>

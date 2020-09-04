@@ -68,7 +68,7 @@ project-start/web/
 echo "execute in shell"
 kubectl exec -it database-TAB -- /bin/sh # -TAB means press tab
 ```
-<small>no path means you can run it in any folder<small>
+<small>no path means you can run it in any folder</small>
 
 #### file:
 
@@ -87,9 +87,9 @@ some:
 
 ## Tipps & Tricks
 
+* carefull with "common" shortcuts: cmd+w
 * use `tab` key a lot - autocompletion is installed
-* less copy & paste more typing & tabbing
-  * get used to the commands, you'll use them a lot
+* less copy & paste => more typing & tabbing
 * use `alt+arrows left right` to navigate the commandline cursor
 * use `ctrl+c` to exit running processes
 * use `exit` command if you are in remote shell

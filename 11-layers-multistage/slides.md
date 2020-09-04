@@ -92,7 +92,8 @@ todo-app/.dockerignore
 node_modules
 ```
 
-> make sure you don't copy unclean files into image
+* only copy files you need
+* security, performacne, caching...
 
 ----
 
@@ -117,13 +118,13 @@ node_modules
 
 project-start/web/Dockerfile
 ```Dockerfile
-FROM node:12-alpine AS build
+FROM node:12-alpine
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 RUN node_modules/.bin/ng build --prod --source-map=false --build-optimizer=false
-CMD ng serve --host 0.0.0.0
+CMD node_modules/.bin/ng serve --host 0.0.0.0
 ````
 
 project-start/web/
@@ -165,7 +166,7 @@ Note:
 
 ----
 
-# Exercise Mode - multi stage
+# Exercise Mode - multistage
 
 > open 10-docker/slides.md
 

@@ -47,7 +47,7 @@ docker run -d \
 ```
 https://hub.docker.com/_/postgres
 
-Hint: No port needed for internal use.
+Hint: No port binding for internal use.
 
 Note:
 * we give it a name for docker internal dns
@@ -104,11 +104,6 @@ ls dist/crawler/
 
 ## Frontend - Dockerfile
 
-web/.dockerignore
-```txt
-node_modules
-```
-
 project-start/build/package/frontend.Dockerfile
 ```Dockerfile
 FROM node:12-alpine AS build
@@ -125,6 +120,7 @@ COPY --from=build /app/dist/crawler /usr/share/nginx/html
 
 Note:
 * From no on we'll keep the Dockerfiles in the build/ci/package folders
+* mono repo structure best practice recomendation from golang
 
 ----
 
@@ -135,7 +131,7 @@ project-start/
 docker build -t frontend \
   -f build/package/frontend.Dockerfile .
 
-docker run -d --name letsboot-frontend \
+docker run -d --name frontend \
   --network letsboot -p 4201:80 frontend 
 
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/
@@ -150,7 +146,9 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/
 ```bash
 go mod download
 go build ./cmd/backend
-./backend --db.password="supersecure" --queue.password="megasecure" 
+./backend --db.password="supersecure" \
+  --queue.password="megasecure" \
+  --db.type=postgres --crawler.data=/tmp/crawler
 ```
 
 ----
@@ -166,6 +164,7 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build ./cmd/backend
+
 FROM scratch
 WORKDIR /app 
 COPY --from=build /app/backend /app/backend
@@ -189,12 +188,15 @@ project-start/
 docker build -t backend \
   -f build/package/backend.Dockerfile .
 
+docker volume create crawler-files
+
 docker run -d --name backend -p 8080:8080 \
   -e LETSBOOT_DB.HOST=database \
   -e LETSBOOT_DB.PASSWORD="supersecure" \
-  -e LETSBOOT_QUEUE.HOST=queue \
+  -e LETSBOOT_DB.PASSWORD="supersecure" \
+  -e LETSBOOT_DB.TYPE="postgres" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
-  -v /home/letsboot/docker-volume/:/var/data \
+  -v crawler-files:/var/data \
   --network letsboot backend
 
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
@@ -208,6 +210,19 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/ 
 echo add website
 echo check data: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
+```
+
+----
+
+> skip
+
+## Crawler - run and build manually
+
+```bash
+go mod download
+go build ./cmd/crawler
+./crawler  --queue.password="megasecure" \
+  --db.type=postgres --crawler.data=/tmp/crawler
 ```
 
 ----
@@ -230,6 +245,7 @@ COPY --from=build /app/config/backend.* .
 ENTRYPOINT ["/app/crawler"]
 #...
 ```
+
 ----
 
 ## Crawler - build and run
@@ -242,7 +258,7 @@ docker build -t crawler \
 docker run -d --name crawler  \
   -e LETSBOOT_QUEUE.HOST=queue \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
-  -v /home/letsboot/docker-volume/:/var/data \
+  -v crawler-files:/var/data \
   --network letsboot crawler
 ```
 
@@ -258,14 +274,27 @@ curl -H "Content-Type: application/json" \
     http://localhost:8080/crawls
 ```
 
----- 
+----
+
+> skip
+
+### run scheduler manually
+
+```bash
+curl -X POST http://$PARTICIPANT_NAME.sk.letsboot.com:8080/schedule
+```
+
+Note:
+* simple example for powerful simple containers 
+
+----
 
 ### scheduler
 
 build/package/scheduler.Dockerfile
 ```Dockerfile
 FROM curlimages/curl
-CMD curl $SCHEDULE_URL
+CMD curl -X POST $SCHEDULE_URL
 ```
 
 project-start/
@@ -280,7 +309,7 @@ docker run -it -e SCHEDULE_URL=http://backend:8080/schedule --network letsboot s
 Note:
 * try `http://backend:8080/sites` to see a result
 
----
+----
 
 ### Shutdown everything
 
@@ -291,8 +320,9 @@ docker rm frontend backend crawler database queue
 
 ----
 
-### gitlab registry
+## Private Registry
 
+Push everything to your registry:
 ```bash
 docker tag backend registry.gitlab.com/$GIT_REPO/jonasfelix/backend:latest
 docker tag crawler registry.gitlab.com/$GIT_REPO/jonasfelix/crawler:latest
@@ -311,6 +341,7 @@ echo "open https://gitlab.com/$GIT_REPO/container_registry"
 
 ### recap
 
+* understanding of the course project
 * run prebuilt docker images (database, queue)
 * create Dockerfiles
 * run containers
