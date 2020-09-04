@@ -70,6 +70,7 @@ func Crawl(uri string, crawlId int) (response sdk.PageResponse, err error) {
 			return response, err
 		}
 		reader = bytes.NewReader(bs)
+		response.Dumped = true
 	}
 
 	uris, err := parseNodes(reader)

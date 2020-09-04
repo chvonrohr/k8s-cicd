@@ -23,6 +23,7 @@ type PageResponse struct {
 	Urls        []string
 	ContentType string
 	Ok          bool
+	Dumped      bool
 }
 
 type SchedulerResponse struct {

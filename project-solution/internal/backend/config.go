@@ -25,4 +25,6 @@ func InitialiseFlags() {
 	pflag.String("queue.password", "guest", "queue password")
 	pflag.Int("queue.port", 5672, "queue port")
 
+	pflag.String("crawler.data", "/var/data", "data dir for crawler dump files")
+
 }
