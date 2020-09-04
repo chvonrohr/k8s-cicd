@@ -20,11 +20,27 @@ Note:
   * Updating the OS
   * Scaling
   * Run a server per app:
-    * bad utilisation
+    * bad utilisation, expensive failover
 * Use virutalisation
   * separate os and environment
-  * 
+  * isolated applications
+  * better/split utilization of servers
+  * overhead (size, bootup time, complexity/updates)
+* Containers
+  * each app is in one container
+  * runs directly in the OS (no virtualisation)
+  * isolated custom environment
+  * can be smaller and faster to deploy
+  * starting up means, starting your apps process
+  * portable to any compatible system
 
+* everything on a server
+* shared hosting
+* chroot in shared hosting
+* virtualisation
+* virtual servers for everything
+* containers on servers
+* clusters managing containers
 
 ----
 
@@ -34,45 +50,14 @@ Note:
 * an isolated process or group of processes
   * resource restrictions (cpu, memory, network...)
   * separate file system
+    * dependencies, configuration, scripts, binaries
   * separate network / ports
   * no direct access or visibility to other processes / containers
-  * 
 
 > a process isolated in it's own environment by the operating system
 
-Note: cbroup, namespaces, 
-
-----
-
-### container vs virtual machine
-
-----
-
-### history of managing infrastrucutre
-
-* everything on a server
-* shared hosting
-* chroot in shared hosting
-* virtualisation
-* virtual servers for everything
-* containers
-* ...
-
-----
-
-
-### history containers
-
-* 
-
-> At Red Hat we like to say, "Containers are Linux—Linux is Containers."
-
-----
-
-### main building blocks
-
+Note: 
 * isolated filesystem based on a container image
-  * dependencies, configuration, scripts, binaries
 * kernel namespaces and cgroups
-
-Note: If you're familiar with chroot, think of a container as an extended version of chroot
+* your process running as your process
+* similar to chroot but with many more features

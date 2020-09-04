@@ -1,5 +1,5 @@
-# DevOps: 
-# CI/CD with Kubernetes
+### Welcome to our course
+## DevOps: CI/CD with Kubernetes
 
 Notes: Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
 
@@ -33,14 +33,14 @@ Note:
 
 ## Agenda - Workshoptage 2020:
 
-* Introduction and Setup (00, 01)
-* Containers (02)
-* Docker Introduction (10, 12, 13)
-  * Course project & Docker (15)
-* Kubernetes Introduction (20, 21, 22)
-  * Course project & Kubernetes  (25)
-* CI/CD Introduction (30)
-  * Course project & Gitlab-CI (35)
+* Introduction and Setup <small>(00, 01)</small>
+* Containers <small>(02)</small>
+* Docker Introduction <small>(10, 12, 13)</small>
+  * Course project & Docker <small>(15)</small>
+* Kubernetes Introduction <small>(20, 21, 22)</small>
+  * Course project & Kubernetes  <small>(25)</small>
+* CI/CD Introduction <small>(30)</small>
+  * Course project & Gitlab-CI <small>(35)</small>
 
 > Tailored/reduced for workshoptage.ch
 

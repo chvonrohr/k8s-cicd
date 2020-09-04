@@ -319,6 +319,10 @@ ul > li:before {
   font-size: 36px;
 }
 
+.reveal small {
+  vertical-align: middle !important;
+}
+
 .reveal:not(.overview) .slides {
   width:90% !important;
 }
@@ -339,6 +343,7 @@ ul > li:before {
 .reveal pre>code {
   font-size: 1em;
   font-family: "Roboto Mono";
+  max-height:500px;
 }
 
 .reveal p>code {

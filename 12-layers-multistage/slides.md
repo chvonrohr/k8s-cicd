@@ -1,8 +1,11 @@
-# images and layers
+# Optimize images
+
+* use cached layers
+* reduce final image size
 
 ----
 
-## look at layers
+## Layers get cached
 
 ```bash
 # show image layers
@@ -29,35 +32,37 @@ fc7d43a7d637        4 days ago          /bin/sh -c yarn install --production    
 ```
 
 Note: 
-The `<missing>` IMAGE history entries refer to steps of the used image, which are not separate images and therfore do not have their own "ID" in the docker hub.
+The `<missing>` IMAGE history entries refer to steps of the used base image, which are not separate images and therfore do not have their own "ID" in the docker hub.
 
 ----
 
-## optimization example - 1/3
+## Current state
 
-Every code change leads to a `yarn install`
+`yarn install` runs on every change
 
 ```bash
-# change something then run regular build (~25s)
+# change something then run regular build - repeat twice (~25s)
 time docker build -t todo-app . 
 ```
 
-Dockerfile
+todo-app/Dockerfile
 ```Dockerfile
 FROM node:12-alpine
 WORKDIR /app
 COPY . .
 RUN yarn install --production
-RUN echo -e "\033[1;31m this will run on build \033[0m"
 CMD ["node", "src/index.js"]
 ```
 
+Note:
+* look at the "Use cache" notes for each Step/layer
+
 ----
 
-## optimization example - 2/3
+## Move layers to optimize caching
 
-Now `yarn` is only run when package.json is changed.
-See difference in "Using cache" within the build output.
+* yarn only needs package.json and yarn.lock
+* copy source after install
 
 Dockerfile
 ```Dockerfile
@@ -74,6 +79,8 @@ CMD ["node", "src/index.js"]
 time docker build -t todo-app . 
 ```
 
+Note:
+* look at the "Use cache" notes for each Step/layer
 ----
 
 ## optimization example - 3/3
@@ -92,3 +99,55 @@ time docker build --no-cache -t todo-app .
 
 > make sure you don't copy unclean files into image
 
+----
+
+## multi stage builds
+
+* separate build container step
+* no build dependencies in final image
+
+----
+
+## without multistage
+### course project frontend
+
+project-start/web/Dockerfile
+```Dockerfile
+FROM node:12-alpine AS build
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install
+COPY . .
+RUN node_modules/.bin/ng build --prod --source-map=false --build-optimizer=false
+CMD ng serve --host 0.0.0.0
+````
+
+project-start/web/
+```sh
+docker build -t frontend .
+docker images # look for frontend - ca. 773MB size
+```
+
+-----
+
+## with multistage
+### course project frontend
+
+project-start/web/Dockerfile
+```Dockerfile
+FROM node:12-alpine AS build
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install
+COPY . .
+RUN node_modules/.bin/ng build --prod --source-map=false --build-optimizer=false
+
+FROM nginx:alpine
+COPY --from=build /app/dist/crawler /usr/share/nginx/html
+```
+
+project-start/web/
+```bash
+docker build -t frontend-slim .
+docker images # look for frontend-slim - ca. 773MB size
+```

@@ -3,6 +3,14 @@
 
 ----
 
+## Workflow
+
+1. First we show and explain
+2. You get all the slides and infos
+3. You walk through it during Exercise slots
+
+----
+
 ## Web IDE / Theia
 
 * open: http://FIRSTNAME.sk.letsboot.com:3000
@@ -83,7 +91,7 @@ some:
   * get used to the commands, you'll use them a lot
 * use `ctrl+c` to exit running processes
 * use `exit` command if you are in remote shell
-* use new terminals if you want to run things in parllel
+* use multiple terminals if you want to run things in parallel
 * click on links in the Theia shell (cmd + click)
 
 ----

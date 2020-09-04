@@ -1,15 +1,12 @@
-# Docker Engine
+# Docker
+### "The" Container Toolset
 
-* Docker Inc. the company
-* Docker Engine the "toolbox"
+* 4 Million images
 
-Notes: Started 2013. Not the first doing container, but the first doing it well.
-
-----
-
-# Docker Facts
-
-* 3,870,423 images
+Notes: 
+* 4 Million images
+* Started 2013. 
+* Not the first doing container, but the first doing it well.
 * First Release 2013
 * Golang
 * "Runs" on Linux, Windows, macOS
@@ -22,18 +19,50 @@ Notes: Started 2013. Not the first doing container, but the first doing it well.
 
 ----
 
-# Ecosystem
+## Docker Overview
 
-* runc
-* dockerd
-* docker-cli
-* docker hub
-* registry - repository for Docker images
-  * biggest registriers: Docker Hub and Docker Cloud
-* docker compose - defining and running multi-container applications (partly similar to kubernetes)
-* docker swarm - manage multiple nodes running docker engine (partly similar to kubernetes)
-* docker objects: images, containers, services
-* ? https://mobyproject.org/
+![Docker Overview](../assets/docker-overview.png)
+
+```txt
+docker-cli -> dockerd (containerd) -> runc -> process
+```
+
+Notes:
+* docker project has many components 
+* changed / separated over time
+* most important:
+  * docker-cli - cli tool, building images and so on
+  * dockerd (containerd) - managing multiple containers and their needs
+  * runc - working with the OS to run the process in a container
+* hub.docker.com - registry
+* docker compose - start/stop multiple containers working together
+* docker swarm - manage containers on multiple servers - not often used anymore due to kubernetes
+
+----
+
+## Docker Workflow
+
+![Docker workflow](../assets/docker-process.svg)
+<!-- .element style="width:50%" -->
+
+Note:
+* You build a docker image
+* The image gets run as container
+* Images are stored locally 
+* Base Images (can) get pulled from the Registry
+* You can push your image to the registry
+* Images are layered and locally cached (often you only need to download the top image)
+
+----
+
+## Docker Image
+
+1. Choose base image
+2. Define changes <small>(copy files, commands to execute)</small>
+3. Build as new image
+
+![Docker Layers](../assets/docker-layers.png)
+<!-- .element style="width: 40%;" -->
 
 Note: 
 * Docker container is a standardized, encapsulated environment that runs applications. A container is managed using the Docker API or CLI.
@@ -42,17 +71,16 @@ Note:
 
 ----
 
-# First container
+## Build and run our first container
 
 1. todo-app
 2. write image configuration (Dockerfile)
 2. build image
 3. run container from image
 
-
 ----
 
-# Write first Dockerfile
+### Todo App
 
 create: todo-app/Dockerfile
 ```Dockerfile
@@ -64,14 +92,19 @@ RUN echo -e "\033[1;31m this will run on build \033[0m"
 CMD ["node", "src/index.js"]
 ```
 
-Note: We use the official example from docker in this first lesson.
+Note: 
+* FROM refers to the base image
+* WORKDIR is the folder in the filesystem we want to work in
+* COPY . . copies ./ from our local machine to ./ in our Working directory
+* RUN runs a command on build time
+* CMD defines how the container should bestarted
 
 ----
 
 ## build image from Dockerfile
 
+todo-app/
 ```bash
-cd todo-app
 docker build -t todo-app .
 ```
 
@@ -87,18 +120,18 @@ docker build -t todo-app .
 
 ```bash
 docker run -d -p 4000:3000 todo-app
-open http://localhost:4000
+docker ps
+echo http://$PARTICIPANT_NAME.sk.letsboot.com:4000
 ```
 
 * `-d` run detached
 * `-p` bind host port 4000 to contianer port 3000
-* open http://localhost:4000 in your browser
 
 ----
 
 ## update container
 
-change: todo-app/static/index.html
+change: todo-app/src/static/index.html
 ```html
 ...
 <body>
@@ -115,60 +148,104 @@ docker run -dp 4000:3000 todo-app
 > You'll get an error.
 
 Note: 
-We could run another version on a different port.
+* We could run another version on a different port.
 
 ----
 
-## remove container
+## replace container
 
 ```bash
 # get the container id 
 docker ps
-# stop the container with the matching id
+
+# stop and remove container 
+#   or in one step: docker rm -f CONTAINER-ID
 docker stop CONTAINER-ID
-# remove image
 docker rm CONTAINER-ID
+
 # run it again with a proper name
 docker run -dp 4000:3000 todo-app
 ```
 
-> or in one step `docker rm -f CONTAINER-ID`
-
 Note: 
-Later we'll see how a Kubernetes kann do this "replacement" automatically.
-All todos are gone, as the data of the container is gone with it.
-We do not update within the container like in linux with "apt update", we build a new version and replace the container.
+* data in the container is gone with the container
+* containers can be stoped and started (data stays)
+* containers get not updated but replaced
 
 https://docs.docker.com/get-started/overview/
 
-----
-
-## put a image on a registry
-
-1. create account on hub.docker.com
-2. login `docker login -u YOUR-USER-NAME`
-1. create a repository: https://hub.docker.com/repository/create
-2. name ist 'todo-app'
-3. list images `docker image ls`
-4. tag your image `docker tag todo-app YOUR-USER-NAME/todo-app`
-5. push it `docker push YOUR-USER-NAME/todo-app`
-
-Note: We'll use our own registry in future exercises.
 
 ----
 
-## run image from registry somewhere
+# Exercise Mode - first container
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/hT6wgEtwoUt0no87gV/giphy.gif)
+
+----
+
+## let's use a registry
+
+1. login to hub.docker.com
+2. create a repository named 'todo-app': <br/>  https://hub.docker.com/repository/create
+3. login and push on terminal
+
+```bash
+docker login -u YOUR-USER-NAME
+docker image ls
+docker tag todo-app YOUR-USER-NAME/todo-app
+docker push YOUR-USER-NAME/todo-app
+```
+
+4. check your image: <br/> https://hub.docker.com/u/YOUR-USER-NAME
+
+----
+
+## run somewhere else
 
 * go to: http://play-with-docker.com/
-* login to get a docker playground
-* click "add new instance" to create playground environment
-* run your image `docker run -dp 3000:3000 YOUR-USER-NAME/todo-app`
-* click on "Open Port" enter "3000" and allow popus
+* login with docker login 
+* click "add new instance" 
+* run your image:
+```bash
+docker run -dp 4000:3000 YOUR-USER-NAME/todo-app
+```
+* click on the "4000" link
+* add somet unique todos
 
 Note: 
-Build docker images, tag them, push them to a registry and use them on any other machine.
-Scenario: Your CI pipeline builds and pushes the image, you can run it on a local-, stage- and production environment.
-(Move secrets/custom configuration out of your images to make them independant.)
+* build docker images anywhere
+* push them on a registry
+* use them anywhere
+* we'll use private registries and ci/cd to do that
+* keep secretes and custom configuration out of your images
+
+----
+
+## stop and start containers
+
+```bash
+# add some todos and then stop the container
+docker ps
+docker stop CONTAINER-ID1
+
+# start a new container and add some todos
+docker run -dp 4000:3000 todo-app
+
+# stop new container and start old one see old todos
+docker container ls
+docker stop CONTAINER-ID1
+docker start CONTAINER-ID2
+```
+
+----
+
+# Exercise Mode - registry
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/RkziS2LzRB1V6xhIs7/giphy.gif)
 
 ----
 
@@ -177,12 +254,12 @@ Scenario: Your CI pipeline builds and pushes the image, you can run it on a loca
 Layered filesystem:
 1. base image layers - imutable
 2. our image layer - imutable
-3. individual container layer - "temporary"
+3. individual container layer - bound to the container
 
 Note: 
-All changes are stored in the individual container layer.
-Multiple container from the same image have different data.
-If a container is updated, which means replaced, the date is gone by deleting the old container.
+* All changes are stored in the individual container layer.
+* Multiple container from the same image have different data.
+* If a container is updated, which means replaced, the date is gone by deleting the old container.
 
 ----
 
@@ -202,8 +279,10 @@ docker exec CONTAINER-ID cat /data.txt
 ```
 
 Note: 
-The tail -f is dummy process to keep the container running.
-If the main process of a container stops, the container is stopped.
+* each running container has it's own layer for changes
+* exec executes a command in a container
+* The tail -f is dummy process to keep the container running.
+* If the main process of a container stops, the container is stopped.
 
 ----
 
@@ -215,40 +294,46 @@ Share data with volumes:
 # create volume
 docker volume create todo-db
 
-# stop todo container
-docker rm -f CONTAINER-ID
-
 # start todo with volume -v
 docker run -dp 4000:3000 -v todo-db:/etc/todos todo-app
+
+# start second container
+docker run -dp 4001:3000 -v todo-db:/etc/todos todo-app
 ```
-Edit todos. Remove container. Run new container as above. Check todos.
+
+create todos on both containers and reload to see same data
 
 Note:
-This will `mount` the /etc/todos folder of the container to our new volume.
-
+* In the /etc/todos is the sqlite database of our app
+* This will `mount` the /etc/todos folder of the container to our new volume.
+* This works with sqlite on low load - won't work with mysql
 
 ----
 
 ## Where is the volume
 
 ```bash
+# show volume
 docker volume inspect todo-db
+
+# list files
+sudo ls /var/lib/docker/volumes/todo-app/_data
 ```
 
-> On docker for desktop this will be within the linux of your docker virtual machine.
+> Hint: On Docker Desktop it's with in the virtual server
 
 ----
 
-## Bind Mounts
+## Bind Mounts - Developer mode
 
-Mount specific host folders to your container.
+Run code from host in container. 
 
-Run code from host in container. (dev-mode)
+todo-app/
 ```bash
 # bind mount /app folder to code folder
 docker run -dp 4000:3000 \
     -w /app \
-    -v "/FULL/PATH/TO/todo-app:/app" \
+    -v "$(pwd):/app" \
     -v todo-db:/etc/todos  \
     node:12-alpine \
     sh -c "yarn install && yarn run dev"
@@ -270,30 +355,30 @@ docker logs -f CONTAINER-ID
 
 ----
 
+# Exercise Mode
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/3ornk7TgUdhjhTYgta/giphy.gif)
+
+----
+
 ## recap
 
 ```bash
-# configure docker image
-vim Dockerfile
+docker build -t tag -f Dockerfile
 
-# run docker image
 docker run -d -p HOST_PORT:CONTAINER_PORT IMAGE_NAME \
-  -v named-volume:/path/ \
-  -v /local/path:/host-path \ 
+  -v named-volume:/path/ \ -v /local/path:/host-path \ 
 
-# create volume
-docker volume create todo-db
+docker volume create todo-db # create volumes
 
-# see running containers
-docker ps
+docker ps --all # show all containers
 
-# stop and remove container
-docker rm -f CONTAINER-ID
+docker rm -f CONTAINER-ID # stop and remove
 
-# log into container
-docker exec -it CONTAINER-ID /bin/bash
+docker exec -it CONTAINER-ID /bin/bash # enter container
 
-# container logs
 docker logs -f CONTAINER-ID
 ```
 
@@ -305,4 +390,4 @@ docker logs -f CONTAINER-ID
 docker run -dp 6080:80 dorowu/ubuntu-desktop-lxde-vnc
 ```
 
-open: http://localhost:6080
+open: http://FIRSTNAME.sk.letsboot.com:6000
