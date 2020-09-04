@@ -51,6 +51,8 @@ spec:
               value: letsboot
             - name: LETSBOOT_DB.USERNAME
               value: letsboot
+            - name: LETSBOOT_DB.TYPE
+              value: postgres
             - name: LETSBOOT_DB.PASSWORD
               valueFrom:
                 secretKeyRef:
