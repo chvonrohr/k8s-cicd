@@ -26,6 +26,7 @@ stages:
 deploy_all:
   # run this on the deployment stage
   stage: deploy
+  needs: ['build_backend', 'build_frontend', 'build_crawler', 'build_scheduler']
   # run this when a tagged commit (when a new git tag is pushed)
   only:
     refs:
@@ -59,6 +60,7 @@ deploy_all:
 
 # cli release
 release:
+  needs: ['test_go']
   stage: release
   image: goreleaser/goreleaser:latest
   variables:

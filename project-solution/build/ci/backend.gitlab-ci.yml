@@ -15,6 +15,7 @@ build_backend:
   # we could import it, but we don't to make it more easy to understand
   variables:
     APP: backend
+  needs: ['test_go']
   script:
   - docker build -t $GITLAB_REPO/$APP:$VERSION -f project-solution/build/package/$APP.Dockerfile project-solution/
   # docker images for commits without a tag are not deployed in our case
