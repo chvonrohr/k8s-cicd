@@ -32,6 +32,11 @@ spec:
             successThreshold: 1
             periodSeconds: 10
             initialDelaySeconds: 5
+          resources:
+            requests:
+              memory: 10M
+            limits:
+              memory: 15M
           image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
           ports:
             - containerPort: 8080
