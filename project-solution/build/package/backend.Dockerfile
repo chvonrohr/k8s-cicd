@@ -30,6 +30,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w" ./cmd/backen
 # use upx to reduce binary size even further
 RUN upx ./backend
 
+# create db dir as letsboot user
+RUN mkdir db
+
 # we use "scratch" image to run go service
 # the scratch image "doesn't contain anything"
 FROM scratch
@@ -46,6 +49,7 @@ ENV GIN_MODE=release
 WORKDIR /app
 COPY --from=build /code/backend /app/backend
 COPY --from=build /code/config/backend.* .
+COPY --from=build /code/db /var/db
 USER letsboot:letsboot
 
 ENTRYPOINT ["/app/backend"]
