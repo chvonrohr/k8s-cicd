@@ -34,9 +34,9 @@ spec:
             initialDelaySeconds: 5
           resources:
             requests:
-              memory: 10M
+              memory: 20M
             limits:
-              memory: 15M
+              memory: 30M
           image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
           ports:
             - containerPort: 8080
