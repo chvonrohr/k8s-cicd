@@ -16,10 +16,10 @@ spec:
           containers:
           - image: eu.gcr.io/letsboot/kubernetes-course/scheduler:latest
             name: scheduler
-            env: 
+            resources: {}
+            env: # add
             - name: SCHEDULE_URL
               value: "http://backend/schedule"
-            resources: {}
           restartPolicy: OnFailure
   schedule: '* * * * *'
 status: {}

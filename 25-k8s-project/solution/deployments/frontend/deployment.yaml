@@ -6,7 +6,7 @@ metadata:
     app: frontend
   name: frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: frontend
@@ -18,7 +18,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: eu.gcr.io/letsboot/kubernetes-course/frontend
+      - image: eu.gcr.io/letsboot/kubernetes-course/frontend:latest
         name: frontend
         resources: {}
 status: {}

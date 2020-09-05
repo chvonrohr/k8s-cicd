@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: backend
   name: backend
@@ -13,13 +12,19 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: backend
     spec:
+      volumes: #add
+      - name: page-storage
+        persistentVolumeClaim:
+          claimName: page-storage
       containers:
       - image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
         name: backend
+        volumeMounts: # add
+          - mountPath: /var/data
+            name: page-storage
         env:
           - name: LETSBOOT_QUEUE.HOST
             value: queue
@@ -31,6 +36,8 @@ spec:
             value: letsboot
           - name: LETSBOOT_DB.USERNAME
             value: letsboot
+          - name: LETSBOOT_DB.TYPE
+            value: postgres
           - name: LETSBOOT_QUEUE.PASSWORD
             valueFrom:
               secretKeyRef:
@@ -41,5 +48,3 @@ spec:
               secretKeyRef:
                 name: database-postgresql
                 key: postgresql-password
-        resources: {}
-status: {}

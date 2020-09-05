@@ -1,13 +1,11 @@
 # Our project with Kubernetes
 
-> A Deployment schedules PODs with one purpose.
-
 ----
 
 ## Agenda:
 
 1. create and use namespace
-2. create kubernetes manifests
+2. create kubernetes manifests <small>for backend, frontend, crawler, scheduler, database and queue</small>
 3. apply to local cluster
 4. apply to google cluster
 
@@ -16,7 +14,10 @@
 ## create and use namespace
 
 ```bash
+# create namespace
 kubectl create namespace letsboot
+
+# set as default namespace
 kubectl config set-context --current --namespace=letsboot
 ```
 
@@ -27,11 +28,11 @@ kubectl config set-context --current --namespace=letsboot
 project-start/
 ```bash
 kubectl create deployment frontend \
-  --image=eu.gcr.io/letsboot/kubernetes-course/frontend \
+  --image=registry.gitlab.com/$GIT_REPO/frontend:latest \
   --dry-run=client -o yaml > deployments/frontend/deployment.yaml
 ```
 
-> for simplicit we use our public registry for now
+> A Deployment schedules PODs with one purpose.
 
 ----
 
@@ -51,7 +52,7 @@ spec:
     metadata: { labels: { app: frontend } }
     spec:
       containers:
-      - image: eu.gcr.io/letsboot/kubernetes-course/frontend
+      - image: registry.gitlab.com/letsboot/REPOSITORY/frontend:latest
         name: frontend
 ```
 
@@ -117,15 +118,15 @@ status:
 
 ## Frontend apply service
 
-Show differences/changes:
 project-start/
 ```bash
+# show changes
 kubectl diff -f deployments
-```
 
-Apply and test it:
-```bash
+# apply all files in the folder
 kubectl apply --recursive -f deployments/
+
+# check gain for lookup
 kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend
 exit
@@ -135,25 +136,56 @@ exit
 
 ----
 
-## Database 1/3 - deployment
+## Database 1/4 - deployment
 
 ```bash
 kubectl create deployment database --image=postgres \
   -o yaml --dry-run=client > deployments/database/deployment.yaml
 ```
 
-* will be changed to statefulset in the future
+Notes:
+* https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
 
 ----
 
-## Database 2/3 - volume
+## Database 2/4 - strategy Recreate
 
 deployments/database/deployment.yaml
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 #...
+spec:
+  replicas: 1 # DO NOT increase
+  selector:
+    matchLabels:
+      app: database
+  strategy:
+    type: Recreate # prevents rolling updates
+#...
+```
+
+Note:
+* strategy recreat will prevent kubernetes from creating multiple pods accessing the same data ie. for updates
+
+----
+
+## Database 3/4 - volume
+
+deployments/database/deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+#...
+spec:
+  #...
+  template:
     spec:
+      # add volume claim
+      volumes:
+      - name: database-storage
+        persistentVolumeClaim:
+          claimName: database-storage
       containers:
       - image: postgres
         name: postgres
@@ -161,36 +193,27 @@ kind: Deployment
         # add volume mount
         volumeMounts: 
           - mountPath: /var/lib/postgresql
-            name: data
-      # add volume claim
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: database
+            name: database-storage
 status: {}
 ```
 
-Note:
-* databases will need stateful sets to keep data consistent 
-* when kubernetes creates or replaces database pods, and has multiple running, there will be data damage to postgres
-
 ----
 
-## Database 3/3 - env and secret
+## Database 4/4 - env and secret
 
 ```bash
+# create secret
 kubectl create secret generic database-postgresql \
-  --from-literal=postgresql-password=ItsComplicated!
+  --from-literal=postgresql-password=secretpassword
 ```
 
 deployments/database/deployment.yaml
 ```yaml
 #...
-    spec:
       containers:
       - image: postgres
         name: postgres
-        # add:
+        # ...
         env:
           - name: POSTGRES_USER
             value: letsboot
@@ -220,14 +243,13 @@ k describe pods database
 
 ## Database volume
 
-* no kubectl create for volumes
 
 deployments/database/pvc.yaml
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: database
+  name: database-storage
 spec:
   accessModes:
     - ReadWriteOnce
@@ -237,12 +259,13 @@ spec:
 ```
 
 ```bash
-kubectl apply --recursive -f deployments/
+k apply -Rf deployments/
 k describe pvc database
 k describe pods database
 ```
 
-* Applications must wait gracefully for resources!
+Note:
+* there is no kubectl create for pvc
 
 ----
 
@@ -252,7 +275,7 @@ k describe pods database
 kubectl create service clusterip database --tcp=5432:5432 \
   -o yaml --dry-run=client > deployments/database/service.yaml
 
-kubectl apply --recursive -f deployments/
+kubectl apply -Rf deployments/
 ```
 
 * ClusterIP means, the service is only available form inside the cluster
@@ -281,17 +304,24 @@ kubectl create deployment queue --image=rabbitmq:3 \
 
 ```bash
 kubectl create secret generic queue-rabbitmq \
-  --from-literal=rabbitmq-password=MoreSecrets!
+  --from-literal=rabbitmq-password=morepasswords
 ```
 
 ```yaml
 #...
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue
+  strategy:
+    type: Recreate # change
+  template:
     spec:
       containers:
       - image: rabbitmq:3
         name: rabbitmq
-        # add:
-        env:
+        env: # add
           - name: RABBITMQ_DEFAULT_USER
             value: user
           - name: RABBITMQ_DEFAULT_PASS
@@ -302,6 +332,9 @@ kubectl create secret generic queue-rabbitmq \
 #...
 ```
 
+Note: 
+* for this chapters we do not use a volume for rabbitmq
+
 ----
 
 ### Rabbitmq - service
@@ -310,7 +343,7 @@ kubectl create secret generic queue-rabbitmq \
 kubectl create service clusterip queue --tcp=5672:5672 \
   -o yaml --dry-run=client > deployments/queue/service.yaml
 
-kubectl apply --recursive -f deployments/
+kubectl apply -Rf deployments/
 ```
 
 ----
@@ -331,30 +364,32 @@ spec:
       storage: 1Gi
 ```
 
-```bash
-kubectl apply --recursive -f deployments/
-```
-
 ----
 
 ## Backend 1/2 - deployment
 
 ```bash
-kubectl create deployment backend --image=eu.gcr.io/letsboot/kubernetes-course/backend:latest \
+kubectl create deployment backend --image=registry.gitlab.com/$GIT_REPO/backend:latest \
   -o yaml --dry-run=client > deployments/backend/deployment.yaml
 ```
 
 ----
 
-## Backend 2/2 - deployment env  & secrets
+## Backend 2/2 - volume, env, secrets
 
 ```yaml
-# ...      
+# ... 
+      volumes: #add
+      - name: page-storage
+        persistentVolumeClaim:
+          claimName: page-storage
       containers:
-      - image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
+      - image: registry.gitlab.com/$GIT_REPO/backend:latest
         name: backend
-        # add
-        env:
+        volumeMounts: # add
+          - mountPath: /var/data
+            name: page-storage
+        env: # add
           - name: LETSBOOT_QUEUE.HOST
             value: queue
           - name: LETSBOOT_QUEUE.USERNAME
@@ -388,7 +423,7 @@ kubectl create deployment backend --image=eu.gcr.io/letsboot/kubernetes-course/b
 kubectl create service nodeport backend --tcp=80:8080 \
   -o yaml --dry-run=client > deployments/backend/service.yaml
 
-kubectl apply --recursive -f deployments/
+kubectl apply -Rf deployments/
 ```
 
 ----
@@ -396,8 +431,6 @@ kubectl apply --recursive -f deployments/
 ## Backend - test and run
 
 ```bash
-kubectl apply --recursive -f deployments/
-
 kubectl run -it --rm  --image=nicolaka/netshoot --restart=Never netshoot -- /bin/sh
 curl http://backend/
 curl http://backend/sites
@@ -409,22 +442,21 @@ exit
 ## Crawler - repeat
 
 ```bash
-kubectl create deployment crawler --image=eu.gcr.io/letsboot/kubernetes-course/crawler:latest \
+kubectl create deployment crawler --image=registry.gitlab.com/$GIT_REPO/crawler:latest \
   -o yaml --dry-run=client > deployments/crawler/deployment.yaml
 ```
 
 ```yaml
 #...
-    spec:
       containers:
-      - image: eu.gcr.io/letsboot/kubernetes-course/crawler:latest
+      - image: registry.gitlab.com/$GIT_REPO/crawler:latest
         name: crawler
         volumeMounts:
           - mountPath: /var/data
             name: page-storage
         env:
           - name: LETSBOOT_BACKEND.URL
-            value: backend
+            value: "http://backend"
           - name: LETSBOOT_QUEUE.HOST
             value: queue
           - name: LETSBOOT_QUEUE.USERNAME
@@ -434,8 +466,10 @@ kubectl create deployment crawler --image=eu.gcr.io/letsboot/kubernetes-course/c
               secretKeyRef:
                 name: queue-rabbitmq
                 key: rabbitmq-password        
-      volumes:
-        - name: page-storage
+      volumes: #add
+      - name: page-storage
+        persistentVolumeClaim:
+          claimName: page-storage
 ```
 
 > no service needed
@@ -446,7 +480,7 @@ kubectl create deployment crawler --image=eu.gcr.io/letsboot/kubernetes-course/c
 
 ```bash
 k create cronjob scheduler --schedule='* * * * *' \
-  --image=eu.gcr.io/letsboot/kubernetes-course/scheduler:latest \
+  --image=registry.gitlab.com/$GIT_REPO/scheduler:latest \
   -o yaml --dry-run=client > deployments/scheduler/cronjob.yaml
 ```
 
@@ -454,9 +488,9 @@ deployments/scheduler/cronjob.yaml
 ```yaml
 # ...
           containers:
-          - image: eu.gcr.io/letsboot/kubernetes-course/scheduler:latest
+          - image: registry.gitlab.com/$GIT_REPO/scheduler:latest
             name: scheduler
-            env: 
+            env: # add
             - name: SCHEDULE_URL
               value: "http://backend/schedule"
 # ...
@@ -465,6 +499,21 @@ deployments/scheduler/cronjob.yaml
 ```bash
 k get cronjobs
 ```
+
+----
+
+## Access from outsie
+
+```bash
+k port-forward service/backend 8080:80 --address 0.0.0.0
+k port-forward service/frontend 4200:80 --address 0.0.0.0
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
+k logs cralwer-TAB
+```
+
+1. add https://www.letsboot.com 
+2. wait for the scheduler to kick in
+3. watch crawling
 
 ----
 
@@ -485,7 +534,13 @@ kubectl wait --namespace ingress-nginx \
 
 > common way to install manifests in kubernetes
 
----
+Note:
+* for docker desktop use this:
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+----
 
 ## Configure ingress
 
@@ -517,19 +572,15 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 Note:
 * use portforward instead:
 
-```bash
-k port-forward service/backend 8080:80 --address 0.0.0.0
-k port-forward service/frontend 4200:80 --address 0.0.0.0
-```
-
 ----
 
 # Google Kubernetes Engine
 
 ```bash
 kubectl config get-contexts
-kubectl config use-context gke
+kubectl config use-context gke_TAB
 kubectl create namespace letsboot
+kubectl config set-context --current --namespace=letsboot
 
 kubectl create secret generic database-postgresql \
   --from-literal=postgresql-password=ItsComplicated!
@@ -538,7 +589,7 @@ kubectl create secret generic queue-rabbitmq \
   --from-literal=rabbitmq-password=MoreSecrets!
 
 kubectl apply --recursive -f deployments/
-kubectl get ingress -o wide # takes a view minutes till you get public ip
+watch kubectl get ingress -o wide # takes a view minutes till you get public ip
 ```
 
 Note:

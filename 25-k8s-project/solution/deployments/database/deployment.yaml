@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: database
   name: database
@@ -10,16 +9,23 @@ spec:
   selector:
     matchLabels:
       app: database
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: database
     spec:
+      volumes:
+      - name: database-storage
+        persistentVolumeClaim:
+          claimName: database-storage
       containers:
       - image: postgres
         name: postgres
+        volumeMounts: 
+          - mountPath: /var/lib/postgresql
+            name: database-storage
         env:
           - name: POSTGRES_USER
             value: letsboot
@@ -30,14 +36,3 @@ spec:
               secretKeyRef:
                 name: database-postgresql
                 key: postgresql-password
-        resources: {}
-        # add volume mount
-        volumeMounts: 
-          - mountPath: /var/lib/postgresql
-            name: data
-      # add volume claim
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: database
-status: {}

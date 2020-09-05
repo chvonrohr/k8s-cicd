@@ -25,9 +25,9 @@ spec:
             name: page-storage
         env:
           - name: LETSBOOT_BACKEND.URL
-            value: "backend"
+            value: http://backend
           - name: LETSBOOT_QUEUE.HOST
-            value: "queue"
+            value: queue
           - name: LETSBOOT_QUEUE.USERNAME
             value: user
           - name: LETSBOOT_QUEUE.PASSWORD
@@ -35,6 +35,7 @@ spec:
               secretKeyRef:
                 name: queue-rabbitmq
                 key: rabbitmq-password        
-      volumes:
-        - name: page-storage
-status: {}
+      volumes: #add
+      - name: page-storage
+        persistentVolumeClaim:
+          claimName: page-storage

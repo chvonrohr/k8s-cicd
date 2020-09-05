@@ -10,7 +10,8 @@ spec:
   selector:
     matchLabels:
       app: queue
-  strategy: {}
+  strategy: 
+    type: Recreate
   template:
     metadata:
       creationTimestamp: null
@@ -20,7 +21,8 @@ spec:
       containers:
       - image: rabbitmq:3
         name: rabbitmq
-        env:
+        resources: {}
+        env: # add
           - name: RABBITMQ_DEFAULT_USER
             value: user
           - name: RABBITMQ_DEFAULT_PASS
@@ -28,5 +30,4 @@ spec:
               secretKeyRef:
                 key: rabbitmq-password
                 name: queue-rabbitmq
-        resources: {}
 status: {}
