@@ -1,7 +1,9 @@
 ### Welcome to our course
 ## DevOps: CI/CD with Kubernetes
 
-Notes: Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
+Notes:
+
+Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
 
 ----
 
@@ -26,7 +28,7 @@ Note:
 * Expectations
 * Questions
 
-Note:
+Notes:
 * Trainer starts to introduce herself/himself and then everyone says their name, company, background, expectations and questions.
 
 ----
@@ -44,7 +46,7 @@ Note:
 
 > Tailored/reduced for workshoptage.ch
 
-Note:
+Notes:
 
 * Remove chapters not use before training.
 * Introduction to containers using Docker
