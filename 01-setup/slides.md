@@ -5,9 +5,11 @@
 
 ## Workflow
 
-1. First we show and explain
+1. We show and explain
 2. You get all the slides and infos
 3. You walk through it during Exercise slots
+
+> we focus on explaining while hands-on
 
 ----
 
