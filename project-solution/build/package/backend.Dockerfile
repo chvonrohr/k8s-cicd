@@ -2,7 +2,7 @@
 FROM golang:alpine AS build
 
 # install dependencies
-RUN apk update && apk add --no-cache git ca-certificates tzdata upx && update-ca-certificates
+RUN apk update && apk add --no-cache git gcc g++ ca-certificates tzdata upx && update-ca-certificates
 
 # don't use root
 ENV USER=letsboot
