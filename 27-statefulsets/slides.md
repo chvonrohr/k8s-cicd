@@ -1,3 +1,3 @@
 # stateful sets
 
-delete everthing to not mess it up :-D
+how to build your own stateful set
