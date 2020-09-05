@@ -1,6 +1,6 @@
-# ci cd the project
+# CI/CD our project
 
-1. build contianer
+1. build contianers
 2. push containers to registry
 3. deliver new versions to the cluster
 
@@ -130,7 +130,8 @@ build_backend:
   stage: build
   tags: [ docker ]
   image: docker:stable
-  services: [ docker:dind ]
+  services:
+  - docker:dind
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
@@ -167,6 +168,17 @@ build_scheduler:
 
 ----
 
+## Run - Continuous Integration
+
+```bash
+git add -A
+git commit -m 'test, build and push containers'
+git push
+echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
+```
+
+----
+
 > skip (is done automatcially)
 
 ## set google service account
@@ -196,7 +208,7 @@ project-start/.gitlab-ci.yml
 #...
 deploy_all:
   variables:
-    CLUSTER_NAME: ke_letsboot_europe-west6_training-k8s-wst-jf-cluster
+    CLUSTER_NAME: training-k8s-wst-jonasf-cluster
   stage: deploy
   tags: [ docker ]
   image: google/cloud-sdk:alpine
@@ -207,7 +219,22 @@ deploy_all:
     - gcloud components install kubectl
     - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
+    - sed -i.bak -E "s/(frontend|backend|scheduler|crawler):latest/\1:$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
     - kubectl apply -f project-start/deployments --recursive
+```
+
+Note:
+* example how to replace :latest with sed inplace without kustomize
+
+----
+
+## Run - Continuous Delivery
+
+```bash
+git add -A
+git commit -m 'test, build and push containers'
+git push
+echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 ```
 
 ----
@@ -218,7 +245,8 @@ project-start/deployments/kustomization
 ```yaml
 resources:
   - deployments/database/service.yaml
-  - deployments/database/statefulset.yaml
+  - deployments/database/deployment.yaml
+  - deployments/database/pvc.yaml
   - deployments/frontend/deployment.yaml
   - deployments/frontend/service.yaml
   - deployments/ingress.yaml
@@ -229,7 +257,7 @@ resources:
   - deployments/backend/service.yaml
   - deployments/namespace.yaml
   - deployments/queue/service.yaml
-  - deployments/queue/statefulset.yaml
+  - deployments/queue/deployment.yaml
 ```
 
 ----

@@ -1,11 +1,23 @@
+# to support local docker in docker gitlab-runner 
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+
+# add your ci/cd code here:
+
+# surge_demo:
+#  image: node:12
+#  script:
+#    - cd project-start/web
+#    - yarn install
+#    - yarn add surge
+#    - node_modules/.bin/ng build --prod
+#    - node_modules/.bin/surge -p dist/crawler/ --domain $CI_PROJECT_NAME-k8s-training.surge.sh
+
 stages:
 - test
 - build
 - deploy
-
-variables:
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://docker:2375/
 
 test_go:
   stage: test
@@ -28,77 +40,74 @@ build_backend:
   variables:
     APP: backend
   stage: build
-  tags:
-  - docker
+  tags: [ docker ]
   image: docker:stable
   services:
   - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-solution/build/package/$APP.Dockerfile project-solution/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
-  before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build_frontend:
   variables:
     APP: frontend
   stage: build
-  tags:
-  - docker
+  tags: [ docker ]
   image: docker:stable
   services:
   - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-solution/build/package/$APP.Dockerfile project-solution/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
-  before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build_crawler:
   variables:
     APP: crawler
   stage: build
-  tags:
-  - docker
+  tags: [ docker ]
   image: docker:stable
   services:
   - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-solution/build/package/$APP.Dockerfile project-solution/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
-  before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build_scheduler:
   variables:
     APP: scheduler
   stage: build
-  tags:
-  - docker
+  tags: [ docker ]
   image: docker:stable
   services:
   - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-solution/build/package/$APP.Dockerfile project-solution/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
-  before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 deploy_all:
   variables:
-    CLUSTER_NAME: CHANGE-ME
+    CLUSTER_NAME: training-k8s-wst-jonasf-cluster
   stage: deploy
   tags: [ docker ]
   image: google/cloud-sdk:alpine
   before_script:
-  - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-  - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
-  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-  - gcloud components install kubectl
-  - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+    - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+    - gcloud components install kubectl
+    - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
+    - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
     - kubectl apply -f project-start/deployments --recursive
