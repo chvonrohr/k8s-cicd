@@ -14,6 +14,10 @@ spec:
       labels:
         app: backend
     spec:
+      volumes:
+        - name: page-storage
+          persistentVolumeClaim:
+            claimName: page-storage
       containers:
         - name: backend
           livenessProbe:
@@ -40,6 +44,9 @@ spec:
           image: eu.gcr.io/letsboot/kubernetes-course/backend:latest
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - mountPath: /var/data
+              name: page-storage
           env:
             - name: LETSBOOT_QUEUE.HOST
               value: letsboot-queue-rabbitmq

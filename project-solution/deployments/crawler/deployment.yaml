@@ -16,6 +16,8 @@ spec:
     spec:
       volumes:
         - name: page-storage
+          persistentVolumeClaim:
+            claimName: page-storage
       containers:
         - name: crawler
           resources:
@@ -31,7 +33,7 @@ spec:
               name: page-storage
           env:
             - name: LETSBOOT_BACKEND.URL
-              value: "letsboot-backend"
+              value: "http://letsboot-backend"
             - name: LETSBOOT_QUEUE.HOST
               value: letsboot-queue-rabbitmq
             - name: LETSBOOT_QUEUE.USERNAME
