@@ -19,9 +19,10 @@ Note:
 1. create a network
 2. run PostgreSQL image
 3. run RabbitMQ image
-4. write Dockerfiles
+4. write Dockerfiles <small>for backend, crawler, scheduler and frontend</small>
 5. build and run containers
 6. push to registry
+
 ----
 
 ## Create network
@@ -111,7 +112,7 @@ WORKDIR /app
 COPY web/yarn.lock .
 COPY web/package.json .
 RUN yarn install
-COPY . .
+COPY web/ .
 RUN node_modules/.bin/ng build --prod --source-map=false --build-optimizer=false
 
 FROM nginx:alpine
@@ -158,12 +159,13 @@ go build ./cmd/backend
 build/ci/package/backend.Dockerfile
 ```Dockerfile
 FROM golang:alpine AS build
+RUN apk add gcc g++
 WORKDIR /app
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build ./cmd/backend
+RUN CGO_ENABLED=0 go build -ldflags="-w" ./cmd/backend
 
 FROM scratch
 WORKDIR /app 
@@ -193,9 +195,9 @@ docker volume create crawler-files
 docker run -d --name backend -p 8080:8080 \
   -e LETSBOOT_DB.HOST=database \
   -e LETSBOOT_DB.PASSWORD="supersecure" \
-  -e LETSBOOT_DB.PASSWORD="supersecure" \
   -e LETSBOOT_DB.TYPE="postgres" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
+  -e LETSBOOT_QUEUE.HOST=queue \
   -v crawler-files:/var/data \
   --network letsboot backend
 
@@ -229,22 +231,28 @@ go build ./cmd/crawler
 
 ### Crawler - Dockerfile
 
-project-start/
-```bash
-cp build/package/backend.Dockerfile build/package/crawler.Dockerfile
-```
-
 build/package/crawler.Dockerfile
 ```Dockerfile
-#...
-RUN CGO_ENABLED=0 go build ./cmd/crawler
+FROM golang:alpine AS build
+RUN apk update && apk add ca-certificates tzdata && update-ca-certificates
+WORKDIR /app
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+COPY . . 
+RUN CGO_ENABLED=0 go build -ldflags="-w"  ./cmd/crawler
+
 FROM scratch
-WORKDIR /app 
+WORKDIR /app
+COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /app/crawler /app/crawler
-COPY --from=build /app/config/backend.* .
+COPY --from=build /app/config/crawler.* .
 ENTRYPOINT ["/app/crawler"]
-#...
 ```
+
+Notes:
+* the crawler needs ssl cert information to connect to websites
 
 ----
 
@@ -256,6 +264,7 @@ docker build -t crawler \
   -f build/package/crawler.Dockerfile .
 
 docker run -d --name crawler  \
+  -e LETSBOOT_BACKEND.URL=http://backend:8080 \
   -e LETSBOOT_QUEUE.HOST=queue \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   -v crawler-files:/var/data \
@@ -304,6 +313,9 @@ docker build -t scheduler - < build/package/scheduler.Dockerfile
 
 # this will be run with kubernetes jobs
 docker run -it -e SCHEDULE_URL=http://backend:8080/schedule --network letsboot scheduler
+
+# watch the crawler
+docker logs -f crawler
 ```
 
 Note:
@@ -324,18 +336,23 @@ docker rm frontend backend crawler database queue
 
 Push everything to your registry:
 ```bash
-docker tag backend registry.gitlab.com/$GIT_REPO/jonasfelix/backend:latest
-docker tag crawler registry.gitlab.com/$GIT_REPO/jonasfelix/crawler:latest
-docker tag frontend registry.gitlab.com/$GIT_REPO/jonasfelix/frontend:latest
-docker tag scheduler registry.gitlab.com/$GIT_REPO/jonasfelix/scheduler:latest
+# you are already logged in - that's how you could login into other registries
+# docker login registry.fromyou.ch
 
-docker push registry.gitlab.com/$GIT_REPO/jonasfelix/backend:latest
-docker push registry.gitlab.com/$GIT_REPO/jonasfelix/crawler:latest
-docker push registry.gitlab.com/$GIT_REPO/jonasfelix/frontend:latest
-docker push registry.gitlab.com/$GIT_REPO/jonasfelix/scheduler:latest
+docker tag backend registry.gitlab.com/$GIT_REPO/backend:latest
+docker tag crawler registry.gitlab.com/$GIT_REPO/crawler:latest
+docker tag frontend registry.gitlab.com/$GIT_REPO/frontend:latest
+docker tag scheduler registry.gitlab.com/$GIT_REPO/scheduler:latest
+
+docker push registry.gitlab.com/$GIT_REPO/backend:latest
+docker push registry.gitlab.com/$GIT_REPO/crawler:latest
+docker push registry.gitlab.com/$GIT_REPO/frontend:latest
+docker push registry.gitlab.com/$GIT_REPO/scheduler:latest
 
 echo "open https://gitlab.com/$GIT_REPO/container_registry"
 ```
+
+* we already logged you in to your registry
 
 ----
 
