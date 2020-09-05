@@ -1,4 +1,5 @@
 *.exe
-crawler
-backend
-scheduler
+./crawler
+./backend
+./scheduler
+./letsboot-cli
