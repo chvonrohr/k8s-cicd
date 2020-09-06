@@ -21,6 +21,9 @@ kubectl create namespace letsboot
 kubectl config set-context --current --namespace=letsboot
 ```
 
+Note:
+* you can create a namespace as declarative yaml and refer to it in each file
+
 ----
 
 ## Generate file with kubectl
@@ -51,15 +54,20 @@ spec:
   template:
     metadata: { labels: { app: frontend } }
     spec:
+      imagePullSecrets: # add
+      - name: regcred
       containers:
-      - image: registry.gitlab.com/letsboot/REPOSITORY/frontend:latest
+      - image: registry.gitlab.com/letsboot/$GIT_REPO/frontend:latest
         name: frontend
 ```
 
 Note:
-* all images are on a public google repository to simplify this part of the course
+* we have a public google registry with the images as backup if gitlab fails
+eu.gcr.io/letsboot/kubernetes-course/frontend:latest
 
 ----
+
+> check skip
 
 ## Frontend - apply and test
 
@@ -68,7 +76,7 @@ project-start/
 kubectl apply -f deployments/frontend/deployment.yaml
 kubectl get pods
 kubectl describe pod frontend
-kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
+kubectl run -i --tty netshoot --rm --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend # will not work
 curl IP-OF-FRONTEND-POD
 exit # we are in the netshoot container
@@ -111,6 +119,7 @@ status:
   loadBalancer: {}
 ```
 
+Note:
 * service provides dns lookup and "connects" to an available matching pod
 * NodePort = Port is bound to the IP of each Node the pod is running on
 
@@ -121,13 +130,13 @@ status:
 project-start/
 ```bash
 # show changes
-kubectl diff -f deployments
+kubectl diff -Rf deployments
 
 # apply all files in the folder
 kubectl apply --recursive -f deployments/
 
 # check gain for lookup
-kubectl run -i --tty netshoot --rm  --image=nicolaka/netshoot --restart=Never -- sh
+kubectl run -i --tty netshoot --rm --image=nicolaka/netshoot --restart=Never -- sh
 curl frontend
 exit
 ```
@@ -180,6 +189,7 @@ kind: Deployment
 spec:
   #...
   template:
+    #...
     spec:
       # add volume claim
       volumes:
@@ -310,13 +320,12 @@ kubectl create secret generic queue-rabbitmq \
 ```yaml
 #...
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: queue
+  replicas: 1 # do not increase
+  # ...
   strategy:
     type: Recreate # change
   template:
+    # ...
     spec:
       containers:
       - image: rabbitmq:3
@@ -334,6 +343,7 @@ spec:
 
 Note: 
 * for this chapters we do not use a volume for rabbitmq
+* still we do not want rolling update for the queue
 
 ----
 
@@ -383,6 +393,8 @@ kubectl create deployment backend --image=registry.gitlab.com/$GIT_REPO/backend:
       - name: page-storage
         persistentVolumeClaim:
           claimName: page-storage
+      imagePullSecrets: #add
+      - name: regcred
       containers:
       - image: registry.gitlab.com/$GIT_REPO/backend:latest
         name: backend
@@ -448,24 +460,28 @@ kubectl create deployment crawler --image=registry.gitlab.com/$GIT_REPO/crawler:
 
 ```yaml
 #...
+      imagePullSecrets: #add
+      - name: regcred
       containers:
       - image: registry.gitlab.com/$GIT_REPO/crawler:latest
         name: crawler
         volumeMounts:
           - mountPath: /var/data
             name: page-storage
+        imagePullSecrets:
+        - name: regcred
         env:
-          - name: LETSBOOT_BACKEND.URL
-            value: "http://backend"
-          - name: LETSBOOT_QUEUE.HOST
-            value: queue
-          - name: LETSBOOT_QUEUE.USERNAME
-            value: user
-          - name: LETSBOOT_QUEUE.PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: queue-rabbitmq
-                key: rabbitmq-password        
+        - name: LETSBOOT_BACKEND.URL
+          value: "http://backend"
+        - name: LETSBOOT_QUEUE.HOST
+          value: queue
+        - name: LETSBOOT_QUEUE.USERNAME
+          value: user
+        - name: LETSBOOT_QUEUE.PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: queue-rabbitmq
+              key: rabbitmq-password        
       volumes: #add
       - name: page-storage
         persistentVolumeClaim:
@@ -487,6 +503,8 @@ k create cronjob scheduler --schedule='* * * * *' \
 deployments/scheduler/cronjob.yaml
 ```yaml
 # ...
+          imagePullSecrets: #add
+          - name: regcred
           containers:
           - image: registry.gitlab.com/$GIT_REPO/scheduler:latest
             name: scheduler
@@ -505,10 +523,13 @@ k get cronjobs
 ## Access from outsie
 
 ```bash
-k port-forward service/backend 8080:80 --address 0.0.0.0
+# run in separate terminals
+k port-forward service/backend 8080:80 --address 0.0.0.0 
 k port-forward service/frontend 4200:80 --address 0.0.0.0
+
+# open page
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
-k logs cralwer-TAB
+k logs -f crawler-TAB
 ```
 
 1. add https://www.letsboot.com 
