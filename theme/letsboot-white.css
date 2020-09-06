@@ -369,6 +369,10 @@ ul > li:before {
   margin: 0;
 }
 
+.reveal table {
+  margin: 0;
+}
+
 /* highlighting */ 
 
 .lang-bash span.hljs-comment {
