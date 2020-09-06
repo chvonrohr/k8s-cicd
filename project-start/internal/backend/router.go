@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util""
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
