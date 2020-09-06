@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/crawler"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/crawler"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util"
 )
 
 func TestCrawl(t *testing.T) {

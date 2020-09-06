@@ -5,7 +5,7 @@ build_scheduler:
     - /var/lib/docker/aufs
   needs: []
   script:
-  - docker build -t $GITLAB_REPO/$APP:$VERSION -f project-solution/build/package/$APP.Dockerfile project-solution/
+  - docker build -t $GITLAB_REPO/$APP:$VERSION -f project-vision/build/package/$APP.Dockerfile project-vision/
   # docker images for commits without a tag are not deployed in our case
   # but we still push them to the docker registry for debugging 
   # and to have a full build to see possible errors

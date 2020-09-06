@@ -53,7 +53,7 @@ ng generate application crawler --prefix crl --routing true --style scss
 
 # this walthrough expects you to have everything installed (see INSTALL.md)
 
-cd project-solution/
+cd project-vision/
 
 # cleanup if already running
 # alternatively you can run cleanup.sh

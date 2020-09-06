@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/model"
 	"gorm.io/gorm"
 )
 

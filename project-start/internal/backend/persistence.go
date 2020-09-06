@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

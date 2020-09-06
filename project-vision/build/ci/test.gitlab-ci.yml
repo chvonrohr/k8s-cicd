@@ -3,7 +3,7 @@ test_go:
   stage: test
   image: golang
   script:
-    - cd project-solution
+    - cd project-vision
     - export GO111MODULE=on
     - go mod download
     - go test ./...
@@ -12,6 +12,6 @@ test_frontend:
   stage: test
   image: trion/ng-cli-karma
   script:
-    - cd project-solution/web
+    - cd project-vision/web
     - yarn install
     - ng test --progress false --watch false

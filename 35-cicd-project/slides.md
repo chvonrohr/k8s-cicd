@@ -40,7 +40,7 @@ echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
 /.gitlab-ci.yml (course level)
 ```yaml
 include:
-# - local: project-solution/.gitlab-ci.yml
+# - local: project-vision/.gitlab-ci.yml
 - local: project-start/.gitlab-ci.yml
 ```
 
@@ -90,7 +90,7 @@ test_go:
   stage: test
   image: golang
   script:
-    - cd project-solution
+    - cd project-vision
     - export GO111MODULE=on
     - go mod download
     - go test ./...
@@ -110,7 +110,7 @@ test_frontend:
   stage: test
   image: trion/ng-cli-karma
   script:
-    - cd project-solution/web
+    - cd project-vision/web
     - yarn install
     - ng test --progress false --watch false
 ```
@@ -135,7 +135,7 @@ build_backend:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-solution/build/package/$APP.Dockerfile project-solution/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 ```

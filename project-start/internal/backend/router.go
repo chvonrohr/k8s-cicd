@@ -3,16 +3,17 @@ package backend
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
 	"log"
 	"strconv"
 	"time"
 
+	"github.com/spf13/viper"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util""
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/sdk"
 	"gorm.io/gorm"
 )
 

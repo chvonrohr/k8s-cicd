@@ -12,6 +12,6 @@ deployments/*/*.yaml
 EOF
 rsync -a  \
     --exclude-from=sync-start-excludes.txt \
-    project-solution/ project-start/
+    project-vision/ project-start/
 
 rm sync-start-excludes.txt

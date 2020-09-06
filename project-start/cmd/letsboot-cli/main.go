@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/sdk"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/sdk"
 )
 
 func main() {

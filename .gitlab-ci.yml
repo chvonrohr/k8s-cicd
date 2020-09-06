@@ -2,5 +2,5 @@
 # this is a special case for this training material, as we have to be able
 # to switch gitlab-ci scripts quickly
 include:
-- local: project-solution/.gitlab-ci.yml
+- local: project-vision/.gitlab-ci.yml
 #- local: project-start/.gitlab-ci.yml

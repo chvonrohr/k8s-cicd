@@ -11,7 +11,7 @@ builds:
       - amd64
       - 386
     id: letsboot-cli
-    dir: ./project-solution
+    dir: ./project-vision
     main: ./cmd/letsboot-cli
     binary: letsboot-cli
 archives:
@@ -25,7 +25,7 @@ archives:
       - LICENSE*
       - README*
       - CHANGELOG*
-      - project-solution/config/**/*
+      - project-vision/config/**/*
     format_overrides:
       - goos: windows
         format: zip

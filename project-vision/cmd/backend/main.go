@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/backend"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/backend"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util"
 )
 
 func main() {

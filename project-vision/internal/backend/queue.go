@@ -3,10 +3,11 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/model"
-	"gitlab.com/letsboot/core/kubernetes-course/project-solution/internal/util"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/model"
+	"gitlab.com/letsboot/core/kubernetes-course/project-vision/internal/util"
 )
 
 var (

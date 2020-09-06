@@ -41,7 +41,7 @@ Folder structure:
 todo-app/ (example project)
 multistage-demo/ (example project)
 project-start/ (starting point of our project)
-project-solution/ (NOT the solution)
+project-vision/ (NOT the solution)
 
 ... other files ...
 ```
