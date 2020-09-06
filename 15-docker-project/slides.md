@@ -14,6 +14,33 @@ Note:
 
 ----
 
+## Project folders
+
+project-start/
+```txt
+.
+├── .gitlab-ci.yml
+├── README.md
+├── build
+│   ├── ci
+│   └── package
+├── cmd
+├── config
+├── deployments
+├── go.mod
+├── go.sum
+├── internal
+└── web
+    ├── package.json
+    └── yarn.lock
+```
+
+Note:
+* Recommended mono repo golang project structure.
+https://github.com/golang-standards/project-layout
+
+----
+
 ## The plan
 
 1. create a network
@@ -22,6 +49,8 @@ Note:
 4. write Dockerfiles <small>for backend, crawler, scheduler and frontend</small>
 5. build and run containers
 6. push to registry
+
+> the "CI" part of CI/CD
 
 ----
 
@@ -72,7 +101,7 @@ docker run -d \
 
 Note: 
 * The hostname in this case is only for rabbitmq important, for networking we use the --name
-* Check: we don't need the port forward if we only want to talk to the queue from other containeers
+* Check: we don't need the port binding if we only want to talk to the queue from other containeers
 
 ----
 
@@ -179,6 +208,9 @@ ENTRYPOINT ["/app/backend"]
 Note:
 * we will use a scratch image, as go is statically compiled and doesn't need anything
 * As golang is statically compiled we don't need anything else
+* we use ENTRYPOINT instead of CMD
+  * CMD sets default command which can be overwritten
+  * ENTRYPOINT sets binary that will be run (docker command parameter swill be added as parameters)
 * Attention: We run this go app in the root context, we'll show how to add a user in a further chapter
 
 ----
@@ -190,7 +222,7 @@ project-start/
 docker build -t backend \
   -f build/package/backend.Dockerfile .
 
-docker volume create crawler-files
+docker volume create page-storage
 
 docker run -d --name backend -p 8080:8080 \
   -e LETSBOOT_DB.HOST=database \
@@ -198,7 +230,7 @@ docker run -d --name backend -p 8080:8080 \
   -e LETSBOOT_DB.TYPE="postgres" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   -e LETSBOOT_QUEUE.HOST=queue \
-  -v crawler-files:/var/data \
+  -v page-storage:/var/data \
   --network letsboot backend
 
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
@@ -253,6 +285,8 @@ ENTRYPOINT ["/app/crawler"]
 
 Notes:
 * the crawler needs ssl cert information to connect to websites
+* use the smallest possible base image providing what you need
+* rethink base image if you need to add to much yourself
 
 ----
 
@@ -267,7 +301,7 @@ docker run -d --name crawler  \
   -e LETSBOOT_BACKEND.URL=http://backend:8080 \
   -e LETSBOOT_QUEUE.HOST=queue \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
-  -v crawler-files:/var/data \
+  -v page-storage:/var/data \
   --network letsboot crawler
 ```
 
@@ -312,7 +346,7 @@ project-start/
 docker build -t scheduler - < build/package/scheduler.Dockerfile 
 
 # this will be run with kubernetes jobs
-docker run -it -e SCHEDULE_URL=http://backend:8080/schedule --network letsboot scheduler
+docker run -e SCHEDULE_URL=http://backend:8080/schedule --network letsboot scheduler
 
 # watch the crawler
 docker logs -f crawler
@@ -327,7 +361,7 @@ Note:
 
 ```sh
 docker stop frontend backend crawler database queue
-docker rm frontend backend crawler database queue
+docker rm frontend backend crawler database queue scheduler
 ```
 
 ----
