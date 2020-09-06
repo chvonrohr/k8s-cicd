@@ -97,6 +97,7 @@ some:
 * use `exit` command if you are in remote shell
 * use multiple terminals if you want to run things in parallel
 * click on links in the Theia shell (cmd + click)
+* ignore extension errors (bottom right)
 
 ----
 
