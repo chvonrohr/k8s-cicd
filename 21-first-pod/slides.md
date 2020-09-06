@@ -1,101 +1,103 @@
+> skip 
+
 # "Creating" a pod
 
 Note: We assume you have a running cluster.
 
 ----
 
-## Add pod manually
+## Add pod manually (Imperative)
 
 ```sh
-kubectl run hello-http --image=strm/helloworld-http 
+# run nginx in a pod
+kubectl run helloworld --image=nginx
+
+# look at the pod
 kubectl get pods
-kubectl get deployments
-kubectl delete deployment hello-http1
+kubectl describe pod helloworld
+
+# access port
+kubectl port-forward --address 0.0.0.0 pod/helloworld 5080:80
+
+# cleanup
+kubectl delete pod helloworld
 ```
 
-Note: This will create one pod within a deployment hello-http. To remove it we'll remove the deployment. It's recommended to do everything decleratively with yaml files.
+Note: 
+* use imperative only for temporary debugging pods or on local development environment
+* do not change your environment imperatively as you'll lose track and history
 
 ----
 
 ## Declerative approach
 
-hello-http.yaml
+project-start/helloworld.yaml
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: hello-http2
+  name: helloworld
 spec:
   containers:
-  - name: hello-http2
-    image: strm/helloworld-http
+  - name: helloworld
+    image: nginx
 ```
 
-Note: We call it hello-http2 so you can separate it from the first manually created if it is still running.
+Note: 
+* always use declarative
+  * versioned
+  * repeatable
+  * adaptable
 
 ----
 
-## Tell K8S to apply it
+## Apply configuration
 
+project-start/
 ```sh
-kubectl apply -f hello-http.yaml
+# tell kubernetes to work towards your configuration
+kubectl apply -f helloworld.yaml
+
+# check status
 kubectl get pods
-kubectl get deployments # none found
-kubectl describe pod hello-http2
-```
 
-Note: This will not create a deployment but only a single independant pod.
-
-----
-
-## Access pod with http
-
-```sh
-kubectl port-forward hello-http2 8282:80
-```
-
-Note: This works for local and remote clusters.
-
-----
-
-## Remove by yaml
-
-```sh
-kubectl delete -f hello-http.yaml
+# tell kubernetes to remove objects from the file
+kubectl delete -f helloworld.yaml
 ```
 
 ----
 
 ## Put it into a deployment
 
-hello-http-deployment.yaml
+project-start/helloworld-deployment.yaml
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-http-deployment
+  name: helloworld
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: hello-http
-      some-label: write-anything
+      app: helloworld
   template:
     metadata:
       labels:
-        app: hello-http
+        app: helloworld
+        some-label: write-anything
     spec:
       containers:
-      - name: hello-http
-        image: strm/helloworld-http
+      - name: helloworld
+        image: nginx
 ```
 
 ----
 
 ## "Apply" deployment
 
+project-start/
 ```sh
-kubectl apply -f hello-http-deployment.yaml
+kubectl apply -f helloworld-deployment.yaml
 kubectl get pods
 kubectl get deployments
 ```
@@ -110,35 +112,50 @@ spec:
   replicas: 10
 ```
 
+project-start/
 ```sh
+kubectl diff -f helloworld-deployment.yaml
 kubectl apply -f hello-http-deployment.yaml
-kubectl get pods
+watch kubectl get pods # ctrl+c to exit
 ```
 
-* change back and reapply
-
-Note: You change the declaration of what you want, and kubernetes will do each step to get there.
+Note: 
+* you change the declaration and kubectl works towards your goal
 
 ----
 
-## Let's change an image
+## Services
 
-port forwards
-```sh
-kubectl port-forward hello-http-deployment-yxasfasdf 8282:80
-```
-
-hello-http-deployment.yaml
+project-start/helloworld-deployment.yaml
 ```yaml
+--- 
+#....
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
 spec:
-  template:
-    spec:
-      containers:
-      - name: hello-http
-        image: nginxdemos/hello
+  selector:
+    app: helloworld
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
 ```
 
-* That's whay we need services :-).
+Note:
+* To access pods from a deployment we need a service which does load balancing.
 
 ----
 
+### Apply and access service
+
+project-start/
+```bash
+# access service
+kubectl port-forward --address 0.0.0.0 service/helloworld 5080:80
+
+# cleanup
+kubectl delete -f helloworld-deployment.yaml
+```

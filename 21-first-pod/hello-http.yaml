@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: hello-http2
-spec:
-  containers:
-  - name: hello-http2
-    image: strm/helloworld-http
