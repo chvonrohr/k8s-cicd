@@ -1,5 +1,17 @@
 # Kubernetes
 
+![Kubernetes Components](../assets/components-of-kubernetes.svg)
+<!-- .element style="width:80%" -->
+
+----
+
+### What Kubernetes doesn't do
+
+* manage underlying infrastructure
+* "manage" storage or backup
+* make an application scalable
+* manage external dns or networking
+
 ----
 
 # Kubernetes Facts
@@ -25,6 +37,8 @@ A Kubernetes object is a "record of intent"--once you create the object, the Kub
 
 ### Ways to manage objects
 
+| | | |
+|---|---|---|
 | Imperative commands | Live objects |
 | Imperative object configuration | Individual files |
 | Declarative object configuration | Directories of files |
