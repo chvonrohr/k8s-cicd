@@ -50,7 +50,7 @@ https://github.com/golang-standards/project-layout
 5. build and run containers
 6. push to registry
 
-> the "CI" part of CI/CD
+> the "CI" part of CI/CD <small>exkl. the run part</small>
 
 ----
 
@@ -248,6 +248,15 @@ echo check data: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 
 ----
 
+### Exercise Mode - multistage
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/Md9UQRsv94yCAjeA1w/giphy.gif)
+<!-- .element style="width=50%" -->
+
+----
+
 > skip
 
 ## Crawler - run and build manually
@@ -315,6 +324,8 @@ docker run -d --name crawler  \
 curl -H "Content-Type: application/json" \
     -X POST -d '{"siteId":1}' \
     http://localhost:8080/crawls
+
+docker logs -f CONTAINER-ID-CRAWLER
 ```
 
 ----
@@ -357,15 +368,6 @@ Note:
 
 ----
 
-### Shutdown everything
-
-```sh
-docker stop frontend backend crawler database queue
-docker rm frontend backend crawler database queue scheduler
-```
-
-----
-
 ## Private Registry
 
 Push everything to your registry:
@@ -390,11 +392,30 @@ echo "open https://gitlab.com/$GIT_REPO/container_registry"
 
 ----
 
+### Shutdown everything
+
+```sh
+docker stop frontend backend crawler database queue
+docker rm frontend backend crawler database queue scheduler
+docker network rm letsboot
+```
+
+----
+
+### Exercise Mode - multistage
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/tAeB6dptxnoli/giphy.gif)
+<!-- .element style="width=50%" -->
+
+----
+
 ### recap
 
 * understanding of the course project
 * run prebuilt docker images (database, queue)
 * create Dockerfiles
 * run containers
-* stop remove containers
 * push containers to registry
+* stop remove containers
