@@ -12,6 +12,9 @@
 * container fundamentals:
   * container from scratch: https://www.youtube.com/watch?v=8fi7uSYlOdc
 
+* great youtube channels and playlists:
+  * Nana: Docker & Kubernetes Tutorial: https://www.youtube.com/watch?v=jPdIRX6q4jA&list=PLy7NrYWoggjwPggqtFsI_zMAwvG0SqYCb&ab_channel=TechWorldwithNana
+
 * Awesome Kubernetes: https://github.com/ramitsurana/awesome-kubernetes
 
 * Containers and Docker:
@@ -53,7 +56,8 @@
     * https://www.ianlewis.org/en/container-runtimes-part-2-anatomy-low-level-contai
     * https://www.ianlewis.org/en/container-runtimes-part-3-high-level-runtimes
     * https://www.ianlewis.org/en/container-runtimes-part-4-kubernetes-container-run
-    * 
+  * https://www.ianlewis.org/en/what-are-kubernetes-pods-anyway
+  * breaking down containers: https://itnext.io/breaking-down-containers-part-0-system-architecture-37afe0e51770
 
 
 * podcast: https://kubernetespodcast.com/
