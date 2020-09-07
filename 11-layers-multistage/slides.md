@@ -97,6 +97,8 @@ node_modules
 
 ----
 
+> skip
+
 # Exercise Mode - layers
 
 > open 10-docker/slides.md
@@ -165,6 +167,8 @@ Note:
 * the built files get copied to the final base image
 
 ----
+
+> skip
 
 # Exercise Mode - multistage
 

@@ -1,7 +1,7 @@
 ### Welcome to our course
 ## DevOps: CI/CD with Kubernetes
 
-Goal: How to get an application into containers automated onto kubernetes.
+> Goal: Put an application into containers and deliver it continuously to kubernetes.
 
 Notes:
 Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
@@ -48,8 +48,10 @@ Notes:
 > Tailored/reduced for workshoptage.ch
 
 Notes:
+* Focus hands-on playthrough
+* View from the developer side of DevOps
 
-* Remove chapters not use before training.
+* Remove chapters not used before training.
 * Introduction to containers using Docker
   * Why Docker?
   * Architecture and concepts

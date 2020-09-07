@@ -39,7 +39,6 @@ Folder structure:
 ...
 
 todo-app/ (example project)
-multistage-demo/ (example project)
 project-start/ (starting point of our project)
 project-vision/ (NOT the solution)
 
@@ -58,6 +57,8 @@ Contains:
 * local docker environment
 * local cluster
 * personal Google Kubernetes Cluster
+* gitlab project for CI/CD (forked)
+* gitlab authentication
 
 ----
 
@@ -85,6 +86,9 @@ some:
 # ... more code here
 ```
 
+Note:
+* careful with copy paste
+
 ----
 
 ## Tipps & Tricks
@@ -97,7 +101,7 @@ some:
 * use `exit` command if you are in remote shell
 * use multiple terminals if you want to run things in parallel
 * click on links in the Theia shell (cmd + click)
-* ignore extension errors (bottom right)
+* ignore theia extension errors (bottom right)
 
 ----
 
@@ -115,4 +119,8 @@ list2:
   - value2
   - object: 
     key: value
+--- # new document
+key1: value
 ```
+
+> Careful with indentation! (2 spaces)

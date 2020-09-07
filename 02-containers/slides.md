@@ -25,7 +25,9 @@ Note:
   * separate os and environment
   * isolated applications
   * better/split utilization of servers
+  * fast to get a new virtual server
   * overhead (size, bootup time, complexity/updates)
+  * philosophically "view from the system up"
 * Containers
   * each app is in one container
   * runs directly in the OS (no virtualisation)
@@ -44,15 +46,15 @@ Note:
 
 ----
 
-### what is a container
+### What is a container
 
-* an image and instructions how to run it
+* a packaged filesystem <small>(image)</small> and instructions how to run it
 * an isolated process or group of processes
   * resource restrictions (cpu, memory, network...)
   * separate file system
     * dependencies, configuration, scripts, binaries
   * separate network / ports
-  * no direct access or visibility to other processes / containers
+  * no direct access or visibility of and to other containers
 
 > a process isolated in it's own environment by the operating system
 

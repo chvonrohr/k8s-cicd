@@ -43,7 +43,15 @@ Notes:
 ## Docker Workflow
 
 ![Docker workflow](../assets/docker-process.svg)
-<!-- .element style="width:50%" -->
+<!-- .element style="width:50%;position:absolute;right:20px;top:0;" -->
+
+1. Write Dockerfile
+2. Build image
+  * push to registry
+3. Run image
+  * pull from registry
+  * or from local images
+
 
 Note:
 * You build a docker image
@@ -58,11 +66,11 @@ Note:
 ## Docker Image
 
 1. Choose base image
-2. Define changes <small>(copy files, commands to execute)</small>
+2. Define changes <br><small>(files to copy, commands to execute)</small>
 3. Build as new image
 
 ![Docker Layers](../assets/docker-layers.png)
-<!-- .element style="width: 40%;" -->
+<!-- .element style="width:50%;position:absolute;right:20px;top:0;" -->
 
 Note: 
 * Docker container is a standardized, encapsulated environment that runs applications. A container is managed using the Docker API or CLI.
@@ -177,7 +185,7 @@ https://docs.docker.com/get-started/overview/
 
 ----
 
-# Exercise Mode - first container
+### Exercise Mode - first container
 
 > open 10-docker/slides.md
 
@@ -241,7 +249,7 @@ docker start CONTAINER-ID2
 
 ----
 
-# Exercise Mode - registry
+### Exercise Mode - registry
 
 > open 10-docker/slides.md
 
@@ -251,17 +259,22 @@ docker start CONTAINER-ID2
 
 ## Persistence
 
-Layered filesystem:
-1. base image layers - imutable
-2. our image layer - imutable
-3. individual container layer - bound to the container
+![Docker Layers](../assets/container-layers.png)
+<!-- .element style="width:50%;position:absolute;right:20px;top:0;" -->
 
-Note: 
+Layered filesystem:
+1. base image layer - imutable
+2. our image layers - imutable
+3. individual container layer
+
+Note:
 * All changes are stored in the individual container layer.
 * Multiple container from the same image have different data.
 * If a container is updated, which means replaced, the date is gone by deleting the old container.
 
 ----
+
+> skip
 
 ## Persistence example
 
@@ -275,12 +288,9 @@ docker exec CONTAINER-ID cat /data.txt
 # create a second busybox container and compare the data
 docker run -d busybox sh -c "hostname > /data.txt && tail -f /dev/null"
 docker exec CONTAINER-ID cat /data.txt
-
 ```
 
-<small>Sidenote: beware of mailious images (ie. hidden minders)</small>
-
-Note: 
+Note:
 * each running container has it's own layer for changes
 * exec executes a command in a container
 * The tail -f is dummy process to keep the container running.
@@ -339,6 +349,9 @@ docker run -dp 4000:3000 \
     -v todo-db:/etc/todos  \
     node:12-alpine \
     sh -c "yarn install && yarn run dev"
+
+# watch logs
+docker logs -f CONTAINER-ID
 ```
 
 Now change index.html of todo-app.
@@ -349,15 +362,7 @@ Note:
 
 ----
 
-## Watch logs
-
-```bash
-docker logs -f CONTAINER-ID
-```
-
-----
-
-# Exercise Mode - volumes
+### Exercise Mode - volumes
 
 > open 10-docker/slides.md
 
