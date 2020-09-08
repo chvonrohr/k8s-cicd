@@ -1,32 +1,49 @@
-# Our project with Kubernetes
+## Our project on 
+# Kubernetes
+
+![project crawler](../assets/the-project.png)
+<!-- .element style="width:60%" -->
 
 ----
 
 ## Agenda:
 
 1. create and use namespace
-2. create kubernetes manifests <small>for backend, frontend, crawler, scheduler, database and queue</small>
-3. apply to local cluster
+2. define our desired kubernetes state <br> <small>configuration for backend, frontend, crawler, scheduler, database and queue</small>
+3. apply "desired state" to local cluster
 4. apply to google cluster
 
 ----
 
-## create and use namespace
+## Create and use namespace
 
 ```bash
+# check if we are in the kind context
+kubectl config get-contexts
+
 # create namespace
 kubectl create namespace letsboot
 
 # set as default namespace
 kubectl config set-context --current --namespace=letsboot
+
+# see your namespace
+kubectl get all
+
+# see everything
+kubectl get all --all-namespaces
 ```
 
 Note:
 * you can create a namespace as declarative yaml and refer to it in each file
+* namespaces group resources and prevent name conflicts
+* services can be accessed cross-namespaces using service.namespace while other things are isolated
+* k8s documentation recommends to use namespaces for different teams on one big cluster
 
 ----
 
-## Generate file with kubectl
+## Frontend
+#### Generate file with kubectl
 
 project-start/
 ```bash
@@ -35,7 +52,7 @@ kubectl create deployment frontend \
   --dry-run=client -o yaml > deployments/frontend/deployment.yaml
 ```
 
-> A Deployment schedules PODs with one purpose.
+> A deployment configures ReplicaSets of PODs.
 
 ----
 
@@ -49,16 +66,16 @@ metadata:
   labels: { app: frontend }
   name: frontend
 spec:
-  replicas: 1
+  replicas: 3 # increase
   selector: { matchLabels: { app: frontend } } 
-  template:
+  template: # the pod template to use for the replicas
     metadata: { labels: { app: frontend } }
     spec:
-      imagePullSecrets: # add
-      - name: regcred
       containers:
       - image: registry.gitlab.com/letsboot/$GIT_REPO/frontend:latest
         name: frontend
+        imagePullSecrets: # add
+        - name: regcred
 ```
 
 Note:
@@ -73,19 +90,34 @@ eu.gcr.io/letsboot/kubernetes-course/frontend:latest
 
 project-start/
 ```bash
+# copy gitlab registry secret to your namespace
+kubectl get secret regcred --namespace=default -o yaml | sed -E 's/^.*(namespace|uid|creationTimesatmp).*$//g' |sed -E '/^$/d'|k apply -f -
+
+# apply desired state
 kubectl apply -f deployments/frontend/deployment.yaml
+
+# check running pod
 kubectl get pods
 kubectl describe pod frontend
+
+# get debugging container to access frontend from within
 kubectl run -i --tty netshoot --rm --image=nicolaka/netshoot --restart=Never -- sh
-curl frontend # will not work
+curl frontend # will not work - we need a service
 curl IP-OF-FRONTEND-POD
 exit # we are in the netshoot container
 ```
 
-> now we need a services
-
 Note:
 * run a split terminal with `watch kubectl get all -o wide`
+
+----
+
+### Exercise Mode - multistage
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/Md9UQRsv94yCAjeA1w/giphy.gif)
+<!-- .element style="width=50%" -->
 
 ----
 
@@ -103,8 +135,7 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  labels:
-    app: frontend
+  labels: { app: frontend }
   name: frontend
 spec:
   ports:
@@ -112,11 +143,8 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
-  selector:
-    app: frontend
+  selector: { app: frontend }
   type: NodePort
-status:
-  loadBalancer: {}
 ```
 
 Note:
@@ -140,8 +168,6 @@ kubectl run -i --tty netshoot --rm --image=nicolaka/netshoot --restart=Never -- 
 curl frontend
 exit
 ```
-
-> now we can use dns - but only within the cluster namespace (security)
 
 ----
 
@@ -204,7 +230,6 @@ spec:
         volumeMounts: 
           - mountPath: /var/lib/postgresql
             name: database-storage
-status: {}
 ```
 
 ----
@@ -286,18 +311,16 @@ kubectl create service clusterip database --tcp=5432:5432 \
   -o yaml --dry-run=client > deployments/database/service.yaml
 
 kubectl apply -Rf deployments/
+
+# check if database was created
+kubectl exec -it database-TAB -- /bin/bash 
+psql -U letsboot -W -d letsboot # use password "secretpassword"
+\l # show database
 ```
 
 * ClusterIP means, the service is only available form inside the cluster
 
 Note:
-
-```bash
-# to get into the sql server
-kubectl exec -it database-TAB -- /bin/sh 
-psql -U letsboot -W # use password above
-\l # show database
-```
 
 ----
 
@@ -443,11 +466,21 @@ kubectl apply -Rf deployments/
 ## Backend - test and run
 
 ```bash
-kubectl run -it --rm  --image=nicolaka/netshoot --restart=Never netshoot -- /bin/sh
-curl http://backend/
-curl http://backend/sites
-exit
+# run in separate terminals
+k port-forward service/backend 8080:80 --address 0.0.0.0 
+k port-forward service/frontend 4200:80 --address 0.0.0.0
+
+echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
 ```
+
+----
+
+### Exercise Mode - multistage
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/3XDXN8tBv5KkjRQpJz/giphy.gif)
+<!-- .element style="width=50%" -->
 
 ----
 
@@ -468,8 +501,6 @@ kubectl create deployment crawler --image=registry.gitlab.com/$GIT_REPO/crawler:
         volumeMounts:
           - mountPath: /var/data
             name: page-storage
-        imagePullSecrets:
-        - name: regcred
         env:
         - name: LETSBOOT_BACKEND.URL
           value: "http://backend"
@@ -503,6 +534,15 @@ k create cronjob scheduler --schedule='* * * * *' \
 deployments/scheduler/cronjob.yaml
 ```yaml
 # ...
+spec:
+  successfulJobsHistoryLimit: 1 # add
+  failedJobsHistoryLimit: 3 # add
+  jobTemplate:
+    # ...
+    spec:
+      backoffLimit: 2 # add
+      template:
+        spec:
           imagePullSecrets: #add
           - name: regcred
           containers:
@@ -529,7 +569,7 @@ k port-forward service/frontend 4200:80 --address 0.0.0.0
 
 # open page
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
-k logs -f crawler-TAB
+k logs -f --selector app=crawler # show logs of all crawlers
 ```
 
 1. add https://www.letsboot.com 
@@ -537,6 +577,8 @@ k logs -f crawler-TAB
 3. watch crawling
 
 ----
+
+> skip
 
 ## Ingress
 
@@ -563,14 +605,15 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 
 ----
 
-## Configure ingress
+> skip
+
+## Configure ingress 
 
 deployments/ingress.yaml
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
-metadata:
-  name: local-ingress
+metadata: { name: local-ingress }
 spec:
   rules:
   - http:
@@ -586,7 +629,7 @@ spec:
 ```
 
 ```bash
-kubectl apply -f deployments --recursive
+kubectl apply -Rf deployments
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 ```
 
@@ -600,8 +643,6 @@ Note:
 ```bash
 kubectl config get-contexts
 kubectl config use-context gke_TAB
-kubectl create namespace letsboot
-kubectl config set-context --current --namespace=letsboot
 
 kubectl create secret generic database-postgresql \
   --from-literal=postgresql-password=ItsComplicated!
