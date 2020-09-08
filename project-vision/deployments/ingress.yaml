@@ -9,11 +9,11 @@ spec:
   rules:
   - http:
       paths:
-      - path: /api/*
+      - path: /api
         backend:
           serviceName: backend
           servicePort: 80
-      - path: /*
+      - path: /
         backend:
           serviceName: frontend
           servicePort: 80

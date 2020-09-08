@@ -7,4 +7,3 @@ spec:
     - port: 80
   selector:
     app: frontend
-  type: NodePort
