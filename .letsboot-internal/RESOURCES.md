@@ -77,6 +77,7 @@
   * https://github.com/containerd/containerd - the deamon managing continers with runc
   * https://github.com/opencontainers/runc - the reference, and also the most used, container implementation
   * ? https://github.com/google/cadvisor - cAdvisor for messuring container metrics
+  * https://github.com/ahmetb/kubectx - k8s commandline powertools
 
 * certifications & courses
   * http://cncf.io/certifications/cka
