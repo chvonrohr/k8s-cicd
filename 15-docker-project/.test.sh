@@ -21,6 +21,8 @@ function errout() {
     exit 1
 }
 
+kubectl config set-context kind-kind
+
 cp -r project-start project-start-pretest
 cp -rv 15-docker-project/solution/* project-start/ ||errout "merging solution"
 
@@ -71,6 +73,8 @@ docker run -d --name crawler  \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
   -v page-storage:/var/data \
   --network letsboot crawler  ||errout "running crawler"
+
+sleep 10
 
 docker run -e SCHEDULE_URL=http://backend:8080/schedule \
   --network letsboot scheduler  ||errout "running scheduler"
