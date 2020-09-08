@@ -58,6 +58,7 @@
     * https://www.ianlewis.org/en/container-runtimes-part-4-kubernetes-container-run
   * https://www.ianlewis.org/en/what-are-kubernetes-pods-anyway
   * breaking down containers: https://itnext.io/breaking-down-containers-part-0-system-architecture-37afe0e51770
+  * 12/15 factor app - the manifesto of cloud native apps: https://cloudificationzone.com/2020/06/15/12-factor-apps-15-factor-apps/
 
 
 * podcast: https://kubernetespodcast.com/
