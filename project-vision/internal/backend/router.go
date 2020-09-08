@@ -37,9 +37,6 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 	endpoints.GET("", func(c *gin.Context) {
 		c.String(200, "backend works")
 	})
-	endpoints.GET("/", func(c *gin.Context) {
-		c.String(200, "backend works")
-	})
 
 	endpoints.POST("/callback/:pageId", func(c *gin.Context) {
 		tx := GetTx(c)
