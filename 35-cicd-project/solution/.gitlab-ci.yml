@@ -49,6 +49,7 @@ build_backend:
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_frontend:
@@ -64,6 +65,7 @@ build_frontend:
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_crawler:
@@ -79,6 +81,7 @@ build_crawler:
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_scheduler:
@@ -94,11 +97,12 @@ build_scheduler:
   script:
   - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 deploy_all:
   variables:
-    CLUSTER_NAME: training-k8s-wst-jonasf-cluster
+    CLUSTER_NAME: CHANGE-TO-YOUR-CLUSTER
   stage: deploy
   tags: [ docker ]
   image: google/cloud-sdk:alpine
