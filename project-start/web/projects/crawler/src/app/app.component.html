@@ -4,7 +4,7 @@
   backend: {{url}} {{error}}
 </p>
 
-<input #siteToAdd>
+<input #siteToAdd value="https://www.letsboot.com" (keydown.enter)="addSite(siteToAdd.value)">
 <button (click)="addSite(siteToAdd.value)">add</button>
 
 <ul>
@@ -28,4 +28,6 @@
   </table>
 </section>
 
-<a href="https://www.letsboot.com" target="_blank">by letsboot.com</a>
+<div class="footer">
+  <a href="https://www.letsboot.com" target="_blank">by letsboot.com</a>
+</div>
