@@ -207,6 +207,7 @@ ENTRYPOINT ["/app/backend"]
 
 Note:
 * we will use a scratch image, as go is statically compiled and doesn't need anything
+* with java you can use GraalVM (optimaly with Quarkus)
 * As golang is statically compiled we don't need anything else
 * we use ENTRYPOINT instead of CMD
   * CMD sets default command which can be overwritten
