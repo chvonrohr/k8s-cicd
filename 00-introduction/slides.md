@@ -76,4 +76,14 @@ Continuous Integration & Delivery
   * Extension script by delivery to Kubernetes
   * Delivery to "productive" cluster
 
+----
 
+### COVID-19 Breaks / workshoptage
+
+> please help to stay within the schedule
+
+Foyer 3. floor 
+
+* 10.45 to 11.00  
+* 12:45 to 14:00 
+* 15.45 to 16.00 
