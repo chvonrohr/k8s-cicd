@@ -77,6 +77,15 @@ echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 
 ----
 
+### Exercise Mode - minimal ci/cd
+
+> open 10-docker/slides.md
+
+![Let's do this](https://media.giphy.com/media/TYlus7VAr9c4M/giphy.gif)
+<!-- .element style="width=50%" -->
+
+----
+
 ## test stage - frontend
 
 project-start/.gitlab-ci.yml
@@ -239,80 +248,21 @@ echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 
 ----
 
-> skip
+### Exercise Mode - ci project
 
-## Versions - Kustomize
+> open 10-docker/slides.md
 
-project-start/deployments/kustomization
-```yaml
-resources:
-  - deployments/database/service.yaml
-  - deployments/database/deployment.yaml
-  - deployments/database/pvc.yaml
-  - deployments/frontend/deployment.yaml
-  - deployments/frontend/service.yaml
-  - deployments/ingress.yaml
-  - deployments/crawler/deployment.yaml
-  - deployments/crawler/pvc.yaml
-  - deployments/scheduler/cronjob.yaml
-  - deployments/backend/deployment.yaml
-  - deployments/backend/service.yaml
-  - deployments/namespace.yaml
-  - deployments/queue/service.yaml
-  - deployments/queue/deployment.yaml
-```
+![Let's do this](https://media.giphy.com/media/GdJz3mScUhC5W/giphy.gif)
+<!-- .element style="width=50%" -->
 
 ----
 
-> skip
+## recap
 
-## production version stage
-
-* different cluster
-* different namespace
-* k8s documentation even suggests in the same namespace but with labels and selectors
-
-we choose different namespaces
-
-----
-
-## stage on every commit/merge to master
-
-
-----
-
-## production on tags
-
-
-----
-
-## test any merge request by checking it out and running it locally
-
-
-----
-
-> skip
-
-## add kubernetes to gitlab ci
-
-!!! deacitvate gitlab managed cluster !!!
-
-```bash
-# open kubernetes services
-echo "open https://gitlab.com/$GIT_REPO/-/clusters/new"
-
-# get api server
-kubectl cluster-info | grep 'Kubernetes master' | awk '/http/ {print $NF}'
-
-# get ca certificate
-kubectl get secret default-token-254xv -o jsonpath="{['data']['ca\.crt']}" |base64 --decode
-
-# get token
-kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep default | awk '{print $1}')
-
-# get cluster name
- echo $KUBERNETES_CLUSTER
-```
-
-Notes:
-* https://docs.gitlab.com/ee/user/project/clusters/add_remove_clusters.html#existing-kubernetes-cluster
+* gitlab-ci.yaml basic structure
+* minimal test scenario
+* docker image for build steps
+* docker in docker to build containers
+* push to registry with tagname/version and latest
+* apply (deliver) to kubernetes
+* auto-adjust versions of imges (for now with sed)
