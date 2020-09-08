@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+body {
+    font-family: "Open Sans";
+    padding: 20px;
+}
+
+input {
+    width: 200px;
+    height: 20px;
+}
+
+button {
+    width: 100px;
+    height: 25px;
+    margin-left: 10px;
+    padding: 0 10px 0 10px;
+}
+
+.footer {
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px
+}

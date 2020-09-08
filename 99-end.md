@@ -1,3 +1,9 @@
+## Final takeaway:
+
+> Always start and run Kubernetes and Container projects with CI/CD
+
+----
+
 # Thank you
 
 ### Survey:

@@ -11,4 +11,5 @@ export interface Crawl {
 export interface Page {
   ID: number;
   url: string;
+  statusCode: number;
 }
