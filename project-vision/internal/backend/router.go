@@ -32,7 +32,7 @@ func InitialiseRouter(r *gin.Engine, db *gorm.DB) {
 
 	endpoints := make(util.EndpointGroup, 0)
 	endpoints = append(endpoints, r.Group("/"))
-	endpoints = append(endpoints, r.Group("/api"))
+	endpoints = append(endpoints, r.Group("/api/"))
 
 	endpoints.GET("", func(c *gin.Context) {
 		c.String(200, "backend works")
