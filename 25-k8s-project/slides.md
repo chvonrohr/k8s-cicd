@@ -112,7 +112,7 @@ Note:
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode
 
 > open 10-docker/slides.md
 
@@ -475,7 +475,7 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode 
 
 > open 10-docker/slides.md
 

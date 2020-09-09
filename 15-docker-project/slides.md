@@ -410,7 +410,7 @@ docker network rm letsboot
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode
 
 > open 10-docker/slides.md
 

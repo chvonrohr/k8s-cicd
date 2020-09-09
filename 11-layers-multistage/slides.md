@@ -155,12 +155,11 @@ Note:
 * the built files get copied to the final base image
 
 ----
-
 > skip
 
-# Exercise Mode - multistage
+# Exercise Mode
 
 > open 10-docker/slides.md
 
-![Let's do this](https://media.giphy.com/media/j70sGTgTllIgE/giphy.gif)
+![Let's do this](https://media.giphy.com/media/l3vR2SwA3hfH4NtVC/giphy.gif)
 <!-- .element style="width=50%" -->
