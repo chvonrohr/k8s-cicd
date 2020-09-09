@@ -34,6 +34,6 @@ kubectl apply -k deployments
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
 
-kubectl apply -f deployments/local-ingress.yaml
+kubectl apply -f deployments/web-ingress.yaml
 
 open http://localhost
