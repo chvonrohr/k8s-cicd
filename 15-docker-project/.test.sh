@@ -11,6 +11,7 @@ function cleanuptest() {
     cd $startdirectory
     docker rm -f database queue frontend backend crawler
     docker network rm letsboot
+    docker volume rm page-storage
     rm -r project-start
     mv project-start-pretest project-start
 }
@@ -52,6 +53,8 @@ docker run -d \
   rabbitmq ||errout "running queue"
 
 sleep 10
+
+docker volume create page-storage||errout "couldn't create storage"
 
 docker run -d --name frontend \
   --network letsboot -p 4201:80 frontend ||errout "running frontend"
