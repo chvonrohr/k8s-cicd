@@ -23,10 +23,12 @@ What we do:
 
 ## protected variables in gitlab-ci
 
-1. open cicd
+1. open gitlab-ci settings
+
 ```bash
 echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
 ```
+
 2. expand variables
 3. add two variables
   * select protected and masked for both
@@ -35,7 +37,7 @@ echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
 
 ----
 
-## replace solution .gitlab-ci.yml with yours
+## Activate the project-start/.gitlab-ci.yml
 
 /.gitlab-ci.yml (course level)
 ```yaml
