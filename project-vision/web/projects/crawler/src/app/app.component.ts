@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
   tryUrl(index): void {
     const tryUrl = this.tryUrls[index];
     if (tryUrl !== undefined) {
-      this.http.get(tryUrl, { responseType: 'text' })
+      this.http.get(tryUrl + '/', { responseType: 'text' })
         .pipe(timeout(100))
         .subscribe(
           response => {
