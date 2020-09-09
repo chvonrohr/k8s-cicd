@@ -6,7 +6,7 @@
 
 ----
 
-## let's add MariaDB to our app
+## let's add MariaDB to our app
 
 ```txt
 [todo-app]--[MariaDB]
@@ -18,7 +18,7 @@
 
 ----
 
-## create a network
+## create a network
 
 * container networks are isolated
 * container in the same network can connect to each other

@@ -18,7 +18,7 @@
 * open: http://FIRSTNAME.sk.letsboot.com:3443
 * login with:
   * user: FIRSTNAME
-  * password: Workshoptage.
+  * password: `Workshoptage.`
 
 ----
 
@@ -91,9 +91,9 @@ Note:
 
 ----
 
-## Tipps & Tricks
+## Tips & Tricks
 
-* carefull with "common" shortcuts: cmd+w
+* careful with "common" shortcuts: cmd+w
 * use `tab` key a lot - autocompletion is installed
 * less copy & paste => more typing & tabbing
 * use `ctrl+c` to exit running processes

@@ -21,7 +21,7 @@ Note:
   * Scaling
   * Run a server per app:
     * bad utilisation, expensive failover
-* Use virutalisation
+* Use virtualisation
   * separate os and environment
   * isolated applications
   * better/split utilization of servers
@@ -56,7 +56,7 @@ Note:
   * separate network / ports
   * no direct access or visibility of and to other containers
 
-> a process isolated in it's own environment by the operating system
+> a process isolated in its own environment by the operating system
 
 Note: 
 * isolated filesystem based on a container image
@@ -77,7 +77,7 @@ Before:
 * System Engineers
   * setup a "Tomcat" Server
   * install Application from developers
-  * Try to fullfill "strange" version requirements
+  * Try to fulfill "strange" version requirements
   * Take care of Infrastructure <br><small>Networking, Storage, Firewall, DNS, Ingress, Resource Utilisation</small>
 
 * Software Engineers
