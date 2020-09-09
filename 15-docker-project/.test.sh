@@ -21,8 +21,6 @@ function errout() {
     exit 1
 }
 
-kubectl config set-context kind-kind
-
 cp -r project-start project-start-pretest
 cp -rv 15-docker-project/solution/* project-start/ ||errout "merging solution"
 
