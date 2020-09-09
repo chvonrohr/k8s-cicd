@@ -1,7 +1,26 @@
 # Kubernetes
 
-![Kubernetes Components](../assets/components-of-kubernetes.svg)
+![Kubernetes Desired State](../assets/kubernetes-desired-state.png)
 <!-- .element style="width:80%" -->
+
+Notes:
+* You tell Kubernetes the desired state of your application with it's containers, resources and volumes.
+* Kubernetes does the manual container steps automatically, smarter and works towards your desired state. 
+
+----
+
+### What does Kubernetes do
+
+* start container on worker nodes
+* monitors health and restarts containers
+* replicates containers (scales up)
+* optimizes utilisation of all nodes
+* rolling updates to replace containers with new versions
+* provides containers with volumes (and resources)
+* provides networking between containers
+* bundles access to multiple containers in services (load balancing)
+* ...
+
 
 ----
 
@@ -11,31 +30,24 @@
 * "manage" storage or backup
 * make an application scalable
 * manage external dns or networking
+* ...
 
 ----
 
-# Kubernetes Facts
+# Kubernetes Overview
 
-* 21.9k stacks on stackshare (vs. 593 Docker Swarm, 266 Mesos)
-* 
+![Kubernetes Components](../assets/components-of-kubernetes.svg)
+<!-- .element style="width:80%" -->
 
-Note: Openshift is a product build on top of Kubernetes and Docker.
-
-
-----
-
-### Kubernetes drives to a desired state
-
-That means applications have to be fault tollerant
-
-Ie. Waiting for a database to be available instead of crashing if it’s not
-
-A Kubernetes object is a "record of intent"--once you create the object, the Kubernetes system will constantly work to ensure that object exists.
-
+Notes:
+* One or multiple servers (nodes) run as Master with the so called control plane
+* Control-Plan runs containers of kubernetes which manage the cluster
+* Each worker node runs a process managing the containers on it 
+* Each worker node runs kube proxy to enable communication between nodes and containers
 
 ----
 
-### Ways to manage objects
+### Ways to manage desired state
 
 | | | |
 |---|---|---|

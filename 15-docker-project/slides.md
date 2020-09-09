@@ -294,6 +294,8 @@ Notes:
 * the crawler needs ssl cert information to connect to websites
 * use the smallest possible base image providing what you need
 * rethink base image if you need to add to much yourself
+* this runs als root in the container, in project-vision we have an example where we create and use a linux user in the scratch container
+
 
 ----
 
@@ -305,10 +307,10 @@ docker build -t crawler \
   -f build/package/crawler.Dockerfile .
 
 docker run -d --name crawler  \
-  -e LETSBOOT_BACKEND.URL=http://backend:8080 \
-  -e LETSBOOT_QUEUE.HOST=queue \
+  -e LETSBOOT_BACKEND.URL="http://backend:8080" \
+  -e LETSBOOT_QUEUE.HOST="queue" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
-  -v page-storage:/var/data \
+  -v "page-storage:/var/data" \
   --network letsboot crawler
 ```
 
@@ -323,7 +325,15 @@ curl -H "Content-Type: application/json" \
     -X POST -d '{"siteId":1}' \
     http://localhost:8080/crawls
 
+# look at the logs (ctrl+c to exit)
 docker logs -f CONTAINER-ID-CRAWLER
+
+# look into the database
+docker exec -it database bash
+psql -U letwsboot -W letsboot # password from above
+SELECT * FROM pages;
+\q
+exit
 ```
 
 ----
@@ -370,9 +380,6 @@ Note:
 
 Push everything to your registry:
 ```bash
-# you are already logged in - that's how you could login into other registries
-# docker login registry.fromyou.ch
-
 docker tag backend registry.gitlab.com/$GIT_REPO/backend:latest
 docker tag crawler registry.gitlab.com/$GIT_REPO/crawler:latest
 docker tag frontend registry.gitlab.com/$GIT_REPO/frontend:latest
@@ -384,8 +391,11 @@ docker push registry.gitlab.com/$GIT_REPO/frontend:latest
 docker push registry.gitlab.com/$GIT_REPO/scheduler:latest
 
 echo "open https://gitlab.com/$GIT_REPO/container_registry"
-```
 
+# on theia your already logged in - how to login on another machine
+docker login registry.gitlab.com
+```
+Notes:
 * we already logged you in to your registry
 
 ----
@@ -400,7 +410,7 @@ docker network rm letsboot
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode
 
 > open 10-docker/slides.md
 

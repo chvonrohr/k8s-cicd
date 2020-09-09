@@ -58,7 +58,7 @@ kubectl create deployment frontend \
 
 ## Frontend minimal deployment
 
-deployments/frontend/deployment.yaml
+project-start/deployments/frontend/deployment.yaml
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -112,7 +112,7 @@ Note:
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode
 
 > open 10-docker/slides.md
 
@@ -129,7 +129,7 @@ kubectl create service nodeport frontend --tcp=80:80 \
   -o yaml --dry-run=client > deployments/frontend/service.yaml
 ```
 
-deployments/frontend/service.yaml (no changes)
+project-start/deployments/frontend/service.yaml (no changes)
 ```yaml
 apiVersion: v1
 kind: Service
@@ -185,7 +185,7 @@ Notes:
 
 ## Database 2/4 - strategy Recreate
 
-deployments/database/deployment.yaml
+project-start/deployments/database/deployment.yaml
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -207,7 +207,7 @@ Note:
 
 ## Database 3/4 - volume
 
-deployments/database/deployment.yaml
+project-start/deployments/database/deployment.yaml
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -242,7 +242,7 @@ kubectl create secret generic database-postgresql \
   --from-literal=postgresql-password=secretpassword
 ```
 
-deployments/database/deployment.yaml
+project-start/deployments/database/deployment.yaml
 ```yaml
 #...
       containers:
@@ -279,7 +279,7 @@ k describe pods database
 ## Database volume
 
 
-deployments/database/pvc.yaml
+project-start/deployments/database/pvc.yaml
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -383,7 +383,7 @@ kubectl apply -Rf deployments/
 
 ## Pages Storage Perstistend Volume Claim
 
-deployments/crawler/pvc.yaml
+project-start/deployments/crawler/pvc.yaml
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -475,7 +475,7 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
 
 ----
 
-### Exercise Mode - multistage
+### Exercise Mode 
 
 > open 10-docker/slides.md
 
@@ -531,7 +531,7 @@ k create cronjob scheduler --schedule='* * * * *' \
   -o yaml --dry-run=client > deployments/scheduler/cronjob.yaml
 ```
 
-deployments/scheduler/cronjob.yaml
+project-start/deployments/scheduler/cronjob.yaml
 ```yaml
 # ...
 spec:
@@ -602,32 +602,59 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 
 ## Configure ingress 
 
-deployments/ingress.yaml
+project-start/kind-ingress.yaml
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
-metadata: { name: web-ingress }
+metadata:
+  name: web-ingress
 spec:
   rules:
   - http:
       paths:
-      - path: /api/*
+      - path: /api
         backend:
-          serviceName: letsboot-backend
+          serviceName: backend
           servicePort: 80
-      - path: /*
+      - path: /
         backend:
-          serviceName: letsboot-frontend
+          serviceName: frontend
           servicePort: 80
 ```
 
+project-stat/
 ```bash
 kubectl apply -Rf deployments
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 ```
 
-Note:
-* use portforward instead:
+----
+
+## Configure Google Cloud ingress 
+
+project-start/gcp-ingress.yaml
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: web-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        backend:
+          serviceName: backend
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: frontend
+          servicePort: 80
+```
+
+Notes:
+* we don't put this into the deployments folder as it doesn't work with gcp
+* To manage different configurations like this we recomment to use kustomize.
 
 ----
 
@@ -643,7 +670,8 @@ kubectl create secret generic database-postgresql \
 kubectl create secret generic queue-rabbitmq \
   --from-literal=rabbitmq-password=MoreSecrets!
 
-kubectl apply --recursive -f deployments/
+kubectl apply --recursive -f deployments/*/ # not the kinde-ingress.yaml
+kubectl apply gcp-ingress.yaml
 
 # wait for it to be available
 kubectl wait ingress/web-ingress --for condition=available
