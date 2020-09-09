@@ -1,22 +1,22 @@
 ### Production vs. Stage
 
-Variations:
+Variations in Kubernetes:
 * separate clusters
 * separate namespaces
 * separate by labels
 
 > We'll choose different namespaces
 
-Notes:
+Note:
 * Kubernetes.io documentation suggests to run multiple environments in one namespace using label and selectors like environment=prod. This can be very complex compared to namespaces.
 
----- 
+----
 
 ### Two namespaces
 
 ```bash
 # make sure you are in the gke cluster
-kubectl config set-context gke_TAB
+kubectl config set-context gke
 
 # create namespace production
 kubectl create namespace stage
@@ -41,12 +41,11 @@ project-start/.gitlab-ci.yml
 # ...
 deploy_stage: # change from deploy_all to deploy_stage
   #...
-  only: # add: only update stage on commit/merge to master
-    - master
   script:
     - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
     - rm project-start/deployments/ingress.yaml # do not add ingress on your stage environment
     - kubectl apply -f project-start/deployments --recursive --namespace stage # add namespace
+#   - kubectl apply -f project-start/gcp-ingress.yaml # removed for stage
 ```
 
 Note:
@@ -146,7 +145,15 @@ kubectl config set-context kind-kind
 kubectl create namespace test-$CI_COMMIT_SHORT_SHA
 sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
 kubectl apply -Rf deployments --namespace test-$CI_COMMIT_SHORT_SHA
+kubectl apply kind-ingress.yaml
 ```
+
+----
+
+### Exercise Mode - ci project
+
+![Let's do this](https://media.giphy.com/media/GdJz3mScUhC5W/giphy.gif)
+<!-- .element style="max-width:50%" -->
 
 ----
 

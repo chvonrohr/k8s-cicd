@@ -664,7 +664,7 @@ Notes:
 
 ```bash
 kubectl config get-contexts
-kubectl config use-context gke_TAB
+kubectl config use-context gke
 
 kubectl create secret generic database-postgresql \
   --from-literal=postgresql-password=ItsComplicated!
