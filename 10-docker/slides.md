@@ -67,7 +67,7 @@ Note:
 
 1. Choose base image
 2. Define changes <br><small>(files to copy, commands to execute)</small>
-3. Build as new image
+3. Build as new image (layer)
 
 ![Docker Layers](../assets/docker-layers.png)
 <!-- .element style="width:50%;position:absolute;right:20px;top:0;" -->
