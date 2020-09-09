@@ -201,7 +201,7 @@ spec:
 ```
 
 Note:
-* strategy recreat will prevent kubernetes from creating multiple pods accessing the same data ie. for updates
+* strategy recreate will prevent kubernetes from creating multiple pods accessing the same data ie. for updates
 
 ----
 
@@ -560,7 +560,7 @@ k get cronjobs
 
 ----
 
-## Access from outsie
+## Access from outsie
 
 ```bash
 # run in separate terminals
@@ -592,7 +592,7 @@ kubectl wait --namespace ingress-nginx \
 ```
 
 Note:
-* this is a common way to install things in your cluser
+* this is a common way to install things in your cluster
 * for docker desktop use this:
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
@@ -654,7 +654,7 @@ spec:
 
 Notes:
 * we don't put this into the deployments folder as it doesn't work with gcp
-* To manage different configurations like this we recomment to use kustomize.
+* To manage different configurations like this we recommend to use kustomize.
 
 ----
 

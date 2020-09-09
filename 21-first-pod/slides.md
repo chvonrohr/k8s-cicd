@@ -29,7 +29,7 @@ Note:
 
 ----
 
-## Declerative approach
+## Declarative approach
 
 project-start/helloworld.yaml
 ```yaml

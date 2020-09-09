@@ -9,7 +9,7 @@ Notes:
 
 ----
 
-### What does Kubernetes do
+### What does Kubernetes do
 
 * start container on worker nodes
 * monitors health and restarts containers
