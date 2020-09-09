@@ -49,7 +49,7 @@ project-vision/ (NOT the solution)
 
 ## Web IDE / Theia
 
-http://localhost:8080/api = http://FIRSTNAME.sk.letsboot.com:8080/api
+http://localhost:8080/api/ = http://FIRSTNAME.sk.letsboot.com:8080/api/
 
 Contains:
 * all tools

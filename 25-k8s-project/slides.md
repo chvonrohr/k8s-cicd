@@ -678,7 +678,6 @@ kubectl apply --recursive -f deployments/
 kubectl apply gcp-ingress.yaml
 
 # wait for it to be available
-kubectl wait ingress/web-ingress --for condition=available
 kubectl get ingress -o wide # takes a view minutes till you get public ip
 ```
 
