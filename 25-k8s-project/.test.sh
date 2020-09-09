@@ -43,7 +43,7 @@ for deployment in queue database backend frontend crawler; do \
 done
 
 curl http://localhost/api/ ||errout "no backend"
-[ "$(curl http://localhost/api)" == "backend works" ] || ||errout "backend doesn't indicate to work"
+[ "$(curl http://localhost/api/)" == "backend works" ] || ||errout "backend doesn't indicate to work"
 curl http://localhost ||errout "no frontend"
 
 cleanuptest
