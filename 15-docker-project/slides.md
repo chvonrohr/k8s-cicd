@@ -10,7 +10,7 @@ Note:
 * crawler - listens to the queue and crawls website
 * scheduler - triggers crawler jobs
 * database - store data
-* messagequeue - manage jobs in queue
+* message queue - manage jobs in queue
 
 ----
 
@@ -50,7 +50,7 @@ https://github.com/golang-standards/project-layout
 5. build and run containers
 6. push to registry
 
-> the "CI" part of CI/CD <small>exkl. the run part</small>
+> the "CI" part of CI/CD <small>excl. the run part</small>
 
 ----
 
@@ -101,7 +101,7 @@ docker run -d \
 
 Note: 
 * The hostname in this case is only for rabbitmq important, for networking we use the --name
-* Check: we don't need the port binding if we only want to talk to the queue from other containeers
+* Check: we don't need the port binding if we only want to talk to the queue from other containers
 
 ----
 
@@ -138,7 +138,7 @@ COPY --from=build /app/dist/crawler /usr/share/nginx/html
 
 Note:
 * From no on we'll keep the Dockerfiles in the build/ci/package folders
-* mono repo structure best practice recomendation from golang
+* mono repo structure best practice recommendation from golang
 
 What does it do:
 1. use node image as base
@@ -204,7 +204,7 @@ ENTRYPOINT ["/app/backend"]
 
 Note:
 * we will use a scratch image, as go is statically compiled and doesn't need anything
-* with java you can use GraalVM (optimaly with Quarkus)
+* in java, you can use GraalVM (optimally with Quarkus)
 * As golang is statically compiled we don't need anything else
 * we use ENTRYPOINT instead of CMD
   * CMD sets default command which can be overwritten
@@ -236,7 +236,7 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 
 ----
 
-## Test app 
+## Test app 
 
 ```bash
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4201/ 
@@ -268,7 +268,7 @@ go build ./cmd/crawler
 
 ----
 
-### Crawler - Dockerfile
+### Crawler - Dockerfile
 
 build/package/crawler.Dockerfile
 ```Dockerfile

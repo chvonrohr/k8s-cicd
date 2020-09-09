@@ -12,8 +12,8 @@ Notes:
 * "Runs" on Linux, Windows, macOS
 * Also called "OS-level virtualization"
 * Combination of Open Source and Closed Source parts
-* Predecesor Dotcloud started 2007
-* Started with LXC (Linux Containers) before writing their own Container imlementation
+* Predecessor Dotcloud started 2007
+* Started with LXC (Linux Containers) before writing their own Container implementation
 * 68.6k Stacks on Stackshare (vs. ?, 6.2k vagrant)
 * main contributors: Docker team, Google, Microsoft, Cisco, Huawei, IBM, and Red Hat.
 
@@ -105,7 +105,7 @@ Note:
 * WORKDIR is the folder in the filesystem we want to work in
 * COPY . . copies ./ from our local machine to ./ in our Working directory
 * RUN runs a command on build time
-* CMD defines how the container should bestarted
+* CMD defines how the container should be started
 
 ----
 
@@ -133,7 +133,7 @@ echo http://$PARTICIPANT_NAME.sk.letsboot.com:4000
 ```
 
 * `-d` run detached
-* `-p` bind host port 4000 to contianer port 3000
+* `-p` bind host port 4000 to container port 3000
 
 ----
 
@@ -177,7 +177,7 @@ docker run -dp 4000:3000 todo-app
 
 Note: 
 * data in the container is gone with the container
-* containers can be stoped and started (data stays)
+* containers can be stopped and started (data stays)
 * containers get not updated but replaced
 
 https://docs.docker.com/get-started/overview/
@@ -220,7 +220,7 @@ docker push YOUR-USER-NAME/todo-app
 docker run -dp 4000:3000 YOUR-USER-NAME/todo-app
 ```
 * click on the "4000" link
-* add somet unique todos
+* add some unique todos
 
 Note: 
 * build docker images anywhere
@@ -263,8 +263,8 @@ docker start CONTAINER-ID2
 <!-- .element style="width:50%;position:absolute;right:20px;top:0;" -->
 
 Layered filesystem:
-1. base image layer - imutable
-2. our image layers - imutable
+1. base image layer - immutable
+2. our image layers - immutable
 3. individual container layer
 
 Note:
@@ -291,7 +291,7 @@ docker exec CONTAINER-ID cat /data.txt
 ```
 
 Note:
-* each running container has it's own layer for changes
+* each running container has its own layer for changes
 * exec executes a command in a container
 * The tail -f is dummy process to keep the container running.
 * If the main process of a container stops, the container is stopped.
@@ -338,7 +338,7 @@ sudo ls /var/lib/docker/volumes/todo-app/_data
 
 ## Bind Mounts - Developer mode
 
-Run code from host in container. 
+Run code from the host in a container. 
 
 todo-app/
 ```bash

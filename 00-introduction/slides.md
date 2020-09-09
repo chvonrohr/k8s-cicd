@@ -48,7 +48,7 @@ Notes:
 > Tailored/reduced for workshoptage.ch
 
 Notes:
-* Focus hands-on playthrough
+* Focus hands-on play-through
 * View from the developer side of DevOps
 
 * Remove chapters not used before training.
@@ -73,7 +73,7 @@ Continuous Integration & Delivery
   * Basic concepts CI/CD Pipeline
   * Play through CI (Build, Test...) with Docker
   * Creation of CI script based on **Gitlab-CI
-  * Extension script by delivery to Kubernetes
+  * Extension scripts by delivery to Kubernetes
   * Delivery to "productive" cluster
 
 ----

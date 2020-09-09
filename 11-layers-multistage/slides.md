@@ -32,7 +32,7 @@ fc7d43a7d637        4 days ago          /bin/sh -c yarn install --production    
 ```
 
 Note: 
-The `<missing>` IMAGE history entries refer to steps of the used base image, which are not separate images and therfore do not have their own "ID" in the docker hub.
+The `<missing>` IMAGE history entries refer to steps of the used base image, which are not separate images and therefore do not have their own "ID" in the docker hub.
 
 ----
 
@@ -93,7 +93,7 @@ node_modules
 ```
 
 * only copy files you need
-* security, performacne, caching...
+* security, performance, caching...
 
 ----
 
