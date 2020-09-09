@@ -34,7 +34,7 @@ Notes:
 
 ----
 
-## Agenda - Workshoptage 2020:
+## Agenda - Workshoptage 2020:
 
 * Introduction and Setup <small>(00, 01)</small>
 * Containers <small>(02)</small>
