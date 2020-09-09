@@ -17,7 +17,7 @@ function cleanuptest() {
 
 function errout() {
     echo Error: "$1" 1>&2
-    cleanuptest
+    #cleanuptest
     exit 1
 }
 
@@ -35,8 +35,10 @@ kubectl create secret generic database-postgresql \
 kubectl create secret generic queue-rabbitmq \
   --from-literal=rabbitmq-password=MoreSecrets! ||errout "queue secret"
 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
 kubectl apply -Rf project-start/deployments
-kubectl apply -Rf project-start/kind-ingress.yaml
+kubectl apply -f project-start/kind-ingress.yaml
 
 for deployment in queue database backend frontend crawler; do \
     kubectl wait deployments/$deployment --for condition=available ||errout "deployment $deployment not available"
