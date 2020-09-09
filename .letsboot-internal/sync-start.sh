@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -d "./project-start" ]; then \
+    echo "run in course folder" 1>&2
+    exit 1
+fi 
+
 cat > sync-start-excludes.txt << EOF
 .dockerignore
 .gitlab-ci.yml
