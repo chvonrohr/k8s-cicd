@@ -114,10 +114,9 @@ Note:
 
 ### Exercise Mode
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/Md9UQRsv94yCAjeA1w/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->
 
 ----
 
@@ -477,10 +476,9 @@ echo open: http://$PARTICIPANT_NAME.sk.letsboot.com:4200/
 
 ### Exercise Mode 
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/3XDXN8tBv5KkjRQpJz/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->
 
 ----
 

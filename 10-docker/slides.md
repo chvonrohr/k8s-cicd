@@ -187,7 +187,6 @@ https://docs.docker.com/get-started/overview/
 
 ### Exercise Mode - first container
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/hT6wgEtwoUt0no87gV/giphy.gif)
 
@@ -251,7 +250,6 @@ docker start CONTAINER-ID2
 
 ### Exercise Mode - registry
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/RkziS2LzRB1V6xhIs7/giphy.gif)
 
@@ -364,7 +362,6 @@ Note:
 
 ### Exercise Mode - volumes
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/3ornk7TgUdhjhTYgta/giphy.gif)
 

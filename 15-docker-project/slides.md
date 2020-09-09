@@ -248,10 +248,9 @@ echo check data: http://$PARTICIPANT_NAME.sk.letsboot.com:8080/sites
 
 ### Exercise Mode - multistage
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/Md9UQRsv94yCAjeA1w/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->
 
 ----
 
@@ -412,10 +411,9 @@ docker network rm letsboot
 
 ### Exercise Mode
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/tAeB6dptxnoli/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->
 
 ----
 

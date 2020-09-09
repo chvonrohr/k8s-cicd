@@ -159,7 +159,6 @@ Note:
 
 # Exercise Mode
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/l3vR2SwA3hfH4NtVC/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->

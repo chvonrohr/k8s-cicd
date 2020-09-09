@@ -46,6 +46,9 @@ include:
 - local: project-start/.gitlab-ci.yml
 ```
 
+Note:
+* per default our project-vision is tested
+
 ----
 
 ## minimal frontend surge example
@@ -63,28 +66,31 @@ surge_demo:
 ```
 
 ```bash
+# commit changes and trigger pipeline
 git add -A
 git commit -m 'push gitlab-ci will trigger ci/cd'
 git push
+
+# look at pipeline
 echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 ```
 
-> check pipeline for url
+Note:
+* surge will get the token and username from the gitlab-ci secretes
 
 ----
 
 ## check ci/cd process
 
 ![gitlab ci/cd test frontend](../assets/gitlab-cicd-test-frontend.png)
+<!-- .element style="width:50%" -->
 
 ----
 
 ### Exercise Mode - minimal ci/cd
 
-> open 10-docker/slides.md
-
 ![Let's do this](https://media.giphy.com/media/TYlus7VAr9c4M/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="width:50%" -->
 
 ----
 
@@ -101,7 +107,7 @@ test_go:
   stage: test
   image: golang
   script:
-    - cd project-vision
+    - cd project-start
     - export GO111MODULE=on
     - go mod download
     - go test ./...
@@ -121,7 +127,7 @@ test_frontend:
   stage: test
   image: trion/ng-cli-karma
   script:
-    - cd project-vision/web
+    - cd project-start/web
     - yarn install
     - ng test --progress false --watch false
 ```
@@ -146,15 +152,11 @@ build_backend:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-start/build/package/$APP.Dockerfile project-start/
+  - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
-  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
 ```
-
-```bash
-echo "open https://gitlab.com/$GIT_REPO/container_registry"
-```
-
 ----
 
 ## Build
@@ -186,28 +188,12 @@ git add -A
 git commit -m 'test, build and push containers'
 git push
 echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
+echo "open https://gitlab.com/$GIT_REPO/container_registry"
 ```
 
 ----
 
-> skip (is done automatically)
-
-## set google service account
-
-1. get prepared service account and open gitlab ci/cd 
-```bash
-cat ~/google-service-account.json
-
-echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
-```
-2. expand variables
-3. add two variables
-  * select protected and masked for both
-  * Key: $GCR_KEY Value: content from file
-
-----
-
-## Deployment 
+## Delivery 
 
 get cluster name
 ```bash
@@ -224,7 +210,6 @@ deploy_all:
   tags: [ docker ]
   image: google/cloud-sdk:alpine
   before_script:
-    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
     - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
     - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
     - gcloud components install kubectl
@@ -253,10 +238,9 @@ echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 
 ### Exercise Mode - ci project
 
-> open 10-docker/slides.md
 
 ![Let's do this](https://media.giphy.com/media/GdJz3mScUhC5W/giphy.gif)
-<!-- .element style="width=50%" -->
+<!-- .element style="max-width:50%" -->
 
 ----
 

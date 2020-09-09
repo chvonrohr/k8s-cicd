@@ -51,7 +51,6 @@ build_backend:
   - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
-  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_frontend:
   variables:
@@ -68,7 +67,6 @@ build_frontend:
   - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
-  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_crawler:
   variables:
@@ -85,7 +83,6 @@ build_crawler:
   - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
-  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 build_scheduler:
   variables:
@@ -102,7 +99,6 @@ build_scheduler:
   - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
-  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
 
 deploy_stage:
   variables:
@@ -113,7 +109,6 @@ deploy_stage:
   tags: [ docker ]
   image: google/cloud-sdk:alpine
   before_script:
-    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
     - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
     - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
     - gcloud components install kubectl

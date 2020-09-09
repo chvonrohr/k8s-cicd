@@ -45,3 +45,23 @@ That means applications have to be fault tollerant
 Ie. Waiting for a database to be available instead of crashing if it’s not
 
 A Kubernetes object is a "record of intent"--once you create the object, the Kubernetes system will constantly work to ensure that object exists.
+
+
+
+
+----
+
+> skip (is done automatically)
+
+## set google service account
+
+1. get prepared service account and open gitlab ci/cd 
+```bash
+cat ~/google-service-account.json
+
+echo "open https://gitlab.com/$GIT_REPO/-/settings/ci_cd"
+```
+2. expand variables
+3. add two variables
+  * select protected and masked for both
+  * Key: $GCR_KEY Value: content from file
