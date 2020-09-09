@@ -230,6 +230,7 @@ deploy_all:
   script:
     - sed -i.bak -E "s/(frontend|backend|scheduler|crawler):latest/\1:$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
     - kubectl apply -f project-start/deployments --recursive
+    - kubectl apply -f project-start/gcp-ingress.yaml
 ```
 
 Note:
