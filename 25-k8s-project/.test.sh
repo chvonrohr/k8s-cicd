@@ -42,7 +42,7 @@ for deployment in queue database backend frontend crawler; do \
     kubectl wait deployments/$deployment --for condition=available ||errout "deployment $deployment not available"
 done
 
-curl http://localhost/api ||errout "no backend"
+curl http://localhost/api/ ||errout "no backend"
 [ "$(curl http://localhost/api)" == "backend works" ] || ||errout "backend doesn't indicate to work"
 curl http://localhost ||errout "no frontend"
 
