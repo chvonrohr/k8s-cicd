@@ -1,6 +1,6 @@
 # CI/CD our project
 
-1. build contianers
+1. build containers
 2. push containers to registry
 3. deliver new versions to the cluster
 
@@ -188,7 +188,7 @@ echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 
 ----
 
-> skip (is done automatcially)
+> skip (is done automatically)
 
 ## set google service account
 
@@ -234,7 +234,7 @@ deploy_all:
 ```
 
 Note:
-* example how to replace :latest with sed inplace without kustomize
+* example how to replace :latest with sed in place without kustomize
 
 ----
 
@@ -266,4 +266,4 @@ echo "open https://gitlab.com/$GIT_REPO/-/pipelines"
 * docker in docker to build containers
 * push to registry with tagname/version and latest
 * apply (deliver) to kubernetes
-* auto-adjust versions of imges (for now with sed)
+* auto-adjust versions of images (for now with sed)

@@ -34,7 +34,7 @@ Note:
 
 ----
 
-### Adapt deploy_all to stage
+### Adapt deploy_all to stage
 
 project-start/.gitlab-ci.yml
 ```yaml
@@ -56,7 +56,7 @@ Note:
 
 ----
 
-### Commit an check Stage
+### Commit and check Stage
 
 ```bash
 # push change
@@ -104,7 +104,7 @@ Note:
 
 ----
 
-### Commit an check Stage
+### Commit and check Stage
 
 ```bash
 # push changes in gitlab-ci
@@ -150,9 +150,9 @@ kubectl apply -Rf deployments --namespace test-$CI_COMMIT_SHORT_SHA
 
 ----
 
-### recap
+### recap
 
 * simple example how to separate prod form stage
 * invoke ci/cd steps only on specific event
-* create separate namespades
+* create separate namespaces
 * local testing of specific versions/branches
