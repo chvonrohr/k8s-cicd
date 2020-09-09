@@ -24,6 +24,20 @@ kubectl create namespace stage
 # create namespace stage
 kubectl create namespace production
 
+# create secrets
+kubectl create secret generic database-postgresql \
+  --from-literal=postgresql-password=ItsComplicated! \
+  --namespace stage
+kubectl create secret generic queue-rabbitmq \
+  --from-literal=rabbitmq-password=morepasswords \
+  --namespace stage
+kubectl create secret generic database-postgresql \
+  --from-literal=postgresql-password=ItsComplicated! \
+  --namespace production
+kubectl create secret generic queue-rabbitmq \
+  --from-literal=rabbitmq-password=morepasswords \
+  --namespace production
+
 # remove current deployment
 kubectl delete -Rf deployments
 ```

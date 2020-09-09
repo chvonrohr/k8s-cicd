@@ -132,5 +132,5 @@ deploy_prod:
     - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
     - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
-    - kubectl apply -f project-start/deployments --recursive --namespace production 
+    - kubectl apply -f project-start/deployments --recursive --namespace production
     - kubectl apply -f project-start/gcp-ingress.yaml
