@@ -141,7 +141,7 @@ Note:
 * mono repo structure best practice recomendation from golang
 
 What does it do:
-1. use node image
+1. use node image as base
 2. copy dependency info
 3. install dependencies
 4. copy code
@@ -223,11 +223,11 @@ docker build -t backend \
 docker volume create page-storage
 
 docker run -d --name backend -p 8080:8080 \
-  -e LETSBOOT_DB.HOST=database \
+  -e LETSBOOT_DB.HOST="database" \
   -e LETSBOOT_DB.PASSWORD="supersecure" \
   -e LETSBOOT_DB.TYPE="postgres" \
   -e LETSBOOT_QUEUE.PASSWORD="megasecure" \
-  -e LETSBOOT_QUEUE.HOST=queue \
+  -e LETSBOOT_QUEUE.HOST="queue" \
   -v page-storage:/var/data \
   --network letsboot backend
 
