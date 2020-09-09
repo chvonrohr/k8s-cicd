@@ -68,6 +68,11 @@ Note:
 
 ### We build apps + environment
 
+* Developers deliver apps with their environments in containers.
+* System administrators provide infrastructure to run containers.
+
+Notes:
+
 Before:
 * System Engineers
   * setup a "Tomcat" Server

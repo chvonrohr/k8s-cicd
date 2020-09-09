@@ -9,4 +9,4 @@ password = "xxx" # default example - use environment variables / kubernetes secr
 
 [crawler]
 data = "/var/data"
-dump = false
+dump = true

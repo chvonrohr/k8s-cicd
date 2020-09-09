@@ -15,7 +15,7 @@
 
 ## Web IDE / Theia
 
-* open: http://FIRSTNAME.sk.letsboot.com:3000
+* open: http://FIRSTNAME.sk.letsboot.com:3443
 * login with:
   * user: FIRSTNAME
   * password: Workshoptage.
@@ -96,12 +96,14 @@ Note:
 * carefull with "common" shortcuts: cmd+w
 * use `tab` key a lot - autocompletion is installed
 * less copy & paste => more typing & tabbing
-* use `alt+arrows left right` to navigate the commandline cursor
 * use `ctrl+c` to exit running processes
 * use `exit` command if you are in remote shell
 * use multiple terminals if you want to run things in parallel
 * click on links in the Theia shell (cmd + click)
 * ignore theia extension errors (bottom right)
+
+Note:
+* use `alt+arrows left right` to navigate the commandline cursor
 
 ----
 
@@ -109,18 +111,22 @@ Note:
 
 ```yaml
 key1: value
-object1: { object: { key: value }}
-object2:
+object1:
   object: 
     key: value
-list1: [ 'value1', 'value2', object: { key: value }]
-list2: 
+object2: { object: { key: value }}
+list1: 
   - value1
   - value2
   - object: 
     key: value
+list2: [ value1, value2, object: { key: value }]
 --- # new document
 key1: value
 ```
 
 > Careful with indentation! (2 spaces)
+
+Note:
+* easier to write version of json
+* https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html#yaml-basics

@@ -23,7 +23,7 @@ test_go:
   stage: test
   image: golang
   script:
-    - cd project-vision
+    - cd project-start
     - export GO111MODULE=on
     - go mod download
     - go test ./...
@@ -32,7 +32,7 @@ test_frontend:
   stage: test
   image: trion/ng-cli-karma
   script:
-    - cd project-vision/web
+    - cd project-start/web
     - yarn install
     - ng test --progress false --watch false
 
@@ -47,7 +47,8 @@ build_backend:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-start/build/package/$APP.Dockerfile project-start/
+  - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
@@ -63,7 +64,8 @@ build_frontend:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-start/build/package/$APP.Dockerfile project-start/
+  - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
@@ -79,7 +81,8 @@ build_crawler:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-start/build/package/$APP.Dockerfile project-start/
+  - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
@@ -95,7 +98,8 @@ build_scheduler:
   before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-start/build/package/$APP.Dockerfile project-start/
+  - docker tag $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/$APP:latest
   - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
   - docker push $CI_REGISTRY_IMAGE/$APP:latest
   - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA

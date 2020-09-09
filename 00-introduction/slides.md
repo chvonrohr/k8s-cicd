@@ -1,10 +1,8 @@
 ### Welcome to our course
 ## DevOps: CI/CD with Kubernetes
 
-> Goal: Put an application into containers and deliver it continuously to kubernetes.
-
 Notes:
-Let's run applications in containers with docker, orchestrate them in Kubernetes and their integration as well as delivery with Gitlab.
+* Goal: Put an application into containers and deliver it continuously to kubernetes.
 
 ----
 
@@ -14,10 +12,12 @@ Let's run applications in containers with docker, orchestrate them in Kubernetes
 
 <!-- .element style="width: 50%;" -->
 
+> Hands-On courses for tech we love.
+
 Note: 
 * letsboot.com started 2016
-* Group of Software Engineers providing hands on courses, coaching and consulting.
 * Goal: Teach topics we love as hands-on bootup trainings.
+* Group of Software Engineers providing hands on courses, coaching and consulting.
 
 ----
 

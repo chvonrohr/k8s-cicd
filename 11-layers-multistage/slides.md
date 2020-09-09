@@ -97,17 +97,6 @@ node_modules
 
 ----
 
-> skip
-
-# Exercise Mode - layers
-
-> open 10-docker/slides.md
-
-![Let's do this](https://media.giphy.com/media/6w4SdNcShkCZfycrxI/giphy.gif)
-<!-- .element style="width: 40%" -->
-
-----
-
 ## Multistage Builds
 
 * separate build container step
@@ -138,7 +127,6 @@ docker images # look for frontend - ca. 773MB size
 ----
 
 ## With multistage
-### course project frontend
 
 project-start/web/Dockerfile
 ```Dockerfile
