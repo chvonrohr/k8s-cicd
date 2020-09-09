@@ -622,11 +622,15 @@ spec:
           servicePort: 80
 ```
 
-project-stat/
+project-start/
 ```bash
-kubectl apply -Rf deployments
+kubectl apply -f kind-ingress.yaml
 echo open: http://$PARTICIPANT_NAME.sk.letsboot.com/
 ```
+
+Notes:
+* this is incompatible with google kubernetes engine so we moved it outsid the deployment folder for this course
+* To manage different configurations like this we recomment to use kustomize.
 
 ----
 
@@ -670,7 +674,7 @@ kubectl create secret generic database-postgresql \
 kubectl create secret generic queue-rabbitmq \
   --from-literal=rabbitmq-password=MoreSecrets!
 
-kubectl apply --recursive -f deployments/*/ # not the kinde-ingress.yaml
+kubectl apply --recursive -f deployments/
 kubectl apply gcp-ingress.yaml
 
 # wait for it to be available

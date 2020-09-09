@@ -120,8 +120,8 @@ deploy_stage:
     - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
   script:
     - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
-    - rm project-start/deployments/ingress.yaml # do not add ingress on your stage environment
     - kubectl apply -f project-start/deployments --recursive --namespace stage # add namespace
+#   - kubectl apply -f project-start/gcp-ingress.yaml # removed for stage
 
 deploy_prod:
   variables:
@@ -141,4 +141,5 @@ deploy_prod:
 
   script:
     - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
-    - kubectl apply -f project-start/deployments --recursive --namespace production # add namespace
+    - kubectl apply -f project-start/deployments --recursive --namespace production 
+    - kubectl apply -f project-start/gcp-ingress.yaml
