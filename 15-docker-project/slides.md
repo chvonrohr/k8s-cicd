@@ -95,7 +95,7 @@ docker run -d \
   --hostname rabbitmq \
   --network letsboot \
   -e RABBITMQ_DEFAULT_PASS="megasecure" \
-  -e RABBITMQ_DEFAULT_USER=letsboot \
+  -e RABBITMQ_DEFAULT_USER="letsboot" \
   rabbitmq
 ```
 
@@ -120,18 +120,6 @@ ls dist/crawler/
 
 ----
 
-## Frontend - docker walkthrough
-
-1. use node image
-2. copy dependency info
-3. install dependencies
-4. copy code
-5. build app
-6. use nginx image
-7. copy build to nginx
-
-----
-
 ## Frontend - Dockerfile
 
 project-start/build/package/frontend.Dockerfile
@@ -151,6 +139,15 @@ COPY --from=build /app/dist/crawler /usr/share/nginx/html
 Note:
 * From no on we'll keep the Dockerfiles in the build/ci/package folders
 * mono repo structure best practice recomendation from golang
+
+What does it do:
+1. use node image
+2. copy dependency info
+3. install dependencies
+4. copy code
+5. build app
+6. use nginx image
+7. copy build to nginx
 
 ----
 

@@ -600,31 +600,6 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 
 ----
 
-## TODO: add loadbalancer
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: elb-service
-  labels:
-    app: simpleapp
-spec:
-  type: LoadBalancer
-  selector:
-    app: simpleapp
-  ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-
-```
-
-
-----
-
-> skip
-
 ## Configure ingress 
 
 deployments/ingress.yaml
@@ -638,11 +613,11 @@ spec:
       paths:
       - path: /api/*
         backend:
-          serviceName: backend
+          serviceName: letsboot-backend
           servicePort: 80
       - path: /*
         backend:
-          serviceName: frontend
+          serviceName: letsboot-frontend
           servicePort: 80
 ```
 
