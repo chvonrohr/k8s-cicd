@@ -72,6 +72,8 @@ docker run -d --name crawler  \
   -v page-storage:/var/data \
   --network letsboot crawler  ||errout "running crawler"
 
+sleep 10
+
 docker run -e SCHEDULE_URL=http://backend:8080/schedule \
   --network letsboot scheduler  ||errout "running scheduler"
 

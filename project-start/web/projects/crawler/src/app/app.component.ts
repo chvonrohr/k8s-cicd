@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {shareReplay, tap, timeout} from 'rxjs/operators';
 import {Crawl, Page, Site} from './model';
 
@@ -79,6 +79,9 @@ export class AppComponent implements OnInit {
         tap(crawls => {
           if (crawls.length > 0 ) {
             this.selectCrawl(crawls[crawls.length - 1]);
+          } else {
+            this.selectedCrawl = null;
+            this.pages = of([]);
           }
         })
       );
@@ -91,7 +94,7 @@ export class AppComponent implements OnInit {
   }
 
   private loadPagesForCrawl(crawl: Crawl): void {
-    this.pages = this.http.get<Page[]>(`${this.url}/pages?site=${crawl.ID}`);
+    this.pages = this.http.get<Page[]>(`${this.url}/pages?crawl=${crawl.ID}`);
   }
 
 }

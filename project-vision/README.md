@@ -366,7 +366,7 @@ kubectl port-forward --namespace letsboot service/letsboot-frontend 4201:80
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
 
 # we prepareted a ingress configuration for localhost
-kubectl apply -f deployments/local-ingress.yaml
+kubectl apply -f deployments/ingress.yaml
 kubectl get ingress
 
 

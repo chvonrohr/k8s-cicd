@@ -578,11 +578,7 @@ k logs -f --selector app=crawler # show logs of all crawlers
 
 ----
 
-> skip
-
-## Ingress
-
-* install ingress controller on kind
+## Ingress on Kind
 
 ```bash
 # install nginx ingress on kind
@@ -595,9 +591,8 @@ kubectl wait --namespace ingress-nginx \
   --timeout=90s
 ```
 
-> common way to install manifests in kubernetes
-
 Note:
+* this is a common way to install things in your cluser
 * for docker desktop use this:
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
@@ -636,7 +631,7 @@ deployments/ingress.yaml
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
-metadata: { name: local-ingress }
+metadata: { name: web-ingress }
 spec:
   rules:
   - http:
@@ -674,8 +669,11 @@ kubectl create secret generic queue-rabbitmq \
   --from-literal=rabbitmq-password=MoreSecrets!
 
 kubectl apply --recursive -f deployments/
-watch kubectl get ingress -o wide # takes a view minutes till you get public ip
+
+# wait for it to be available
+kubectl wait ingress/web-ingress --for condition=available
+kubectl get ingress -o wide # takes a view minutes till you get public ip
 ```
 
 Note:
-* check ingress
+* Disclaimer: There is currently an issue with our Ingress example and Google Kubernetes Engine Version

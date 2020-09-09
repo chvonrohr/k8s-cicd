@@ -23,7 +23,7 @@
     </tr>
     <tr *ngFor="let page of pages | async">
       <td>{{page.statusCode}}</td>
-      <td>{{page.url}}</td>
+      <td><a [href]="'/api/pages/' + page.ID + '?format=html'" target="_blank">{{page.url}}</a></td>
     </tr>
   </table>
 </section>

@@ -1,0 +1,152 @@
+# to support local docker in docker gitlab-runner 
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+
+# add your ci/cd code here:
+
+# surge_demo:
+#  image: node:12
+#  script:
+#    - cd project-start/web
+#    - yarn install
+#    - yarn add surge
+#    - node_modules/.bin/ng build --prod
+#    - node_modules/.bin/surge -p dist/crawler/ --domain $CI_PROJECT_NAME-k8s-training.surge.sh
+
+stages:
+- test
+- build
+- deploy
+
+test_go:
+  stage: test
+  only:
+    - master
+  image: golang
+  script:
+    - cd project-vision
+    - export GO111MODULE=on
+    - go mod download
+    - go test ./...
+
+test_frontend:
+  stage: test
+  only:
+    - master
+  image: trion/ng-cli-karma
+  script:
+    - cd project-vision/web
+    - yarn install
+    - ng test --progress false --watch false
+
+build_backend:
+  variables:
+    APP: backend
+  stage: build
+  only:
+    - master
+  tags: [ docker ]
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
+  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+
+build_frontend:
+  variables:
+    APP: frontend
+  stage: build
+  only:
+    - master
+  tags: [ docker ]
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
+  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+
+build_crawler:
+  variables:
+    APP: crawler
+  stage: build
+  only:
+    - master
+  tags: [ docker ]
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
+  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+
+build_scheduler:
+  variables:
+    APP: scheduler
+  stage: build
+  only:
+    - master
+  tags: [ docker ]
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA -f project-vision/build/package/$APP.Dockerfile project-vision/
+  - docker push $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+  - docker push $CI_REGISTRY_IMAGE/$APP:latest
+  - echo $CI_REGISTRY_IMAGE/$APP:$CI_COMMIT_SHORT_SHA
+
+deploy_stage:
+  variables:
+    CLUSTER_NAME: CHANGE-TO-YOUR-CLUSTER
+  stage: deploy
+  only:
+    - master
+  tags: [ docker ]
+  image: google/cloud-sdk:alpine
+  before_script:
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+    - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+    - gcloud components install kubectl
+    - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
+  script:
+    - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
+    - rm project-start/deployments/ingress.yaml # do not add ingress on your stage environment
+    - kubectl apply -f project-start/deployments --recursive --namespace stage # add namespace
+
+deploy_prod:
+  variables:
+    CLUSTER_NAME: CHANGE-TO-YOUR-CLUSTER
+  stage: deploy
+  only:
+    refs:
+      - tags
+  tags: [ docker ]
+  image: google/cloud-sdk:alpine
+  before_script:
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+    - echo $GCR_KEY > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+    - gcloud components install kubectl
+    - gcloud container clusters get-credentials $CLUSTER_NAME --region europe-west6 --project letsboot
+
+  script:
+    - sed -i.bak "s/(frontend|backend|scheduler|crawler):latest/$CI_COMMIT_SHORT_SHA/" project-start/deployments/*/*.yaml
+    - kubectl apply -f project-start/deployments --recursive --namespace production # add namespace

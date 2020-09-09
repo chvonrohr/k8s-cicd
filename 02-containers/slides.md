@@ -63,3 +63,33 @@ Note:
 * kernel namespaces and cgroups
 * your process running as your process
 * similar to chroot but with many more features
+
+----
+
+### We build apps + environment
+
+Before:
+* System Engineers
+  * setup a "Tomcat" Server
+  * install Application from developers
+  * Try to fullfill "strange" version requirements
+  * Take care of Infrastructure <br><small>Networking, Storage, Firewall, DNS, Ingress, Resource Utilisation</small>
+
+* Software Engineers
+  * Code locally - solving conflicts with different environments
+  * Try to get right server and versions
+  * Hope it will work in production
+
+* Both
+  * Try to make it work in prod
+
+After:
+
+* System Engineers
+  * Provide Container "Cluster"
+  * Take care of Infrastructure <br><small>Networking, Storage, Firewall, DNS, Ingress, Resource Utilisation</small>
+
+* Software Engineers
+  * Build applications WITH the environment
+  * Run containers locally as they run on production
+  * Deliver containers
